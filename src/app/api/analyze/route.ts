@@ -15,7 +15,8 @@ import {
   type Report,
 } from "@/lib/types";
 
-export const maxDuration = 60;
+/** Gemini can be slow at peak times; Vercel Hobby with Fluid compute allows up to 300 s. */
+export const maxDuration = 300;
 
 /**
  * ~50–60k tokens. Gemini Flash reads far more, but this keeps one request inside free-tier

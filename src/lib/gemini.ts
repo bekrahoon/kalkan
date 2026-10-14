@@ -184,12 +184,15 @@ export async function analyzeWithGemini(input: PolicyInput, lang: Lang): Promise
       temperature: 0.2,
       responseMimeType: "application/json",
       responseSchema: RESPONSE_SCHEMA,
+      // Little "thinking" = much faster answers; the schema and rules do the heavy lifting here.
+      thinkingConfig: { thinkingLevel: "low" },
     },
   };
+  let withThinkingConfig = true;
 
   // Overloaded (503) or rate-limited (429): retry, then fall back to lighter Flash models.
   const models = [model, ...FALLBACK_MODELS.filter((m) => m !== model)];
-  const deadline = Date.now() + 52_000;
+  const deadline = Date.now() + 250_000;
   let res: Response | null = null;
   let usedModel = model;
   let lastStatus = 0;
@@ -204,8 +207,12 @@ export async function analyzeWithGemini(input: PolicyInput, lang: Lang): Promise
           {
             method: "POST",
             headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-            body: JSON.stringify(body),
-            signal: AbortSignal.timeout(Math.min(left, 40_000)),
+            body: JSON.stringify(
+              withThinkingConfig
+                ? body
+                : { ...body, generationConfig: { ...body.generationConfig, thinkingConfig: undefined } },
+            ),
+            signal: AbortSignal.timeout(Math.min(left, 90_000)),
           },
         );
         if (r.ok) {
@@ -217,13 +224,19 @@ export async function analyzeWithGemini(input: PolicyInput, lang: Lang): Promise
         const detail = await r.text().catch(() => "");
         console.error(`[gemini] ${m} HTTP ${r.status}`, detail.slice(0, 300));
         if (r.status === 401 || r.status === 403 || /API key/i.test(detail)) throw new AnalyzeError("no_api_key", 503);
+        if (r.status === 400 && withThinkingConfig && /thinking/i.test(detail)) {
+          withThinkingConfig = false; // this model doesn't accept the setting → resend without it
+          attempt--;
+          continue;
+        }
         if (r.status === 404) continue outer; // model not available for this key → next model
         if (r.status !== 503 && r.status !== 429 && r.status !== 500) throw new AnalyzeError("ai_failed", 502);
         if (attempt === 0) await new Promise((ok) => setTimeout(ok, 1_500));
       } catch (e) {
         if (e instanceof AnalyzeError) throw e;
-        console.error(`[gemini] ${m} network error`, e);
+        console.error(`[gemini] ${m} ${(e as Error)?.name === "TimeoutError" ? "timeout" : "network error"}`);
         lastStatus = 0;
+        continue outer; // slow or unreachable → try the next, lighter model
       }
     }
   }

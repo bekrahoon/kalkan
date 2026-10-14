@@ -8,11 +8,16 @@ import { ShieldLogo } from "./ShieldLogo";
 export function LoadingView({ onCancel }: { onCancel: () => void }) {
   const { t } = useLang();
   const [step, setStep] = useState(0);
+  const [slow, setSlow] = useState(false);
   const caps = t.loading.captions;
 
   useEffect(() => {
     const id = setInterval(() => setStep((s) => Math.min(s + 1, caps.length - 1)), 800);
-    return () => clearInterval(id);
+    const slowTimer = setTimeout(() => setSlow(true), 15_000);
+    return () => {
+      clearInterval(id);
+      clearTimeout(slowTimer);
+    };
   }, [caps.length]);
 
   return (
@@ -42,6 +47,12 @@ export function LoadingView({ onCancel }: { onCancel: () => void }) {
             );
           })}
         </ol>
+
+        {slow && (
+          <p role="status" className="fade-in mt-5 rounded-xl bg-subtle p-3 text-sm text-muted">
+            {t.loading.slow}
+          </p>
+        )}
 
         <button type="button" onClick={onCancel} className="btn btn-secondary mt-8 w-full">
           {t.loading.cancel}
