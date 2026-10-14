@@ -53,7 +53,37 @@ phishing – fake website/login of a bank, mail, social network asking for crede
 deepfake – AI-faked voice or video of a known person or celebrity asking for money or promoting investments.`;
 
 function langName(lang: Lang) {
-  return lang === "ky" ? "Kyrgyz (Cyrillic, simple everyday language)" : "Russian (simple everyday language)";
+  return lang === "ky"
+    ? "Kyrgyz written ONLY in Cyrillic script (кыргыз тили: ө, ү, ң), simple everyday language. Never use Latin transliteration, even if the input is in Russian"
+    : "Russian (simple everyday language)";
+}
+
+/** Share of Latin letters in the human-readable fields (brand names aside, Kyrgyz/Russian text should be Cyrillic). */
+function latinShare(v: AiVerdict): number {
+  const text = [v.title, v.summary, ...v.signals.map((s) => s.text), ...v.advice].join(" ").replace(/https?:\/\/\S+/g, "");
+  const lat = (text.match(/[a-z]/gi) ?? []).length;
+  const cyr = (text.match(/[а-яёөүң]/gi) ?? []).length;
+  return lat / Math.max(1, lat + cyr);
+}
+
+/** Runs the call; if the answer came back in Latin transliteration, asks once more. */
+async function ask(system: string, parts: GeminiPart[], lang: Lang, budgetMs: number): Promise<AiVerdict> {
+  const started = Date.now();
+  const { json } = await generateJson<Record<string, unknown>>(system, parts, SCHEMA, budgetMs);
+  const first = clean(json);
+  if (latinShare(first) < 0.5 || budgetMs - (Date.now() - started) < 6_000) return first;
+  try {
+    const { json: again } = await generateJson<Record<string, unknown>>(
+      `${system}\nIMPORTANT: your previous answer used Latin letters. Answer again using Cyrillic letters only.`,
+      parts,
+      SCHEMA,
+      budgetMs - (Date.now() - started),
+    );
+    const second = clean(again);
+    return latinShare(second) < latinShare(first) ? second : first;
+  } catch {
+    return first;
+  }
 }
 
 const RULES = `You are Kalkan, an anti-fraud assistant for people in Kyrgyzstan (Bishkek, regions). Be concrete and calm, address the reader informally ("ты"/"сен").
@@ -66,8 +96,7 @@ export async function aiForLink(facts: Record<string, unknown>, lang: Lang, budg
 Task: judge one web link using the technical facts collected by our server and the text of the page.
 ${SCHEME_GUIDE}
 Write all human-readable fields in ${langName(lang)}. Leave urls and phones empty.`;
-  const { json } = await generateJson<Record<string, unknown>>(system, [{ text: JSON.stringify(facts) }], SCHEMA, budgetMs);
-  return clean(json);
+  return ask(system, [{ text: JSON.stringify(facts) }], lang, budgetMs);
 }
 
 export async function aiForMessage(text: string, image: { mime: string; data: string } | null, lang: Lang, budgetMs: number): Promise<AiVerdict> {
@@ -81,8 +110,7 @@ Write all human-readable fields in ${langName(lang)}.`;
   const parts: GeminiPart[] = [];
   if (image) parts.push({ inlineData: { mimeType: image.mime, data: image.data } });
   parts.push({ text: text ? `<<<MESSAGE\n${text.slice(0, 6000)}\nMESSAGE>>>` : "Check the attached screenshot." });
-  const { json } = await generateJson<Record<string, unknown>>(system, parts, SCHEMA, budgetMs);
-  return clean(json);
+  return ask(system, parts, lang, budgetMs);
 }
 
 export async function aiForFacts(kind: "app" | "phone", facts: Record<string, unknown>, lang: Lang, budgetMs: number): Promise<AiVerdict> {
@@ -91,8 +119,7 @@ export async function aiForFacts(kind: "app" | "phone", facts: Record<string, un
 Task: judge ${what} using only the facts given.
 ${SCHEME_GUIDE}
 Write all human-readable fields in ${langName(lang)}. Leave urls and phones empty.`;
-  const { json } = await generateJson<Record<string, unknown>>(system, [{ text: JSON.stringify(facts) }], SCHEMA, budgetMs);
-  return clean(json);
+  return ask(system, [{ text: JSON.stringify(facts) }], lang, budgetMs);
 }
 
 const LAT2CYR: Record<string, string> = {

@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash } from "node:crypto";
-import { get, put } from "@vercel/blob";
+import { del, get, put } from "@vercel/blob";
 import type { Indicator } from "./types";
 
 /*
@@ -83,4 +83,18 @@ export async function addReport(i: Indicator): Promise<number | null> {
     }
   }
   return null;
+}
+
+/** Moderation: removes all reports for an indicator (false or malicious reports). */
+export async function clearReports(i: Indicator): Promise<boolean> {
+  if (!enabled()) return false;
+  const path = pathFor(i);
+  try {
+    await del(path);
+    cache.delete(path);
+    return true;
+  } catch (e) {
+    console.warn("[reports] delete", (e as Error).message);
+    return false;
+  }
 }

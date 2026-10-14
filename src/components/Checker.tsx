@@ -323,7 +323,7 @@ export function Checker() {
               <span className="block font-semibold">{t.bot.title}</span>
               <span className="block text-sm text-muted">{t.bot.text}</span>
             </span>
-            <span className="shrink-0 text-sm font-semibold text-primary">{t.bot.button}</span>
+            <span className="hidden shrink-0 text-sm font-semibold text-primary sm:inline">{t.bot.button}</span>
           </a>
 
           <InstallCard />
