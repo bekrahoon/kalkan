@@ -233,7 +233,7 @@ export const TERMS: Record<Lang, LegalDoc> = {
 
 export const CONSENT: Record<
   Lang,
-  { title: string; lead: string; points: string[]; read: string; privacy: string; terms: string; accept: string; cancel: string; declinedTitle: string; declinedText: string; again: string; updated: string }
+  { title: string; lead: string; points: string[]; read: string; privacy: string; terms: string; accept: string; cancel: string; declinedTitle: string; declinedText: string; again: string; leave: string; updated: string }
 > = {
   ru: {
     title: "Прежде чем начать",
@@ -249,9 +249,10 @@ export const CONSENT: Record<
     terms: "Пользовательское соглашение",
     accept: "Принимаю",
     cancel: "Отмена",
-    declinedTitle: "Без согласия проверка недоступна",
-    declinedText: "Калкан не может проверять ссылки, сообщения и документы, пока ты не примешь условия. Справочник схем и советы доступны и так.",
-    again: "Посмотреть условия ещё раз",
+    declinedTitle: "Ты не принял условия",
+    declinedText: "Без согласия с условиями пользоваться Калканом нельзя. Можешь закрыть страницу или вернуться и прочитать условия ещё раз.",
+    again: "Вернуться к условиям",
+    leave: "Выйти",
     updated: "Обновлено",
   },
   ky: {
@@ -268,9 +269,10 @@ export const CONSENT: Record<
     terms: "Колдонуучу келишими",
     accept: "Кабыл алам",
     cancel: "Жокко чыгаруу",
-    declinedTitle: "Макулдуксуз текшерүү жеткиликсиз",
-    declinedText: "Шарттарды кабыл алмайынча Калкан шилтемелерди, билдирүүлөрдү жана документтерди текшере албайт. Схемалар жана кеңештер баары бир жеткиликтүү.",
-    again: "Шарттарды кайра көрүү",
+    declinedTitle: "Сен шарттарды кабыл алган жоксуң",
+    declinedText: "Шарттарга макул болбостон Калканды колдонууга болбойт. Баракты жаап же кайтып келип, шарттарды кайра окусаң болот.",
+    again: "Шарттарга кайтуу",
+    leave: "Чыгуу",
     updated: "Жаңыртылды",
   },
 };

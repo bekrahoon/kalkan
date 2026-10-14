@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AlertCircle, ClipboardPaste, FileText, Link2, MessageSquareText, Paperclip, Send, Smartphone, X } from "lucide-react";
+import { AlertCircle, ClipboardPaste, FileText, Link2, MessageSquareText, Paperclip, Send, Smartphone, Users, X } from "lucide-react";
 import { InstallCard } from "./PwaSetup";
-import { ConsentDeclined, readConsentNow, setConsent, useConsent } from "./Consent";
+import { readConsentNow, setConsent } from "./Consent";
 import { useLang } from "./LangProvider";
 import { ShieldLogo } from "./ShieldLogo";
 import { LoadingView } from "./LoadingView";
@@ -11,7 +11,7 @@ import { VerdictView } from "./VerdictView";
 import { HistoryPanel } from "./HistoryPanel";
 import { addToHistory, type HistoryItem } from "@/lib/history";
 import { DEMO_IDS, DEMO_INPUTS, getDemoResult } from "@/lib/demo";
-import { BOT_URL } from "@/lib/i18n";
+import { BOT_URL, GROUP_URL } from "@/lib/i18n";
 import { MAX_FILE_BYTES, type CheckResponse, type CheckResult, type DemoId, type ErrorCode, type Lang, type UploadedImage } from "@/lib/types";
 
 type Phase = "idle" | "loading" | "result";
@@ -61,7 +61,6 @@ async function prepareImage(f: File): Promise<UploadedImage | "file_type" | "fil
 
 export function Checker() {
   const { t, lang } = useLang();
-  const consent = useConsent();
   const [phase, setPhase] = useState<Phase>("idle");
   const [text, setText] = useState("");
   const [image, setImage] = useState<UploadedImage | null>(null);
@@ -218,9 +217,6 @@ export function Checker() {
             <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-muted sm:text-lg">{t.hero.subtitle}</p>
           </div>
 
-          {consent === "no" ? (
-            <ConsentDeclined />
-          ) : (
           <form onSubmit={onSubmit} className="card mt-7 p-4 sm:p-5" noValidate>
             <label htmlFor="check-input" className="sr-only">
               {t.hero.label}
@@ -289,7 +285,6 @@ export function Checker() {
               </button>
             </div>
           </form>
-          )}
 
           {error && (
             <div
@@ -330,7 +325,19 @@ export function Checker() {
             </div>
           </div>
 
-          <a href={BOT_URL} target="_blank" rel="noopener noreferrer" className="card mt-6 flex items-center gap-3 p-4 hover:border-primary">
+          <section className="mt-6 rounded-2xl bg-primary-soft p-5">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" aria-hidden />
+              <h2 className="font-bold">{t.group.title}</h2>
+              <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-on-primary">{t.group.badge}</span>
+            </div>
+            <p className="mt-2 text-sm leading-relaxed">{t.group.text}</p>
+            <a href={GROUP_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary mt-4 w-full sm:w-auto">
+              <Send className="h-4 w-4" aria-hidden /> {t.group.button}
+            </a>
+          </section>
+
+          <a href={BOT_URL} target="_blank" rel="noopener noreferrer" className="card mt-3 flex items-center gap-3 p-4 hover:border-primary">
             <span className="icon-badge bg-primary-soft text-primary">
               <Send className="h-5 w-5" aria-hidden />
             </span>

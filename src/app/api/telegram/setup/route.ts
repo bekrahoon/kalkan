@@ -14,11 +14,13 @@ export async function GET(req: Request) {
   const webhook = await tg("setWebhook", {
     url: `https://${host}/api/telegram`,
     secret_token: webhookSecret(),
-    allowed_updates: ["message", "callback_query"],
+    allowed_updates: ["message", "callback_query", "my_chat_member"],
     drop_pending_updates: true,
   });
   const me = await tg<{ username: string }>("getMe", {});
   await tg("setMyCommands", { commands: [{ command: "start", description: "Как пользоваться" }, { command: "lang", description: "Язык / Тил" }] });
+  // Suggested rights when someone adds the bot to a group as admin (admins see all messages; no real powers needed).
+  await tg("setMyDefaultAdministratorRights", { rights: { can_manage_chat: false, can_delete_messages: false, can_invite_users: true }, for_channels: false });
   await tg("setMyDescription", {
     description:
       "Калкан проверяет ссылки, сообщения, номера и скриншоты на мошенничество. Перешли подозрительное сообщение — отвечу за пару секунд.\n\nКалкан шилтемелерди, билдирүүлөрдү, номерлерди жана скриншотторду алдамчылыкка текшерет.",

@@ -14,6 +14,7 @@ import {
   webhookSecret,
 } from "@/lib/telegram";
 import { MAX_FILE_BYTES } from "@/lib/types";
+import { botId, guardGroupMessage, sendGroupIntro } from "@/lib/telegram-group";
 
 /** The check runs after we answer Telegram (it waits only a few seconds for webhooks). */
 export const maxDuration = 60;
@@ -24,8 +25,8 @@ interface TgEntity {
 }
 interface TgMessage {
   message_id: number;
-  chat: { id: number };
-  from?: { language_code?: string };
+  chat: { id: number; type?: string };
+  from?: { language_code?: string; is_bot?: boolean };
   text?: string;
   caption?: string;
   entities?: TgEntity[];
@@ -35,6 +36,12 @@ interface TgMessage {
 }
 interface TgUpdate {
   message?: TgMessage;
+  my_chat_member?: {
+    chat: { id: number; type: string };
+    from?: { language_code?: string };
+    old_chat_member: { status: string };
+    new_chat_member: { status: string; user: { id: number } };
+  };
   callback_query?: { id: string; data?: string; message?: { chat: { id: number }; message_id: number }; from?: { language_code?: string } };
 }
 
@@ -45,6 +52,15 @@ export async function POST(req: Request) {
     return new Response("Not found", { status: 404 });
   }
   const update = (await req.json().catch(() => ({}))) as TgUpdate;
+
+  // The bot was added to a group: introduce itself once.
+  const mcm = update.my_chat_member;
+  if (mcm && mcm.new_chat_member.user.id === botId() && ["member", "administrator"].includes(mcm.new_chat_member.status)
+    && ["left", "kicked"].includes(mcm.old_chat_member.status) && mcm.chat.type !== "private") {
+    const lang = getLang(mcm.chat.id, mcm.from?.language_code);
+    after(() => sendGroupIntro(mcm.chat.id, lang));
+    return new Response("ok");
+  }
 
   const cb = update.callback_query;
   if (cb?.message) {
@@ -82,6 +98,31 @@ export async function POST(req: Request) {
   const t = botText(lang);
   const raw = (msg.text || msg.caption || "").trim();
   const send = (body: string, extra: Record<string, unknown> = {}) => tg("sendMessage", { chat_id: chatId, text: body, parse_mode: "HTML", ...extra });
+
+  // Groups: silent guard mode (see lib/telegram-group.ts).
+  if (msg.chat.type === "group" || msg.chat.type === "supergroup") {
+    if (msg.from?.is_bot) return new Response("ok");
+    if (raw.startsWith("/start") || raw.startsWith("/help")) {
+      after(() => sendGroupIntro(chatId, lang));
+      return new Response("ok");
+    }
+    if (raw.startsWith("/lang")) {
+      after(() =>
+        send(t.chooseLang, {
+          reply_markup: { inline_keyboard: [[{ text: "Русский", callback_data: "lang:ru" }, { text: "Кыргызча", callback_data: "lang:ky" }]] },
+        }),
+      );
+      return new Response("ok");
+    }
+    const gdoc = msg.document;
+    if (gdoc && (/\.apk$/i.test(gdoc.file_name ?? "") || gdoc.mime_type === "application/vnd.android.package-archive")) {
+      after(() => send(t.apk, { reply_to_message_id: msg.message_id }));
+      return new Response("ok");
+    }
+    const hiddenLinks = [...(msg.entities ?? []), ...(msg.caption_entities ?? [])].filter((e) => e.type === "text_link" && e.url).map((e) => e.url!);
+    if (raw || hiddenLinks.length) after(() => guardGroupMessage(chatId, msg.message_id, raw, hiddenLinks, lang, site(req)));
+    return new Response("ok");
+  }
 
   if (raw.startsWith("/start") || raw.startsWith("/help")) {
     after(() => send(t.start));

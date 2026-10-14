@@ -3,7 +3,7 @@
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, ShieldCheck } from "lucide-react";
+import { FileText, ShieldCheck, ShieldX } from "lucide-react";
 import { useLang } from "./LangProvider";
 import { CONSENT, CONSENT_VERSION, LEGAL_UPDATED } from "@/content/legal";
 
@@ -59,21 +59,23 @@ const LEGAL_PAGES = ["/privacy", "/terms"];
 export function ConsentModal() {
   const consent = useConsent();
   const path = usePathname();
-  const open = consent === "unknown" && !LEGAL_PAGES.includes(path);
+  const onLegal = LEGAL_PAGES.includes(path);
+  const open = consent === "unknown" && !onLegal;
   const { lang, setLang } = useLang();
   const c = CONSENT[lang];
   const acceptRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open && !(consent === "no" && !onLegal)) return;
     acceptRef.current?.focus();
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [open]);
+  }, [open, consent, onLegal]);
 
+  if (consent === "no" && !onLegal) return <Declined />;
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4">
@@ -128,7 +130,10 @@ export function ConsentModal() {
           </p>
         </div>
         <div className="mt-5 grid grid-cols-2 gap-2">
-          <button type="button" className="btn btn-secondary" onClick={() => setConsent("no")}>
+          <button type="button" className="btn btn-secondary" onClick={() => {
+              setConsent("no");
+              leaveSite();
+            }}>
             {c.cancel}
           </button>
           <button ref={acceptRef} type="button" className="btn btn-primary" onClick={() => setConsent("yes")}>
@@ -140,17 +145,45 @@ export function ConsentModal() {
   );
 }
 
-/** Shown instead of the checker after "Cancel". */
-export function ConsentDeclined() {
+/** After "Cancel": leave the way the person came, otherwise a full page that blocks the site. */
+function leaveSite() {
+  try {
+    const ref = document.referrer ? new URL(document.referrer) : null;
+    if (ref && ref.origin !== location.origin && history.length > 1) {
+      history.back();
+      return;
+    }
+  } catch {
+    /* no referrer */
+  }
+  window.close();
+}
+
+function Declined() {
   const { lang } = useLang();
   const c = CONSENT[lang];
   return (
-    <div className="card mt-7 p-5 text-center">
-      <h2 className="text-lg font-bold">{c.declinedTitle}</h2>
-      <p className="mt-2 text-sm leading-relaxed text-muted">{c.declinedText}</p>
-      <button type="button" className="btn btn-primary mt-4" onClick={() => setConsent("unknown")}>
-        {c.again}
-      </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg p-4">
+      <div role="alertdialog" aria-modal="true" aria-labelledby="declined-title" className="w-full max-w-md text-center">
+        <ShieldX className="mx-auto h-14 w-14 text-muted" aria-hidden />
+        <h2 id="declined-title" className="mt-4 text-2xl font-bold">
+          {c.declinedTitle}
+        </h2>
+        <p className="mt-3 leading-relaxed text-muted">{c.declinedText}</p>
+        <div className="mt-6 grid gap-2">
+          <button type="button" className="btn btn-primary" onClick={() => setConsent("unknown")}>
+            {c.again}
+          </button>
+          <button type="button" className="btn btn-secondary" onClick={leaveSite}>
+            {c.leave}
+          </button>
+        </div>
+        <p className="mt-6 text-sm">
+          <Link href="/privacy" className="text-primary hover:underline">{c.privacy}</Link>
+          {" · "}
+          <Link href="/terms" className="text-primary hover:underline">{c.terms}</Link>
+        </p>
+      </div>
     </div>
   );
 }
