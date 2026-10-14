@@ -21,9 +21,9 @@ export async function GET(req: Request) {
   await tg("setMyCommands", { commands: [{ command: "start", description: "Как пользоваться" }, { command: "lang", description: "Язык / Тил" }] });
   await tg("setMyDescription", {
     description:
-      "Калкан объясняет простыми словами, что приложение или сайт делает с твоими данными. Пришли ссылку, текст политики, PDF или скриншот.\n\nКалкан тиркеме же сайт маалыматтарың менен эмне кыларын жөнөкөй түшүндүрөт.",
+      "Калкан проверяет ссылки, сообщения, номера и скриншоты на мошенничество. Перешли подозрительное сообщение — отвечу за пару секунд.\n\nКалкан шилтемелерди, билдирүүлөрдү, номерлерди жана скриншотторду алдамчылыкка текшерет.",
   });
-  await tg("setMyShortDescription", { short_description: "Кто читает твои данные? Проверка политик конфиденциальности на русском и кыргызском." });
+  await tg("setMyShortDescription", { short_description: "Проверь, прежде чем нажать: ссылки, сообщения и номера на мошенничество. RU / KG." });
   const info = await tg("getWebhookInfo", {});
   return Response.json({ ok: Boolean(webhook), bot: me?.username, webhook: info });
 }

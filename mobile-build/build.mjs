@@ -58,7 +58,7 @@ function faces(pkg) {
 const fonts = faces("inter");
 
 const html = `<title>Калкан</title>
-<meta name="description" content="ИИ-помощник: кто читает твои данные. Мобильная демо-версия.">
+<meta name="description" content="Калкан: проверь, прежде чем нажать. Мобильная демо-версия.">
 <style>
 ${fonts}
 ${css}

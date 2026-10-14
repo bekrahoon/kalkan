@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { BrainCircuit, Info, Languages, ScanSearch, ShieldHalf, UserRound } from "lucide-react";
+import { BrainCircuit, Info, KeyRound, ScanSearch, UserRound, Wallet } from "lucide-react";
 import { useLang } from "./LangProvider";
 import { ShieldLogo } from "./ShieldLogo";
 import { ABOUT_PAGE, TEAM } from "@/content/pages";
 
-const WHY_ICONS = [ShieldHalf, Languages, BrainCircuit];
+const WHY_ICONS = [Wallet, KeyRound, BrainCircuit];
 
 export function AboutContent() {
   const { lang } = useLang();

@@ -3,9 +3,9 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "Калкан — кто читает твои данные?",
+    name: "Калкан — проверь, прежде чем нажать",
     short_name: "Калкан",
-    description: "Проверь, что сайт или приложение делает с твоими персональными данными.",
+    description: "Проверка ссылок, сообщений, номеров и приложений на мошенничество.",
     lang: "ru",
     start_url: "/",
     scope: "/",

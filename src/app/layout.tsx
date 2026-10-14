@@ -6,9 +6,9 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata: Metadata = {
-  title: "Калкан — кто читает твои данные?",
+  title: "Калкан — проверь, прежде чем нажать",
   description:
-    "ИИ-помощник, который простым языком объясняет, что сайт или приложение делает с твоими персональными данными. Русский и кыргызский.",
+    "Проверка ссылок, сообщений, номеров и приложений на мошенничество за несколько секунд. Русский и кыргызский.",
   icons: { icon: "/icon.svg", apple: "/apple-touch-icon.png" },
   appleWebApp: { capable: true, title: "Калкан", statusBarStyle: "default" },
 };

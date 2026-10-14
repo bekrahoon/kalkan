@@ -17,7 +17,9 @@ export function ShareRedirect() {
     const params = new URLSearchParams(window.location.search);
     const url = extractUrl(params);
     const text = (params.get("text") || "").trim();
-    const target = url ? `/?check=${encodeURIComponent(url)}` : text.length > 200 ? `/?text=${encodeURIComponent(text.slice(0, 6000))}` : "/";
+    // A bare link is checked as a link; anything longer (a forwarded message) as a message.
+    const onlyUrl = url && (!text || text === url || text.replace(url, "").trim().length < 3);
+    const target = onlyUrl ? `/?check=${encodeURIComponent(url!)}` : text ? `/?text=${encodeURIComponent(text.slice(0, 6000))}` : url ? `/?check=${encodeURIComponent(url)}` : "/";
     window.location.replace(target);
   }, []);
 

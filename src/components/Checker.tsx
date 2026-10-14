@@ -1,78 +1,66 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AlertCircle, Car, ChevronRight, FileText, FileUp, Link2, ShoppingBag, Trophy, Upload, Users } from "lucide-react";
-import Link from "next/link";
+import { AlertCircle, ClipboardPaste, ImagePlus, Link2, MessageSquareText, Phone, Send, Smartphone, X } from "lucide-react";
 import { InstallCard } from "./PwaSetup";
 import { useLang } from "./LangProvider";
 import { ShieldLogo } from "./ShieldLogo";
 import { LoadingView } from "./LoadingView";
-import { ReportView } from "./ReportView";
+import { VerdictView } from "./VerdictView";
 import { HistoryPanel } from "./HistoryPanel";
-import { CompareView } from "./CompareView";
 import { addToHistory, type HistoryItem } from "@/lib/history";
-import { upgradeReport } from "@/lib/normalize";
-import { DEMO_IDS, DEMO_TEXTS, getDemoReport } from "@/lib/demo";
-import {
-  FILE_MIMES,
-  MAX_FILE_BYTES,
-  type AnalyzeMeta,
-  type AnalyzeRequest,
-  type AnalyzeResponse,
-  type DemoId,
-  type ErrorCode,
-  type Lang,
-  type Report,
-  type UploadedFile,
-} from "@/lib/types";
+import { DEMO_IDS, DEMO_INPUTS, getDemoResult } from "@/lib/demo";
+import { BOT_URL } from "@/lib/i18n";
+import { MAX_FILE_BYTES, type CheckResponse, type CheckResult, type DemoId, type ErrorCode, type Lang, type UploadedImage } from "@/lib/types";
 
-type Phase = "idle" | "loading" | "report" | "compare";
-type Mode = "url" | "text" | "file";
-const MODES: { id: Mode; icon: React.ComponentType<{ className?: string }> }[] = [
-  { id: "url", icon: Link2 },
-  { id: "text", icon: FileText },
-  { id: "file", icon: FileUp },
-];
+type Phase = "idle" | "loading" | "result";
+type Req = { text?: string; image?: UploadedImage; demoId?: DemoId };
 
-/** Phones sometimes report HEIC photos with an empty type, so fall back to the extension. */
-function mimeOf(f: File): string {
-  if (f.type) return f.type.toLowerCase();
-  const ext = f.name.split(".").pop()?.toLowerCase();
-  return ext === "pdf" ? "application/pdf" : ext === "heic" || ext === "heif" ? `image/${ext}` : "";
-}
+const MIN_LOADING_MS = 1400;
+const STATIC_DEMO = process.env.NEXT_PUBLIC_KALKAN_STATIC === "1";
+const WHAT_ICONS = [Link2, MessageSquareText, Phone, Smartphone];
 
-function readAsBase64(f: File): Promise<string> {
+function readAsDataUrl(f: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
-    r.onload = () => resolve(String(r.result).replace(/^data:[^,]*,/, ""));
+    r.onload = () => resolve(String(r.result));
     r.onerror = () => reject(r.error);
     r.readAsDataURL(f);
   });
 }
-const MIN_LOADING_MS = 2600;
-const STATIC_DEMO = process.env.NEXT_PUBLIC_KALKAN_STATIC === "1";
-const DEMO_ICONS: Record<DemoId, React.ComponentType<{ className?: string }>> = {
-  social: Users,
-  taxi: Car,
-  shop: ShoppingBag,
-};
+
+/** Screenshots are often large PNGs: shrink to a JPEG the server and the AI read just as well. */
+async function prepareImage(f: File): Promise<UploadedImage | "file_type" | "file_too_big"> {
+  const mime = (f.type || "").toLowerCase() || (/\.(heic|heif)$/i.test(f.name) ? "image/heic" : "");
+  if (!mime.startsWith("image/")) return "file_type";
+  try {
+    const bmp = await createImageBitmap(f);
+    const scale = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bmp.width * scale);
+    canvas.height = Math.round(bmp.height * scale);
+    canvas.getContext("2d")!.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((ok) => canvas.toBlob(ok, "image/jpeg", 0.85));
+    if (blob) {
+      const url = await readAsDataUrl(blob);
+      return { name: f.name || "screenshot.jpg", mime: "image/jpeg", data: url.replace(/^data:[^,]*,/, "") };
+    }
+  } catch {
+    /* the browser can't decode it (e.g. HEIC outside Safari) → send as is */
+  }
+  if (f.size > MAX_FILE_BYTES) return "file_too_big";
+  const url = await readAsDataUrl(f);
+  return { name: f.name || "screenshot", mime, data: url.replace(/^data:[^,]*,/, "") };
+}
 
 export function Checker() {
   const { t, lang } = useLang();
   const [phase, setPhase] = useState<Phase>("idle");
-  const [mode, setMode] = useState<Mode>("url");
-  const [forChild, setForChild] = useState(false);
-  const [file, setFile] = useState<(UploadedFile & { size: number }) | null>(null);
-  const [url, setUrl] = useState("");
   const [text, setText] = useState("");
+  const [image, setImage] = useState<UploadedImage | null>(null);
   const [error, setError] = useState<ErrorCode | null>(null);
-  const [result, setResult] = useState<{
-    report: Report;
-    meta: AnalyzeMeta;
-    lang: Lang;
-    request?: Omit<AnalyzeRequest, "lang">;
-  } | null>(null);
-  const [comparing, setComparing] = useState<[HistoryItem, HistoryItem] | null>(null);
+  const [result, setResult] = useState<{ result: CheckResult; req: Req } | null>(null);
+  const [canPaste, setCanPaste] = useState(false);
   const abort = useRef<AbortController | null>(null);
   const errorRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
@@ -81,140 +69,102 @@ export function Checker() {
     if (error) errorRef.current?.focus();
   }, [error]);
 
+  useEffect(() => {
+    const id = setTimeout(() => setCanPaste(Boolean(navigator.clipboard?.readText)), 0);
+    return () => clearTimeout(id);
+  }, []);
+
   const run = useCallback(
-    async (req: Omit<AnalyzeRequest, "lang">, reqLang: Lang = lang) => {
+    async (req: Req, reqLang: Lang = lang) => {
       setError(null);
       setPhase("loading");
       topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-
       const ctrl = new AbortController();
       abort.current = ctrl;
       const started = Date.now();
-      const wait = () => new Promise((r) => setTimeout(r, Math.max(0, MIN_LOADING_MS - (Date.now() - started))));
 
-      let data: AnalyzeResponse;
-      if (STATIC_DEMO) {
-        // Serverless phone demo: examples come from the bundle, everything else needs the real deploy.
-        data = req.demoId
-          ? {
-              ok: true,
-              report: getDemoReport(req.demoId, reqLang),
-              meta: { source: "demo-cache", truncated: false, originalChars: 0, analyzedChars: 0, fallbackReason: "static_demo" },
-            }
-          : { ok: false, error: { code: "static_demo" } };
+      let data: CheckResponse;
+      if (req.demoId) {
+        data = { ok: true, result: getDemoResult(req.demoId, reqLang) };
+      } else if (STATIC_DEMO) {
+        data = { ok: false, error: { code: "static_demo" } };
       } else {
         try {
-        const res = await fetch("/api/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...req, lang: reqLang }),
-          signal: ctrl.signal,
-        });
-        data = (await res.json()) as AnalyzeResponse;
-      } catch (e) {
-        if ((e as Error).name === "AbortError") return;
-        // Server unreachable (offline laptop, broken deploy): demo still works from the bundle.
-        data = req.demoId
-          ? {
-              ok: true,
-              report: getDemoReport(req.demoId, reqLang),
-              meta: { source: "demo-cache", truncated: false, originalChars: 0, analyzedChars: 0, fallbackReason: "network" },
-            }
-          : { ok: false, error: { code: "network" } };
+          const res = await fetch("/api/check", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: req.text, image: req.image, lang: reqLang }),
+            signal: ctrl.signal,
+          });
+          data = (await res.json()) as CheckResponse;
+        } catch (e) {
+          if ((e as Error).name === "AbortError") return;
+          data = { ok: false, error: { code: "network" } };
         }
       }
-
-      await wait();
+      await new Promise((r) => setTimeout(r, Math.max(0, MIN_LOADING_MS - (Date.now() - started))));
       if (ctrl.signal.aborted) return;
 
       if (data.ok) {
-        setResult({ report: data.report, meta: data.meta, lang: reqLang, request: req });
-        let host = "";
-        try {
-          host = req.url ? new URL(/^https?:/i.test(req.url) ? req.url : `https://${req.url}`).hostname : "";
-        } catch {
-          /* not a URL */
-        }
+        setResult({ result: data.result, req });
+        const r = data.result;
+        const label = r.kind === "message" && req.text ? `${req.text.slice(0, 48)}${req.text.length > 48 ? "…" : ""}` : r.subject;
         addToHistory({
           lang: reqLang,
-          label: data.report.company_name || data.meta.play?.title || host || req.file?.name || t.hero.tabs.text,
-          report: data.report,
-          meta: data.meta,
+          label,
+          result: r,
           example: Boolean(req.demoId),
-          request: req.demoId
-            ? { mode: "text", demoId: req.demoId, text: DEMO_TEXTS[req.demoId] }
-            : req.mode === "url"
-              ? { mode: "url", url: req.url, forChild: req.forChild }
-              : undefined,
+          request: req.image ? undefined : { text: req.text, demoId: req.demoId },
         });
-        setPhase("report");
+        setPhase("result");
       } else {
         setError(data.error.code);
         setPhase("idle");
       }
       requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
     },
-    [lang, t],
+    [lang],
   );
 
-  // Opened via "Share → Kalkan" (/share redirects here with ?check=<link> or ?text=<policy>).
+  // Opened via "Share → Kalkan" (/share redirects here with ?check=<link> or ?text=<message>).
   const sharedHandled = useRef(false);
   useEffect(() => {
     if (sharedHandled.current) return;
     sharedHandled.current = true;
     const params = new URLSearchParams(window.location.search);
-    const shared = params.get("check");
-    const sharedText = params.get("text");
-    if (!shared && !sharedText) return;
+    const shared = params.get("check") || params.get("text");
+    if (!shared) return;
     window.history.replaceState(null, "", window.location.pathname);
-    const t = setTimeout(() => {
-      if (shared) {
-        setMode("url");
-        setUrl(shared);
-        run({ mode: "url", url: shared });
-      } else if (sharedText) {
-        setMode("text");
-        setText(sharedText);
-      }
+    const id = setTimeout(() => {
+      setText(shared);
+      run({ text: shared });
     }, 0);
-    return () => clearTimeout(t);
+    return () => clearTimeout(id);
   }, [run]);
-
-  const openHistory = (h: HistoryItem) => {
-    setResult({ report: upgradeReport(h.report, h.lang), meta: h.meta, lang: h.lang, request: h.request });
-    setPhase("report");
-    requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
-  };
-
-  const openCompare = (a: HistoryItem, b: HistoryItem) => {
-    setComparing([a, b]);
-    setPhase("compare");
-    requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
-  };
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (mode === "url") {
-      if (!url.trim()) return setError("invalid_url");
-      run({ mode: "url", url: url.trim(), forChild });
-    } else if (mode === "file") {
-      if (!file) return;
-      run({ mode: "file", file: { name: file.name, mime: file.mime, data: file.data }, forChild });
-    } else {
-      const demoId = DEMO_IDS.find((id) => DEMO_TEXTS[id].trim() === text.trim());
-      run({ mode: "text", text, demoId: forChild ? undefined : demoId, forChild });
+    const v = text.trim();
+    if (!v && !image) return setError("empty");
+    const demoId = !image ? DEMO_IDS.find((id) => DEMO_INPUTS[id] === v) : undefined;
+    run(demoId ? { demoId, text: v } : { text: v || undefined, image: image ?? undefined });
+  };
+
+  const attach = async (f: File | undefined | null) => {
+    if (!f) return;
+    const r = await prepareImage(f);
+    if (typeof r === "string") return setError(r);
+    setError(null);
+    setImage(r);
+  };
+
+  const paste = async () => {
+    try {
+      const v = await navigator.clipboard.readText();
+      if (v) setText(v);
+    } catch {
+      /* permission denied: the user can long-press and paste */
     }
-  };
-
-  const runDemo = (id: DemoId) => {
-    setMode("text");
-    setText(DEMO_TEXTS[id]);
-    run({ mode: "text", text: DEMO_TEXTS[id], demoId: id });
-  };
-
-  const cancel = () => {
-    abort.current?.abort();
-    setPhase("idle");
   };
 
   const reset = () => {
@@ -223,169 +173,107 @@ export function Checker() {
     requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
-  const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    e.target.value = "";
-    if (!f) return;
-    const mime = mimeOf(f);
-    if (!(FILE_MIMES as readonly string[]).includes(mime)) return setError("file_type");
-    if (f.size > MAX_FILE_BYTES) return setError("file_too_big");
-    setError(null);
-    setFile({ name: f.name, mime, size: f.size, data: await readAsBase64(f) });
-  };
-
-  const switchToManual = () => {
-    setMode("text");
-    setError(null);
+  const openHistory = (h: HistoryItem) => {
+    setResult({ result: h.result, req: h.request ?? {} });
+    setPhase("result");
+    requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
   return (
     <div ref={topRef} className="scroll-mt-20">
-      {phase === "loading" && <LoadingView onCancel={cancel} />}
+      {phase === "loading" && (
+        <LoadingView
+          onCancel={() => {
+            abort.current?.abort();
+            setPhase("idle");
+          }}
+        />
+      )}
 
-      {phase === "compare" && comparing && <CompareView a={comparing[0]} b={comparing[1]} onBack={reset} />}
-
-      {phase === "report" && result && (
-        <ReportView
-          report={result.report}
-          meta={result.meta}
-          reportLang={result.lang}
+      {phase === "result" && result && (
+        <VerdictView
+          result={result.result}
           onReset={reset}
-          onRerun={result.request ? () => result.request && run(result.request, lang) : undefined}
+          onRerun={result.req.text || result.req.demoId ? () => run(result.req, lang) : undefined}
         />
       )}
 
       {phase === "idle" && (
-        <section className="mx-auto max-w-2xl px-4 pb-6 pt-10 sm:pt-16">
+        <section className="mx-auto max-w-2xl px-4 pb-6 pt-8 sm:pt-14">
           <div className="text-center">
             <ShieldLogo size={52} className="mx-auto" />
-            <p className="eyebrow mt-5">{t.hero.kicker}</p>
-            <h1 className="mt-2 text-[clamp(2rem,7vw,3rem)] font-bold leading-tight">{t.hero.title}</h1>
-            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted sm:text-lg">{t.hero.subtitle}</p>
+            <p className="eyebrow mt-4">{t.hero.kicker}</p>
+            <h1 className="mt-2 text-[clamp(2rem,7.5vw,3rem)] font-bold leading-tight">{t.hero.title}</h1>
+            <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-muted sm:text-lg">{t.hero.subtitle}</p>
           </div>
 
-          <form onSubmit={onSubmit} className="card mt-8 p-4 sm:p-5" noValidate>
-            <div role="tablist" aria-label={t.hero.urlLabel} className="mb-4 grid grid-cols-3 gap-1 rounded-xl bg-subtle p-1">
-              {MODES.map(({ id, icon: Icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  role="tab"
-                  aria-selected={mode === id}
-                  onClick={() => {
-                    setMode(id);
-                    setError(null);
-                  }}
-                  className={`flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-medium transition-colors ${
-                    mode === id ? "bg-surface text-fg shadow-sm" : "text-muted hover:text-fg"
-                  }`}
-                >
-                  <Icon className="h-4 w-4 shrink-0" aria-hidden />
-                  <span className="truncate">{t.hero.tabs[id]}</span>
-                </button>
-              ))}
-            </div>
-
-            {mode === "url" && (
-              <div>
-                <label htmlFor="url" className="mb-2 block text-sm font-medium">
-                  {t.hero.urlLabel}
-                </label>
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <input
-                    id="url"
-                    type="text"
-                    inputMode="url"
-                    autoComplete="url"
-                    spellCheck={false}
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder={t.hero.urlPlaceholder}
-                    className="field flex-1"
-                    aria-describedby={error ? "form-error" : "url-hint"}
-                    aria-invalid={error === "invalid_url" || undefined}
-                  />
-                  <button type="submit" className="btn btn-primary">
-                    {t.hero.check}
-                  </button>
-                </div>
-                <p id="url-hint" className="mt-2 text-xs text-muted">
-                  {t.hero.manualHint}
-                </p>
-              </div>
-            )}
-
-            {mode === "text" && (
-              <div>
-                <label htmlFor="policy" className="mb-2 block text-sm font-medium">
-                  {t.hero.textLabel}
-                </label>
-                <textarea
-                  id="policy"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  placeholder={t.hero.textPlaceholder}
-                  rows={7}
-                  className="field resize-y text-sm leading-relaxed"
-                  aria-describedby={error ? "form-error" : "policy-count"}
-                />
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                  <span id="policy-count" className="text-xs text-muted">
-                    {t.hero.chars(text.length)}
-                  </span>
-                  <button type="submit" className="btn btn-primary" disabled={!text.trim()}>
-                    {t.hero.check}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {mode === "file" && (
-              <div>
-                <p className="mb-2 text-sm font-medium">{t.hero.fileLabel}</p>
-                <label
-                  htmlFor="policy-file"
-                  className="flex min-h-[112px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-line p-4 text-center transition-colors hover:border-primary focus-within:border-primary"
-                >
-                  <Upload className="h-6 w-6 text-primary" aria-hidden />
-                  {file ? (
-                    <>
-                      <span className="max-w-full truncate font-medium">{file.name}</span>
-                      <span className="text-xs text-muted">
-                        {t.hero.fileSize(Math.max(1, Math.round(file.size / 1024)))} · {t.hero.fileChange}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="font-medium text-primary">{t.hero.filePick}</span>
-                      <span className="text-xs text-muted">{t.hero.fileHint}</span>
-                    </>
-                  )}
-                  <input
-                    id="policy-file"
-                    type="file"
-                    accept="application/pdf,image/*,.pdf,.heic,.heif"
-                    onChange={onFile}
-                    className="sr-only"
-                  />
-                </label>
-                <button type="submit" className="btn btn-primary mt-3 w-full" disabled={!file}>
-                  {t.hero.check}
-                </button>
-              </div>
-            )}
-            <label className="mt-4 flex cursor-pointer items-start gap-3 border-t border-line pt-4">
-              <input
-                type="checkbox"
-                checked={forChild}
-                onChange={(e) => setForChild(e.target.checked)}
-                className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--primary)]"
-              />
-              <span className="text-sm">
-                <span className="font-medium">{t.hero.forChild}</span>
-                <span className="block text-muted">{t.hero.forChildHint}</span>
-              </span>
+          <form onSubmit={onSubmit} className="card mt-7 p-4 sm:p-5" noValidate>
+            <label htmlFor="check-input" className="sr-only">
+              {t.hero.label}
             </label>
+            <textarea
+              id="check-input"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onPaste={(e) => {
+                const f = Array.from(e.clipboardData.files).find((x) => x.type.startsWith("image/"));
+                if (f) {
+                  e.preventDefault();
+                  attach(f);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) onSubmit(e);
+              }}
+              placeholder={t.hero.placeholder}
+              rows={4}
+              spellCheck={false}
+              className="field resize-y text-base leading-relaxed"
+              aria-describedby={error ? "form-error" : undefined}
+            />
+
+            {image && (
+              <div className="mt-3 flex items-center gap-3 rounded-xl bg-subtle p-2">
+                {image.mime === "image/jpeg" || image.mime === "image/png" || image.mime === "image/webp" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={`data:${image.mime};base64,${image.data}`} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover" />
+                ) : (
+                  <ImagePlus className="m-3 h-6 w-6 shrink-0 text-primary" aria-hidden />
+                )}
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">{image.name}</span>
+                <button
+                  type="button"
+                  onClick={() => setImage(null)}
+                  aria-label={t.hero.removeImage}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-muted hover:bg-surface hover:text-fg"
+                >
+                  <X className="h-4 w-4" aria-hidden />
+                </button>
+              </div>
+            )}
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              {canPaste && (
+                <button type="button" onClick={paste} className="btn btn-secondary min-h-[44px] flex-1 px-3 text-sm sm:flex-none">
+                  <ClipboardPaste className="h-4 w-4" aria-hidden /> {t.hero.paste}
+                </button>
+              )}
+              <label className="btn btn-secondary min-h-[44px] flex-1 cursor-pointer px-3 text-sm focus-within:border-primary sm:flex-none">
+                <ImagePlus className="h-4 w-4" aria-hidden /> {t.hero.screenshot}
+                <input
+                  type="file"
+                  accept="image/*,.heic,.heif"
+                  className="sr-only"
+                  onChange={(e) => {
+                    attach(e.target.files?.[0]);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+              <button type="submit" className="btn btn-primary min-h-[44px] w-full sm:ml-auto sm:w-auto" disabled={!text.trim() && !image}>
+                {t.hero.check}
+              </button>
+            </div>
           </form>
 
           {error && (
@@ -400,60 +288,67 @@ export function Checker() {
               <div className="min-w-0">
                 <p className="font-semibold">{t.errors.title}</p>
                 <p className="mt-1 text-sm leading-snug">{t.errors[error]}</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {mode === "url" && error !== "invalid_url" && error !== "static_demo" && (
-                    <button type="button" onClick={switchToManual} className="btn btn-primary min-h-[40px] px-3 py-1 text-sm">
-                      {t.errors.toManual}
-                    </button>
-                  )}
-                  <button type="button" onClick={() => setError(null)} className="btn btn-secondary min-h-[40px] px-3 py-1 text-sm">
-                    {t.errors.retry}
-                  </button>
-                </div>
+                <button type="button" onClick={() => setError(null)} className="btn btn-secondary mt-3 min-h-[40px] px-3 py-1 text-sm">
+                  {t.errors.retry}
+                </button>
               </div>
             </div>
           )}
 
-          <div className="mt-8">
+          <div className="mt-6">
             <p className="text-center text-sm text-muted">{t.hero.demosTitle}</p>
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              {DEMO_IDS.map((id) => {
-                const Icon = DEMO_ICONS[id];
-                return (
-                  <button key={id} type="button" onClick={() => runDemo(id)} className="btn btn-secondary justify-start text-sm sm:justify-center">
-                    <Icon className="h-4 w-4 text-primary" aria-hidden />
-                    {t.hero.demos[id]}
-                  </button>
-                );
-              })}
+            <div className="mt-3 flex flex-wrap justify-center gap-2">
+              {DEMO_IDS.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => {
+                    setText(DEMO_INPUTS[id]);
+                    setImage(null);
+                    run({ demoId: id, text: DEMO_INPUTS[id] });
+                  }}
+                  className="rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium hover:border-primary"
+                >
+                  {t.hero.demos[id]}
+                </button>
+              ))}
             </div>
           </div>
 
-          <Link href="/rating" className="card mt-6 flex items-center gap-3 p-4 hover:border-primary">
+          <a href={BOT_URL} target="_blank" rel="noopener noreferrer" className="card mt-6 flex items-center gap-3 p-4 hover:border-primary">
             <span className="icon-badge bg-primary-soft text-primary">
-              <Trophy className="h-5 w-5" aria-hidden />
+              <Send className="h-5 w-5" aria-hidden />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block font-semibold">{t.rating.homeLink}</span>
-              <span className="block text-sm text-muted">{t.rating.homeHint}</span>
+              <span className="block font-semibold">{t.bot.title}</span>
+              <span className="block text-sm text-muted">{t.bot.text}</span>
             </span>
-            <ChevronRight className="h-5 w-5 shrink-0 text-muted" aria-hidden />
-          </Link>
+            <span className="shrink-0 text-sm font-semibold text-primary">{t.bot.button}</span>
+          </a>
 
           <InstallCard />
 
-          <HistoryPanel onOpen={openHistory} onCompare={openCompare} />
+          <HistoryPanel onOpen={openHistory} />
 
-          <ol className="mt-10 grid gap-3 sm:grid-cols-3">
-            {t.hero.steps.map((s, i) => (
-              <li key={i} className="flex items-center gap-3 rounded-2xl bg-subtle p-3 text-sm">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface text-xs font-bold text-primary">
-                  {i + 1}
-                </span>
-                {s}
-              </li>
-            ))}
-          </ol>
+          <section className="mt-10" aria-labelledby="what">
+            <h2 id="what" className="text-lg font-bold">
+              {t.hero.whatTitle}
+            </h2>
+            <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+              {t.hero.what.map(([title, desc], i) => {
+                const Icon = WHAT_ICONS[i];
+                return (
+                  <li key={title} className="flex gap-3 rounded-2xl bg-subtle p-4">
+                    <Icon className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+                    <span>
+                      <span className="block font-semibold">{title}</span>
+                      <span className="mt-0.5 block text-sm leading-snug text-muted">{desc}</span>
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
 
           <p className="mt-6 text-center text-xs text-muted">{t.hero.privacyNote}</p>
         </section>

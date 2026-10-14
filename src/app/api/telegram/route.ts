@@ -1,33 +1,41 @@
 import { after } from "next/server";
+import { addReport } from "@/lib/reports";
+import { reportableIndicators } from "@/lib/report-input";
 import {
-  analyzeForChat,
   botText,
   botToken,
   chatTooMany,
+  checkForChat,
   downloadTelegramFile,
   getLang,
+  parseReportData,
   setLang,
   tg,
   webhookSecret,
 } from "@/lib/telegram";
 import { MAX_FILE_BYTES } from "@/lib/types";
-import type { AnalysisInput } from "@/lib/pipeline";
 
-/** Analysis runs after we answer Telegram (it waits only a few seconds for webhooks). */
-export const maxDuration = 300;
+/** The check runs after we answer Telegram (it waits only a few seconds for webhooks). */
+export const maxDuration = 60;
 
+interface TgEntity {
+  type: string;
+  url?: string;
+}
 interface TgMessage {
   message_id: number;
   chat: { id: number };
   from?: { language_code?: string };
   text?: string;
   caption?: string;
-  document?: { file_id: string; mime_type?: string; file_size?: number };
+  entities?: TgEntity[];
+  caption_entities?: TgEntity[];
+  document?: { file_id: string; file_name?: string; mime_type?: string; file_size?: number };
   photo?: { file_id: string; file_size?: number; width: number }[];
 }
 interface TgUpdate {
   message?: TgMessage;
-  callback_query?: { id: string; data?: string; message?: { chat: { id: number }; message_id: number } };
+  callback_query?: { id: string; data?: string; message?: { chat: { id: number }; message_id: number }; from?: { language_code?: string } };
 }
 
 const site = (req: Request) => `https://${req.headers.get("x-forwarded-host") || req.headers.get("host")}`;
@@ -38,15 +46,32 @@ export async function POST(req: Request) {
   }
   const update = (await req.json().catch(() => ({}))) as TgUpdate;
 
-  // Language buttons
   const cb = update.callback_query;
-  if (cb?.message && (cb.data === "lang:ru" || cb.data === "lang:ky")) {
-    const lang = cb.data === "lang:ky" ? "ky" : "ru";
-    setLang(cb.message.chat.id, lang);
-    after(async () => {
-      await tg("answerCallbackQuery", { callback_query_id: cb.id });
-      await tg("editMessageText", { chat_id: cb.message!.chat.id, message_id: cb.message!.message_id, text: botText(lang).langChosen });
-    });
+  if (cb?.message) {
+    const chatId = cb.message.chat.id;
+    // Language buttons
+    if (cb.data === "lang:ru" || cb.data === "lang:ky") {
+      const lang = cb.data === "lang:ky" ? "ky" : "ru";
+      setLang(chatId, lang);
+      after(async () => {
+        await tg("answerCallbackQuery", { callback_query_id: cb.id });
+        await tg("editMessageText", { chat_id: chatId, message_id: cb.message!.message_id, text: botText(lang).langChosen });
+      });
+      return new Response("ok");
+    }
+    // "This is fraud" button
+    const parsed = cb.data ? parseReportData(cb.data) : null;
+    if (parsed) {
+      const t = botText(getLang(chatId, cb.from?.language_code));
+      after(async () => {
+        const indicators = reportableIndicators([parsed]);
+        const ok = indicators.length > 0 && !chatTooMany(chatId, "report", 3, 20) && (await addReport(indicators[0])) !== null;
+        await tg("answerCallbackQuery", { callback_query_id: cb.id, text: ok ? t.reported : t.reportFail });
+        if (ok) await tg("editMessageReplyMarkup", { chat_id: chatId, message_id: cb.message!.message_id, reply_markup: { inline_keyboard: [] } });
+      });
+      return new Response("ok");
+    }
+    after(() => tg("answerCallbackQuery", { callback_query_id: cb.id }));
     return new Response("ok");
   }
 
@@ -55,15 +80,14 @@ export async function POST(req: Request) {
   const chatId = msg.chat.id;
   const lang = getLang(chatId, msg.from?.language_code);
   const t = botText(lang);
-  const text = (msg.text || msg.caption || "").trim();
-  const send = (body: string, extra: Record<string, unknown> = {}) =>
-    tg("sendMessage", { chat_id: chatId, text: body, parse_mode: "HTML", ...extra });
+  const raw = (msg.text || msg.caption || "").trim();
+  const send = (body: string, extra: Record<string, unknown> = {}) => tg("sendMessage", { chat_id: chatId, text: body, parse_mode: "HTML", ...extra });
 
-  if (text.startsWith("/start") || text.startsWith("/help")) {
+  if (raw.startsWith("/start") || raw.startsWith("/help")) {
     after(() => send(t.start));
     return new Response("ok");
   }
-  if (text.startsWith("/lang")) {
+  if (raw.startsWith("/lang")) {
     after(() =>
       send(t.chooseLang, {
         reply_markup: { inline_keyboard: [[{ text: "Русский", callback_data: "lang:ru" }, { text: "Кыргызча", callback_data: "lang:ky" }]] },
@@ -72,14 +96,21 @@ export async function POST(req: Request) {
     return new Response("ok");
   }
 
-  // What did the user send?
-  const urlMatch = text.match(/https?:\/\/[^\s"'<>]+/i);
-  const pdf = msg.document && (msg.document.mime_type === "application/pdf" || msg.document.mime_type?.startsWith("image/")) ? msg.document : null;
-  const photo = msg.photo?.length ? msg.photo[msg.photo.length - 1] : null;
-  const kind = pdf || photo ? "file" : urlMatch ? "url" : text.length >= 200 ? "text" : null;
+  const doc = msg.document;
+  if (doc && (/\.apk$/i.test(doc.file_name ?? "") || doc.mime_type === "application/vnd.android.package-archive")) {
+    after(() => send(t.apk, { reply_to_message_id: msg.message_id }));
+    return new Response("ok");
+  }
 
-  if (!kind) {
-    after(() => send(t.hint));
+  // Hidden links: "нажми здесь" with the real address only in the formatting.
+  const hidden = [...(msg.entities ?? []), ...(msg.caption_entities ?? [])].filter((e) => e.type === "text_link" && e.url).map((e) => e.url!);
+  const text = [raw, ...hidden.filter((u) => !raw.includes(u))].join("\n").trim();
+  const imageDoc = doc?.mime_type?.startsWith("image/") ? doc : null;
+  const photo = msg.photo?.length ? msg.photo[msg.photo.length - 1] : null;
+  const image = imageDoc ?? photo;
+
+  if (!text && !image) {
+    after(() => send(t.unsupported));
     return new Response("ok");
   }
   if (chatTooMany(chatId)) {
@@ -90,22 +121,17 @@ export async function POST(req: Request) {
   const base = site(req);
   after(async () => {
     const working = await tg<{ message_id: number }>("sendMessage", { chat_id: chatId, text: t.working, reply_to_message_id: msg.message_id });
-    let input: AnalysisInput;
-    if (kind === "file") {
-      const fileId = (pdf ?? photo)!.file_id;
-      const size = (pdf ?? photo)!.file_size ?? 0;
-      const buf = size > MAX_FILE_BYTES ? null : await downloadTelegramFile(fileId);
+    let img: { mime: string; data: string } | null = null;
+    if (image) {
+      const size = image.file_size ?? 0;
+      const buf = size > MAX_FILE_BYTES ? null : await downloadTelegramFile(image.file_id);
       if (!buf || buf.length > MAX_FILE_BYTES) {
         await tg("editMessageText", { chat_id: chatId, message_id: working?.message_id, text: t.tooBig });
         return;
       }
-      input = { kind: "file", mime: pdf?.mime_type ?? "image/jpeg", data: buf.toString("base64") };
-    } else if (kind === "url") {
-      input = { kind: "url", url: urlMatch![0].replace(/[).,;!?»]+$/, "") };
-    } else {
-      input = { kind: "text", text };
+      img = { mime: imageDoc?.mime_type ?? "image/jpeg", data: buf.toString("base64") };
     }
-    await analyzeForChat(chatId, working?.message_id ?? null, input, lang, base);
+    await checkForChat(chatId, working?.message_id ?? null, { text, image: img }, lang, base);
   });
   return new Response("ok");
 }

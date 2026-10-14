@@ -1,22 +1,21 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import type { AnalyzeMeta, AnalyzeRequest, Lang, Report } from "./types";
+import type { CheckResult, DemoId, Lang } from "./types";
 
-/** Recent reports, kept only in this browser (localStorage). Nothing is sent anywhere. */
+/** Recent checks, kept only in this browser (localStorage). Nothing is sent anywhere. */
 export interface HistoryItem {
   id: string;
   at: number;
   lang: Lang;
   label: string;
-  report: Report;
-  meta: AnalyzeMeta;
+  result: CheckResult;
   example: boolean;
-  /** Kept for links and examples only (small), so the report can be rebuilt in another language. */
-  request?: Omit<AnalyzeRequest, "lang">;
+  /** Text input (not screenshots), so the check can be re-run. */
+  request?: { text?: string; demoId?: DemoId };
 }
 
-const KEY = "kalkan-history-v1";
+const KEY = "kalkan-history-v2";
 const EVT = "kalkan-history-change";
 const MAX = 12;
 let memory: HistoryItem[] = [];
