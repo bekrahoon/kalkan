@@ -3,6 +3,7 @@ import { getDemoReport, isDemoId, DEMO_TEXTS } from "@/lib/demo";
 import { AnalyzeError, analyzeWithGemini } from "@/lib/gemini";
 import { normalizeReport } from "@/lib/normalize";
 import { runAnalysis, type AnalysisInput } from "@/lib/pipeline";
+import { clientIp, sameOrigin, tooMany } from "@/lib/guard";
 import {
   FILE_MIMES,
   MAX_FILE_BYTES,
@@ -20,39 +21,8 @@ const MIN_POLICY_CHARS = 200;
 /** Room for a 3 MB file as base64 (~4 MB of JSON). */
 const MAX_BODY_CHARS = 4_300_000;
 
-/*
- * Abuse protection for the shared free Gemini key (per server instance; the Vercel Firewall
- * rate-limit rule adds a global per-IP limit in front of this):
- *  - only requests coming from the Kalkan page itself,
- *  - at most PER_MINUTE AI checks per minute and PER_DAY per day per IP.
- */
 const PER_MINUTE = 6;
 const PER_DAY = Number(process.env.DAILY_LIMIT_PER_IP || 40);
-const hits = new Map<string, number[]>();
-function tooMany(ip: string): boolean {
-  const now = Date.now();
-  const day = (hits.get(ip) ?? []).filter((t) => now - t < 86_400_000);
-  const minute = day.filter((t) => now - t < 60_000);
-  if (minute.length >= PER_MINUTE || day.length >= PER_DAY) return true;
-  day.push(now);
-  hits.set(ip, day);
-  if (hits.size > 20_000) hits.clear();
-  return false;
-}
-
-function sameOrigin(req: Request): boolean {
-  const origin = req.headers.get("origin");
-  const site = req.headers.get("sec-fetch-site");
-  if (site && site !== "same-origin") return false;
-  if (!origin) return false;
-  try {
-    const o = new URL(origin);
-    const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
-    return o.host === host || o.hostname === "localhost" || o.hostname === "127.0.0.1";
-  } catch {
-    return false;
-  }
-}
 
 /* Same input + language → same report for a day, without spending the AI quota again.
    In-memory per server instance: on Vercel it survives warm invocations, which is what demos hit. */
@@ -93,6 +63,7 @@ export async function POST(req: Request) {
 
   const lang: Lang = body.lang === "ky" ? "ky" : "ru";
   const demoId = isDemoId(body.demoId) ? body.demoId : undefined;
+  const forChild = body.forChild === true;
   if (demoId) return runDemo(demoId, lang);
 
   // Validate and build the input.
@@ -116,16 +87,15 @@ export async function POST(req: Request) {
 
   // Cache lookup before the rate limit: repeated checks of the same thing cost nothing.
   const key = sha(
-    [lang, input.kind, input.kind === "url" ? input.url.toLowerCase() : input.kind === "file" ? sha(input.data) : input.text].join("\u0000"),
+    [lang, forChild ? "child" : "adult", input.kind, input.kind === "url" ? input.url.toLowerCase() : input.kind === "file" ? sha(input.data) : input.text].join("\u0000"),
   );
   const hit = cacheGet(key);
   if (hit) return Response.json({ ok: true, report: hit.report, meta: { ...hit.meta, cached: true } } satisfies AnalyzeResponse);
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-  if (tooMany(ip)) return fail("too_many_requests", 429);
+  if (tooMany(clientIp(req), PER_MINUTE, PER_DAY, "analyze")) return fail("too_many_requests", 429);
 
   try {
-    const { report, meta } = await runAnalysis(input, lang);
+    const { report, meta } = await runAnalysis(input, lang, forChild);
     cacheSet(key, report, meta);
     return Response.json({ ok: true, report, meta } satisfies AnalyzeResponse);
   } catch (e) {

@@ -5,7 +5,7 @@ import { forwardRef } from "react";
 type Props = React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
 
 export function toHash(href: string) {
-  const name = href.replace(/^\//, "");
+  const name = href.replace(/^\//, "").replace(/^\?/, "check?");
   return name ? `#${name}` : "#check";
 }
 

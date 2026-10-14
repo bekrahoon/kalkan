@@ -3,12 +3,15 @@
 import { ArrowLeft, Trophy } from "lucide-react";
 import { useLang } from "./LangProvider";
 import type { HistoryItem } from "@/lib/history";
+import { upgradeReport } from "@/lib/normalize";
 import type { RiskLevel, TriState } from "@/lib/types";
 
 const LEVEL_CHIP: Record<RiskLevel, string> = { low: "chip-no", medium: "chip-yes", high: "chip-danger" };
 
 /** Side-by-side view of two saved reports. Lower score = safer; ties within 5 points count as equal. */
-export function CompareView({ a, b, onBack }: { a: HistoryItem; b: HistoryItem; onBack: () => void }) {
+export function CompareView({ a: rawA, b: rawB, onBack }: { a: HistoryItem; b: HistoryItem; onBack: () => void }) {
+  const a = { ...rawA, report: upgradeReport(rawA.report, rawA.lang) };
+  const b = { ...rawB, report: upgradeReport(rawB.report, rawB.lang) };
   const { t } = useLang();
   const tc = t.compare;
   const tr = t.report;

@@ -20,6 +20,8 @@ import {
   Landmark,
   Languages,
   Lightbulb,
+  ClipboardCheck,
+  Baby as BabyIcon,
   Check,
   Share2,
   Smartphone,
@@ -37,6 +39,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useLang } from "./LangProvider";
+import { sortPermissions } from "@/lib/permissions";
 import { Reveal } from "./Reveal";
 import { RiskGauge } from "./RiskGauge";
 import { LetterGenerator } from "./LetterGenerator";
@@ -121,7 +124,7 @@ async function shareText(text: string): Promise<"shared" | "copied" | "failed"> 
 }
 
 function PlaySection({ play }: { play: PlayInfo }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const tr = t.report;
   const list = (items: { data: string; purpose: string }[]) =>
     items.length ? (
@@ -161,13 +164,24 @@ function PlaySection({ play }: { play: PlayInfo }) {
         <div className="card p-4 sm:col-span-2">
           <h3 className="font-semibold">{tr.playPermissions}</h3>
           {play.permissions.length ? (
-            <ul className="mt-2 flex flex-wrap gap-1.5">
-              {play.permissions.map((p) => (
-                <li key={p} className="rounded-full bg-subtle px-2.5 py-1 text-xs">
-                  {p}
+            <>
+            <ul className="mt-2 divide-y divide-line">
+              {sortPermissions(play.permissions, lang).map((p) => (
+                <li key={p.name} className="flex gap-2.5 py-2">
+                  <span
+                    className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${p.risk === "high" ? "bg-danger" : p.risk === "medium" ? "bg-[var(--meter-medium)]" : "bg-primary"}`}
+                    aria-hidden
+                  />
+                  <span className="min-w-0 text-sm leading-snug">
+                    <span className="font-medium">{p.name}</span>
+                    {p.risk !== "low" && <span className="sr-only"> ({tr.permRisk[p.risk]})</span>}
+                    {p.text && <span className="block text-muted">{p.text}</span>}
+                  </span>
                 </li>
               ))}
             </ul>
+            <p className="mt-2 text-xs text-muted">{tr.permHint}</p>
+            </>
           ) : (
             <p className="mt-2 text-sm text-muted">{tr.playNothing}</p>
           )}
@@ -187,6 +201,85 @@ function PlaySection({ play }: { play: PlayInfo }) {
   );
 }
 
+function KidsSection({ report }: { report: Report }) {
+  const { t } = useLang();
+  const tr = t.report;
+  const k = report.children_check;
+  const chip = (v: TriState, goodWhenYes: boolean) => {
+    if (v === "unclear") return <span className="chip chip-unclear">{tr.kidsTri.unclear}</span>;
+    const good = goodWhenYes ? v === "yes" : v === "no";
+    return <span className={`chip ${good ? "chip-no" : "chip-danger"}`}>{tr.kidsTri[v]}</span>;
+  };
+  return (
+    <section className="mt-10" aria-labelledby="sec-kids">
+      <SectionTitle id="sec-kids" icon={BabyIcon}>
+        {tr.kidsTitle}
+      </SectionTitle>
+      <div className="card p-5">
+        <p className="leading-relaxed">{k.summary}</p>
+        <dl className="mt-4 divide-y divide-line border-t border-line text-sm">
+          <div className="flex items-center justify-between gap-3 py-2.5">
+            <dt className="text-muted">{tr.kidsAge}</dt>
+            <dd className="font-medium">{k.min_age}</dd>
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2.5">
+            <dt className="text-muted">{tr.kidsConsent}</dt>
+            <dd>{chip(k.parental_consent, true)}</dd>
+          </div>
+          <div className="flex items-center justify-between gap-3 py-2.5">
+            <dt className="text-muted">{tr.kidsAds}</dt>
+            <dd>{chip(k.ads_to_children, false)}</dd>
+          </div>
+        </dl>
+        <Link href="/guides?for=parents" className="mt-3 inline-flex min-h-[44px] items-center gap-2 text-sm font-medium text-primary hover:underline">
+          {tr.kidsGuide} <ArrowRight className="h-4 w-4" aria-hidden />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function ComplianceSection({ report }: { report: Report }) {
+  const { t } = useLang();
+  const tr = t.report;
+  const items = report.compliance;
+  const have = items.filter((c) => c.status === "yes").length;
+  const order = { no: 0, unclear: 1, yes: 2 } as const;
+  const sorted = [...items].sort((a, b) => order[a.status] - order[b.status]);
+  return (
+    <section className="mt-6" aria-labelledby="sec-comp">
+      <div className="card p-5 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 id="sec-comp" className="flex items-center gap-2.5 text-xl font-bold">
+            <ClipboardCheck className="h-5 w-5 text-primary" aria-hidden />
+            {tr.compTitle}
+          </h2>
+          <span className={`chip ${have >= 10 ? "chip-no" : have >= 6 ? "chip-yes" : "chip-danger"} text-sm`}>
+            {tr.compScore(have, items.length)}
+          </span>
+        </div>
+        <p className="mt-1 text-sm text-muted">{tr.compLead}</p>
+        <ul className="mt-4 divide-y divide-line">
+          {sorted.map((c) => (
+            <li key={c.item} className="flex gap-3 py-2.5">
+              <span
+                className={`chip w-[76px] shrink-0 justify-center self-start ${c.status === "yes" ? "chip-no" : c.status === "no" ? "chip-danger" : "chip-yes"}`}
+              >
+                {tr.compTri[c.status]}
+              </span>
+              <span className="min-w-0 text-sm leading-snug">
+                <span className="font-medium">{tr.compItems[c.item]}</span>
+                {c.note && <span className="block text-muted">{c.note}</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 text-xs text-muted">{tr.compDraft}</p>
+      </div>
+    </section>
+  );
+}
+
 export function ReportView({
   report: r,
   meta,
@@ -194,6 +287,7 @@ export function ReportView({
   onReset,
   onRerun,
   backLabel,
+  business,
 }: {
   report: Report;
   meta: AnalyzeMeta;
@@ -201,6 +295,8 @@ export function ReportView({
   onReset: () => void;
   onRerun?: () => void;
   backLabel?: string;
+  /** Business owner checking their own policy: show the compliance checklist first. */
+  business?: boolean;
 }) {
   const { t, lang } = useLang();
   const tr = t.report;
@@ -307,6 +403,8 @@ export function ReportView({
           </span>
         </div>
       </section>
+
+      {business && <ComplianceSection report={r} />}
 
       {/* data categories */}
       <section className="mt-10" aria-labelledby="sec-data">
@@ -445,6 +543,8 @@ export function ReportView({
           </ol>
         )}
       </section>
+
+      <KidsSection report={r} />
 
       {/* rights */}
       <section className="mt-10" aria-labelledby="sec-rights">

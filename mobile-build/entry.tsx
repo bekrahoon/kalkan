@@ -7,12 +7,14 @@ import { Checker } from "@/components/Checker";
 import { RightsContent } from "@/components/RightsContent";
 import { AboutContent } from "@/components/AboutContent";
 import { RatingContent } from "@/components/RatingContent";
+import { GuidesContent } from "@/components/GuidesContent";
 
 function Page() {
   const path = usePathname();
   if (path === "/rights") return <RightsContent />;
   if (path === "/about") return <AboutContent />;
   if (path === "/rating") return <RatingContent />;
+  if (path === "/guides") return <GuidesContent />;
   return <Checker />;
 }
 

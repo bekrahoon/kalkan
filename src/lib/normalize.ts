@@ -1,6 +1,9 @@
 import {
   BASE_SCORE,
   CATEGORY_IDS,
+  COMPLIANCE_ITEMS,
+  type ComplianceCheck,
+  type ComplianceItem,
   RECIPIENT_TYPES,
   RIGHT_IDS,
   type CategoryId,
@@ -148,6 +151,23 @@ export function normalizeReport(raw: unknown, lang: Lang, sourceText?: string): 
     .filter(Boolean)
     .slice(0, 8);
 
+  const ch = obj(r.children_check);
+  const children_check = {
+    min_age: str(ch.min_age, ns),
+    parental_consent: tri(ch.parental_consent),
+    ads_to_children: tri(ch.ads_to_children),
+    summary: str(ch.summary, ns),
+  };
+
+  const compMap = new Map<ComplianceItem, ComplianceCheck>();
+  for (const item of arr(r.compliance)) {
+    const c = obj(item);
+    const id = c.item as ComplianceItem;
+    if (!COMPLIANCE_ITEMS.includes(id) || compMap.has(id)) continue;
+    compMap.set(id, { item: id, status: tri(c.status), note: str(c.note) });
+  }
+  const compliance = COMPLIANCE_ITEMS.map((id) => compMap.get(id) ?? { item: id, status: "unclear" as TriState, note: "" });
+
   return {
     company_name: str(r.company_name),
     contact_email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str(r.contact_email)) ? str(r.contact_email) : "",
@@ -161,6 +181,8 @@ export function normalizeReport(raw: unknown, lang: Lang, sourceText?: string): 
     retention,
     red_flags,
     user_rights,
+    children_check,
+    compliance,
   };
 }
 
@@ -193,9 +215,36 @@ export function mergeTranslation(source: Report, translatedRaw: unknown, lang: L
       explanation: byIndex(tr.red_flags, i)?.explanation || f.explanation,
       action: byIndex(tr.red_flags, i)?.action || f.action,
     })),
+    children_check: {
+      ...source.children_check,
+      min_age: tr.children_check.min_age || source.children_check.min_age,
+      summary: tr.children_check.summary || source.children_check.summary,
+    },
+    compliance: source.compliance.map((c) => ({
+      ...c,
+      note: tr.compliance.find((x) => x.item === c.item)?.note || c.note,
+    })),
     user_rights: source.user_rights.map((u) => ({
       ...u,
       details: tr.user_rights.find((x) => x.right === u.right)?.details || u.details,
     })),
   };
+}
+
+/** Brings an older saved report (history, rating file) up to the current shape, keeping its quote checks. */
+export function upgradeReport(raw: unknown, lang: Lang): Report {
+  const report = normalizeReport(raw, lang);
+  const old = obj(raw);
+  const flags = arr(old.red_flags);
+  report.red_flags = report.red_flags.map((f, i) => {
+    const v = obj(flags[i]).quote_verified;
+    return { ...f, quote_verified: typeof v === "boolean" ? v : undefined };
+  });
+  // keep the stored score even if the old file had no factors
+  const score = Number(old.risk_score);
+  if (!report.risk_factors.length && Number.isFinite(score)) {
+    report.risk_score = Math.max(0, Math.min(100, Math.round(score)));
+    report.risk_level = levelFromScore(report.risk_score);
+  }
+  return report;
 }

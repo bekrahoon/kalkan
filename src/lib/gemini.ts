@@ -1,5 +1,5 @@
 import "server-only";
-import { BASE_SCORE, CATEGORY_IDS, RECIPIENT_TYPES, RIGHT_IDS, type ErrorCode, type Lang } from "./types";
+import { BASE_SCORE, CATEGORY_IDS, COMPLIANCE_ITEMS, RECIPIENT_TYPES, RIGHT_IDS, type ErrorCode, type Lang } from "./types";
 import { NOT_SPECIFIED } from "./normalize";
 
 /** Current GA Flash model at the time of writing; override with GEMINI_MODEL if Google renames it. */
@@ -92,6 +92,30 @@ const RESPONSE_SCHEMA = {
         required: ["title", "quote", "explanation", "action"],
       },
     },
+    compliance: {
+      type: "ARRAY",
+      description: "Exactly one entry for every item id: does the policy contain this element?",
+      items: {
+        type: "OBJECT",
+        properties: {
+          item: { type: "STRING", enum: [...COMPLIANCE_ITEMS] },
+          status: { type: "STRING", enum: ["yes", "no", "unclear"], description: "yes = clearly present, no = missing, unclear = vague/partial" },
+          note: { type: "STRING", description: "One short sentence: what is there or what is missing." },
+        },
+        required: ["item", "status", "note"],
+      },
+    },
+    children_check: {
+      type: "OBJECT",
+      description: "What a parent should know about children's data in this policy.",
+      properties: {
+        min_age: { type: "STRING", description: "Minimum age stated in the policy, e.g. '13+', or not specified." },
+        parental_consent: TRI,
+        ads_to_children: { type: "STRING", enum: ["yes", "no", "unclear"], description: "Are minors' data used for ads/profiling?" },
+        summary: { type: "STRING", description: "1–2 sentences for a parent." },
+      },
+      required: ["min_age", "parental_consent", "ads_to_children", "summary"],
+    },
     user_rights: {
       type: "ARRAY",
       description: "Exactly one entry for every right id.",
@@ -119,10 +143,22 @@ const RESPONSE_SCHEMA = {
     "retention",
     "red_flags",
     "user_rights",
+    "children_check",
+    "compliance",
   ],
 };
 
-function systemPrompt(lang: Lang): string {
+function systemPrompt(lang: Lang, forChild = false): string {
+  return baseSystemPrompt(lang) + (forChild ? CHILD_MODE : "");
+}
+
+const CHILD_MODE = `
+
+PARENT MODE: the reader is a parent deciding whether their CHILD may use this app. Judge everything from that angle:
+weigh data of minors, age checks, parental consent, contact with strangers, in-app purchases, ads/profiling of children and location of children much more heavily (add points for each in risk_factors);
+write red_flags and actions for a parent (e.g. which setting to switch on for the child).`;
+
+function baseSystemPrompt(lang: Lang): string {
   const langName = lang === "ky" ? "Kyrgyz (кыргыз тили, Cyrillic script)" : "Russian";
   const ns = NOT_SPECIFIED[lang];
   return `You are "Kalkan", a privacy-policy analyst that explains to ordinary people what a website or app does with their personal data.
@@ -140,6 +176,8 @@ CATEGORIES (data_categories, return all ${CATEGORY_IDS.length}):
 geolocation = location/GPS/IP-based location; contacts = address book, friends lists, phone contacts; biometrics = face, fingerprint, voice prints; finance = cards, payments, income, purchase history; browsing = browsing/search/activity history, cookies, tracking across sites; media = photos, camera, microphone, audio/video recordings; children = data of minors.
 "collected": "yes" if the policy says it is collected, "no" only if the policy explicitly says it is NOT collected, otherwise "unclear".
 
+COMPLIANCE (compliance, return all ${COMPLIANCE_ITEMS.length}): operator = who processes the data (legal name, address); purposes = why data is processed; data_list = which data is collected; consent = how consent is obtained/withdrawn; retention = how long data is kept; third_parties = who receives data; cross_border = whether/where data goes abroad; user_rights = how users exercise their rights; contact = contact for data questions; security = how data is protected; children = rules for minors; changes = how users are told about policy changes.
+
 RIGHTS (user_rights, return all ${RIGHT_IDS.length}): access, rectification, deletion, withdraw_consent, portability, objection. "available" = what the policy itself grants.
 
 THIRD PARTIES: who receives data (advertisers, partners, affiliates, processors, government, other), why, and cross_border=true if data goes to other countries.
@@ -155,8 +193,8 @@ interface GeminiResult {
 /** Either extracted text, or a PDF / photo that Gemini reads itself. */
 export type PolicyInput = { text: string } | { mime: string; data: string };
 
-export async function analyzeWithGemini(input: PolicyInput, lang: Lang): Promise<GeminiResult> {
-  return generateReportJson(systemPrompt(lang), [
+export async function analyzeWithGemini(input: PolicyInput, lang: Lang, forChild = false): Promise<GeminiResult> {
+  return generateReportJson(systemPrompt(lang, forChild), [
     {
       role: "user",
       parts:
@@ -189,7 +227,7 @@ Keep the same number and order of items in every array.`;
   return generateReportJson(sys, [{ role: "user", parts: [{ text: JSON.stringify(report) }] }]);
 }
 
-async function generateReportJson(system: string, contents: unknown[]): Promise<GeminiResult> {
+export async function generateReportJson(system: string, contents: unknown[], schema: object = RESPONSE_SCHEMA): Promise<GeminiResult> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new AnalyzeError("no_api_key", 503);
   const model = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
@@ -200,7 +238,7 @@ async function generateReportJson(system: string, contents: unknown[]): Promise<
     generationConfig: {
       temperature: 0.2,
       responseMimeType: "application/json",
-      responseSchema: RESPONSE_SCHEMA,
+      responseSchema: schema,
       // Little "thinking" = much faster answers; the schema and rules do the heavy lifting here.
       thinkingConfig: { thinkingLevel: "low" },
     },

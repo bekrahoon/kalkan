@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight, Info, Trophy } from "lucide-react";
+import { ChevronRight, Database, Download, Info, Trophy } from "lucide-react";
 import { useLang } from "./LangProvider";
 import { ReportView } from "./ReportView";
 import { RATING_SERVICES, type RatingService } from "@/content/rating-services";
-import ratingData from "@/content/rating-data.json";
+import { RATING, ratingCsv } from "@/lib/rating";
 import type { AnalyzeMeta, Lang, Report, RiskLevel } from "@/lib/types";
+import { upgradeReport } from "@/lib/normalize";
 
 interface Entry {
   report: Report;
@@ -18,22 +19,24 @@ interface RatingItem {
   ru?: Entry;
   ky?: Entry;
 }
-const DATA = ratingData as unknown as { generatedAt: string | null; items: Record<string, RatingItem> };
+const DATA = RATING as { generatedAt: string | null; items: Record<string, RatingItem> };
+const STATIC_DEMO = process.env.NEXT_PUBLIC_KALKAN_STATIC === "1";
 
 const LEVEL_CHIP: Record<RiskLevel, string> = { low: "chip-no", medium: "chip-yes", high: "chip-danger" };
 const LEVEL_BAR: Record<RiskLevel, string> = { low: "bg-primary", medium: "bg-[var(--meter-medium)]", high: "bg-danger" };
 
 function pick(item: RatingItem, lang: Lang): { entry: Entry; lang: Lang } | null {
   const own = item[lang];
-  if (own) return { entry: own, lang };
-  const other = lang === "ru" ? item.ky : item.ru;
-  return other ? { entry: other, lang: lang === "ru" ? "ky" : "ru" } : null;
+  const otherLang: Lang = lang === "ru" ? "ky" : "ru";
+  const chosen = own ? { entry: own, lang } : item[otherLang] ? { entry: item[otherLang]!, lang: otherLang } : null;
+  return chosen ? { entry: { ...chosen.entry, report: upgradeReport(chosen.entry.report, chosen.lang) }, lang: chosen.lang } : null;
 }
 
 export function RatingContent() {
   const { t, lang } = useLang();
   const tr = t.rating;
   const [open, setOpen] = useState<{ service: RatingService; entry: Entry; lang: Lang } | null>(null);
+  const [cat, setCat] = useState<string | null>(null);
 
   const rows = RATING_SERVICES.map((s) => {
     const item = DATA.items[s.id];
@@ -41,6 +44,7 @@ export function RatingContent() {
     return chosen ? { service: s, ...chosen, analyzedAt: item?.analyzedAt } : null;
   })
     .filter((r): r is NonNullable<typeof r> => r !== null)
+    .filter((r) => !cat || r.service.category.ru === cat)
     .sort((a, b) => a.entry.report.risk_score - b.entry.report.risk_score);
 
   if (open) {
@@ -74,10 +78,27 @@ export function RatingContent() {
       <p className="mt-3 text-lg leading-relaxed text-muted">{tr.lead}</p>
       {date && <p className="mt-2 text-sm text-muted">{tr.checked(date)}</p>}
 
+      <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
+        {[null, ...Array.from(new Set(RATING_SERVICES.filter((s) => DATA.items[s.id]).map((s) => s.category.ru)))].map((c) => {
+          const label = c ? RATING_SERVICES.find((s) => s.category.ru === c)!.category[lang] : tr.all;
+          return (
+            <button
+              key={c ?? "all"}
+              type="button"
+              aria-pressed={cat === c}
+              onClick={() => setCat(c)}
+              className={`shrink-0 rounded-full border px-3 py-1.5 text-sm ${cat === c ? "border-primary bg-primary-soft text-primary" : "border-line bg-surface text-muted"}`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
       {rows.length === 0 ? (
         <div className="card mt-8 p-6 text-center text-muted">{tr.empty}</div>
       ) : (
-        <ol className="card mt-8 divide-y divide-line">
+        <ol className="card mt-4 divide-y divide-line">
           {rows.map((r, i) => (
             <li key={r.service.id}>
               <button
@@ -115,6 +136,39 @@ export function RatingContent() {
         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
         {tr.note}
       </p>
+
+      {rows.length > 0 && (
+        <section className="card mt-8 p-5" aria-labelledby="open-data">
+          <h2 id="open-data" className="flex items-center gap-2 font-semibold">
+            <Database className="h-5 w-5 text-primary" aria-hidden />
+            {tr.openTitle}
+          </h2>
+          <p className="mt-1 text-sm leading-relaxed text-muted">{tr.openText}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="btn btn-secondary min-h-[42px] text-sm"
+              onClick={() => {
+                const blob = new Blob(["\uFEFF" + ratingCsv(lang)], { type: "text/csv;charset=utf-8" });
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(blob);
+                a.download = `kalkan-rating-${lang}.csv`;
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+              }}
+            >
+              <Download className="h-4 w-4" aria-hidden />
+              {tr.csv}
+            </button>
+            {!STATIC_DEMO && (
+              <a href={`/api/rating?lang=${lang}`} className="btn btn-secondary min-h-[42px] text-sm" target="_blank" rel="noopener">
+                JSON API
+              </a>
+            )}
+          </div>
+          <p className="mt-3 text-xs text-muted">{tr.license}</p>
+        </section>
+      )}
     </div>
   );
 }

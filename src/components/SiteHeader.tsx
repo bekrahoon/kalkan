@@ -17,8 +17,8 @@ export function SiteHeader() {
   const links = [
     { href: "/", label: t.nav.check },
     { href: "/rating", label: t.nav.rating },
+    { href: "/guides", label: t.nav.guides },
     { href: "/rights", label: t.nav.rights },
-    { href: "/about", label: t.nav.about },
   ];
 
   return (

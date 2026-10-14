@@ -22,6 +22,7 @@ const C = {
   bank: { ru: "Банк и платежи", ky: "Банк жана төлөмдөр" },
   maps: { ru: "Карты", ky: "Карталар" },
   telecom: { ru: "Мобильная связь", ky: "Мобилдик байланыш" },
+  kids: { ru: "Детям и подросткам", ky: "Балдарга жана өспүрүмдөргө" },
 };
 
 // Wildberries, lalafo and «Мой О!» were left out for now: their policy pages block automated reading.
@@ -35,4 +36,8 @@ export const RATING_SERVICES: RatingService[] = [
   { id: "mbank", name: "MBANK", category: C.bank, query: "MBANK мобильный банк Кыргызстан" },
   { id: "megacom", name: "MegaCom", category: C.telecom, query: "MegaCom Кыргызстан" },
   { id: "2gis", name: "2ГИС", category: C.maps, appId: "ru.dublgis.dgismobile" },
+  { id: "youtube", name: "YouTube", category: C.kids, appId: "com.google.android.youtube" },
+  { id: "roblox", name: "Roblox", category: C.kids, appId: "com.roblox.client" },
+  { id: "brawl-stars", name: "Brawl Stars", category: C.kids, appId: "com.supercell.brawlstars" },
+  { id: "minecraft", name: "Minecraft", category: C.kids, appId: "com.mojang.minecraftpe" },
 ];

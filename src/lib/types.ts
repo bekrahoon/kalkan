@@ -75,6 +75,37 @@ export interface UserRight {
   details: string;
 }
 
+export const COMPLIANCE_ITEMS = [
+  "operator",
+  "purposes",
+  "data_list",
+  "consent",
+  "retention",
+  "third_parties",
+  "cross_border",
+  "user_rights",
+  "contact",
+  "security",
+  "children",
+  "changes",
+] as const;
+export type ComplianceItem = (typeof COMPLIANCE_ITEMS)[number];
+
+/** Does the policy contain an element a well-written policy should have? (for business owners) */
+export interface ComplianceCheck {
+  item: ComplianceItem;
+  status: TriState;
+  note: string;
+}
+
+/** What a parent needs to know about children's data. */
+export interface ChildrenCheck {
+  min_age: string;
+  parental_consent: TriState;
+  ads_to_children: TriState;
+  summary: string;
+}
+
 export interface Report {
   company_name: string;
   contact_email: string;
@@ -89,6 +120,8 @@ export interface Report {
   retention: Retention;
   red_flags: RedFlag[];
   user_rights: UserRight[];
+  children_check: ChildrenCheck;
+  compliance: ComplianceCheck[];
 }
 
 export type ErrorCode =
@@ -151,6 +184,8 @@ export interface AnalyzeRequest {
   file?: UploadedFile;
   lang: Lang;
   demoId?: DemoId;
+  /** A parent checking an app for their child. */
+  forChild?: boolean;
 }
 
 /** A PDF or photo of a policy, sent as base64 and read by Gemini directly. */

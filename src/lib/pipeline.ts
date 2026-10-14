@@ -28,7 +28,11 @@ export type AnalysisInput =
  * The whole job for one policy: get its text (page, PDF, Google Play app or upload),
  * ask Gemini, and clean up the answer. Throws AnalyzeError with a user-facing code.
  */
-export async function runAnalysis(input: AnalysisInput, lang: Lang): Promise<{ report: Report; meta: AnalyzeMeta }> {
+export async function runAnalysis(
+  input: AnalysisInput,
+  lang: Lang,
+  forChild = false,
+): Promise<{ report: Report; meta: AnalyzeMeta }> {
   let policy = "";
   let fileInput: PolicyInput | null = null;
   let sourceUrl: string | undefined;
@@ -60,7 +64,7 @@ export async function runAnalysis(input: AnalysisInput, lang: Lang): Promise<{ r
 
   const originalChars = policy.length;
   const { text, truncated } = truncate(policy);
-  const { json, model } = await analyzeWithGemini(fileInput ?? { text }, lang);
+  const { json, model } = await analyzeWithGemini(fileInput ?? { text }, lang, forChild);
   // Quotes can only be checked against text we extracted ourselves, not against a PDF/photo.
   const report = normalizeReport(json, lang, fileInput ? undefined : text);
   return {

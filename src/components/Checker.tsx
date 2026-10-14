@@ -11,6 +11,7 @@ import { ReportView } from "./ReportView";
 import { HistoryPanel } from "./HistoryPanel";
 import { CompareView } from "./CompareView";
 import { addToHistory, type HistoryItem } from "@/lib/history";
+import { upgradeReport } from "@/lib/normalize";
 import { DEMO_IDS, DEMO_TEXTS, getDemoReport } from "@/lib/demo";
 import {
   FILE_MIMES,
@@ -60,6 +61,7 @@ export function Checker() {
   const { t, lang } = useLang();
   const [phase, setPhase] = useState<Phase>("idle");
   const [mode, setMode] = useState<Mode>("url");
+  const [forChild, setForChild] = useState(false);
   const [file, setFile] = useState<(UploadedFile & { size: number }) | null>(null);
   const [url, setUrl] = useState("");
   const [text, setText] = useState("");
@@ -142,7 +144,7 @@ export function Checker() {
           request: req.demoId
             ? { mode: "text", demoId: req.demoId, text: DEMO_TEXTS[req.demoId] }
             : req.mode === "url"
-              ? { mode: "url", url: req.url }
+              ? { mode: "url", url: req.url, forChild: req.forChild }
               : undefined,
         });
         setPhase("report");
@@ -179,7 +181,7 @@ export function Checker() {
   }, [run]);
 
   const openHistory = (h: HistoryItem) => {
-    setResult({ report: h.report, meta: h.meta, lang: h.lang, request: h.request });
+    setResult({ report: upgradeReport(h.report, h.lang), meta: h.meta, lang: h.lang, request: h.request });
     setPhase("report");
     requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
@@ -194,13 +196,13 @@ export function Checker() {
     e.preventDefault();
     if (mode === "url") {
       if (!url.trim()) return setError("invalid_url");
-      run({ mode: "url", url: url.trim() });
+      run({ mode: "url", url: url.trim(), forChild });
     } else if (mode === "file") {
       if (!file) return;
-      run({ mode: "file", file: { name: file.name, mime: file.mime, data: file.data } });
+      run({ mode: "file", file: { name: file.name, mime: file.mime, data: file.data }, forChild });
     } else {
       const demoId = DEMO_IDS.find((id) => DEMO_TEXTS[id].trim() === text.trim());
-      run({ mode: "text", text, demoId });
+      run({ mode: "text", text, demoId: forChild ? undefined : demoId, forChild });
     }
   };
 
@@ -372,6 +374,18 @@ export function Checker() {
                 </button>
               </div>
             )}
+            <label className="mt-4 flex cursor-pointer items-start gap-3 border-t border-line pt-4">
+              <input
+                type="checkbox"
+                checked={forChild}
+                onChange={(e) => setForChild(e.target.checked)}
+                className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--primary)]"
+              />
+              <span className="text-sm">
+                <span className="font-medium">{t.hero.forChild}</span>
+                <span className="block text-muted">{t.hero.forChildHint}</span>
+              </span>
+            </label>
           </form>
 
           {error && (
