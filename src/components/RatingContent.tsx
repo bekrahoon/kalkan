@@ -64,7 +64,7 @@ export function RatingContent() {
   }
 
   const date = DATA.generatedAt
-    ? new Date(DATA.generatedAt).toLocaleDateString(lang === "ky" ? "ky-KG" : "ru-RU", { day: "numeric", month: "long", year: "numeric" })
+    ? new Date(DATA.generatedAt).toLocaleDateString("ru-RU", lang === "ky" ? undefined : { day: "numeric", month: "long", year: "numeric" })
     : null;
 
   return (

@@ -66,7 +66,7 @@ export function HistoryPanel({
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-medium">{h.label}</span>
                 <span className="block text-xs text-muted">
-                  {new Date(h.at).toLocaleDateString(lang === "ky" ? "ky-KG" : "ru-RU", { day: "numeric", month: "short" })}
+                  {new Date(h.at).toLocaleDateString("ru-RU", lang === "ky" ? { day: "2-digit", month: "2-digit" } : { day: "numeric", month: "short" })}
                   {h.example && ` · ${t.history.example}`}
                   {h.lang !== lang && ` · ${h.lang === "ky" ? "KG" : "RU"}`}
                 </span>
