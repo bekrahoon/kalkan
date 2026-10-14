@@ -23,9 +23,31 @@ export async function domainAge(domain: string, budgetMs = 5_000): Promise<Domai
   return v;
 }
 
+/** IANA's list of RDAP servers per zone (public rdap.org redirector blocks server-side clients). */
+let bootstrap: { at: number; map: Map<string, string> } | null = null;
+async function rdapBase(tld: string): Promise<string | null> {
+  if (!bootstrap || Date.now() - bootstrap.at > 24 * 3600_000) {
+    try {
+      const r = await fetch("https://data.iana.org/rdap/dns.json", { signal: AbortSignal.timeout(3_000) });
+      const j = (await r.json()) as { services: [string[], string[]][] };
+      const map = new Map<string, string>();
+      for (const [tlds, urls] of j.services) {
+        const url = urls.find((u) => u.startsWith("https")) ?? urls[0];
+        for (const t of tlds) map.set(t.toLowerCase(), url.endsWith("/") ? url : `${url}/`);
+      }
+      bootstrap = { at: Date.now(), map };
+    } catch {
+      return null;
+    }
+  }
+  return bootstrap.map.get(tld) ?? null;
+}
+
 async function viaRdap(domain: string, budgetMs: number): Promise<DomainAge | null> {
-  const r = await fetch(`https://rdap.org/domain/${encodeURIComponent(domain)}`, {
-    headers: { Accept: "application/rdap+json, application/json" },
+  const base = await rdapBase(domain.split(".").pop() ?? "");
+  if (!base) return null;
+  const r = await fetch(`${base}domain/${encodeURIComponent(domain)}`, {
+    headers: { Accept: "application/rdap+json, application/json", "User-Agent": "Kalkan/1.0 (+https://kalkan-sigma.vercel.app)" },
     signal: AbortSignal.timeout(Math.min(budgetMs, 4_000)),
   });
   if (!r.ok) return null;

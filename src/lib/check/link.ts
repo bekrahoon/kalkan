@@ -166,6 +166,9 @@ export async function checkLink(raw: string, lang: Lang, opts: { ai?: boolean; b
     else if (days > 730) add("good", t.ageOld(age.created.getUTCFullYear()));
   }
 
+  if (scan && /suspected (phishing|malware)|phishing warning|deceptive site/i.test(scan.title)) {
+    add("bad", t.cfWarning);
+  }
   if (scan) {
     if (!trusted(final)) {
       const mentioned = brandMentioned(`${scan.title} ${scan.text.slice(0, 1500)}`);
