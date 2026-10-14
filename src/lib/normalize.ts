@@ -1,4 +1,5 @@
 import {
+  BASE_SCORE,
   CATEGORY_IDS,
   RECIPIENT_TYPES,
   RIGHT_IDS,
@@ -67,7 +68,18 @@ export function normalizeReport(raw: unknown, lang: Lang, sourceText?: string): 
   const r = obj(raw);
   const ns = NOT_SPECIFIED[lang];
 
+  // "Why this score": keep sane factors, then make the score the exact sum so the breakdown always adds up.
+  const risk_factors = arr(r.risk_factors)
+    .map((item) => {
+      const f = obj(item);
+      const points = Math.round(Number(f.points));
+      return { factor: str(f.factor), points: Number.isFinite(points) ? Math.max(-30, Math.min(30, points)) : 0 };
+    })
+    .filter((f) => f.factor && f.points !== 0)
+    .slice(0, 10);
+
   let score = Number(r.risk_score);
+  if (risk_factors.length) score = BASE_SCORE + risk_factors.reduce((a, f) => a + f.points, 0);
   if (!Number.isFinite(score)) score = 50;
   score = Math.max(0, Math.min(100, Math.round(score)));
 
@@ -124,6 +136,7 @@ export function normalizeReport(raw: unknown, lang: Lang, sourceText?: string): 
         title: str(f.title),
         quote,
         explanation: str(f.explanation),
+        action: str(f.action),
         quote_verified: sourceText && quote ? quoteAppearsIn(quote, sourceText) : undefined,
       };
     })
@@ -141,6 +154,7 @@ export function normalizeReport(raw: unknown, lang: Lang, sourceText?: string): 
     summary: str(r.summary, ns),
     risk_score: score,
     risk_level: levelFromScore(score),
+    risk_factors,
     data_categories,
     other_data,
     third_parties,

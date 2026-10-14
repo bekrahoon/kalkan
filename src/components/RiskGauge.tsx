@@ -5,9 +5,11 @@ import type { RiskLevel } from "@/lib/types";
 
 export const LEVEL_COLOR: Record<RiskLevel, string> = {
   low: "var(--primary)",
-  medium: "var(--warn)",
+  medium: "var(--meter-medium)",
   high: "var(--danger)",
 };
+/** Darker shades for the number so it stays readable (WCAG AA) on light backgrounds. */
+const TEXT_COLOR: Record<RiskLevel, string> = { low: "var(--primary)", medium: "var(--warn)", high: "var(--danger)" };
 
 const RM = "(prefers-reduced-motion: reduce)";
 function usePrefersReducedMotion() {
@@ -67,7 +69,7 @@ export function RiskGauge({ score, level, label, of100 }: { score: number; level
         />
       </svg>
       <div className="absolute inset-x-0 bottom-0 text-center">
-        <span className="text-5xl font-bold tabular-nums" style={{ color }}>
+        <span className="text-5xl font-bold tabular-nums" style={{ color: TEXT_COLOR[level] }}>
           {shown}
         </span>
         <span className="ml-1 text-sm text-muted">{of100}</span>

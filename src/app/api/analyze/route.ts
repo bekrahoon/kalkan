@@ -1,15 +1,16 @@
 import { getDemoReport, isDemoId, DEMO_TEXTS } from "@/lib/demo";
 import { fetchPolicyText } from "@/lib/extract";
-import { AnalyzeError, analyzeWithGemini } from "@/lib/gemini";
+import { AnalyzeError, analyzeWithGemini, type PolicyInput } from "@/lib/gemini";
 import { normalizeReport } from "@/lib/normalize";
-import type { AnalyzeResponse, ErrorCode, Lang } from "@/lib/types";
+import { FILE_MIMES, MAX_FILE_BYTES, type AnalyzeResponse, type ErrorCode, type Lang } from "@/lib/types";
 
 export const maxDuration = 60;
 
 /** ~15–20k tokens: comfortably inside free-tier limits and enough for almost any policy. */
 const MAX_POLICY_CHARS = 60_000;
 const MIN_POLICY_CHARS = 200;
-const MAX_BODY_CHARS = 400_000;
+/** Room for a 3 MB file as base64 (~4 MB of JSON). */
+const MAX_BODY_CHARS = 4_300_000;
 
 /* Light per-instance rate limit so one visitor can't burn the shared free quota. */
 const hits = new Map<string, number[]>();
@@ -46,12 +47,13 @@ export async function POST(req: Request) {
 
   const lang: Lang = body.lang === "ky" ? "ky" : "ru";
   const demoId = isDemoId(body.demoId) ? body.demoId : undefined;
-  const mode = body.mode === "url" ? "url" : "text";
+  const mode = body.mode === "url" || body.mode === "file" ? body.mode : "text";
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
   if (!demoId && tooMany(ip)) return fail("too_many_requests", 429);
 
   let policy = "";
+  let fileInput: PolicyInput | null = null;
   let sourceUrl: string | undefined;
 
   try {
@@ -61,8 +63,16 @@ export async function POST(req: Request) {
       const url = typeof body.url === "string" ? body.url : "";
       if (!url.trim()) return fail("invalid_url", 400);
       const fetched = await fetchPolicyText(url);
-      policy = fetched.text;
       sourceUrl = fetched.url;
+      if ("pdf" in fetched) fileInput = { mime: "application/pdf", data: fetched.pdf };
+      else policy = fetched.text;
+    } else if (mode === "file") {
+      const f = (body.file ?? {}) as Record<string, unknown>;
+      const mime = typeof f.mime === "string" ? f.mime.toLowerCase() : "";
+      const data = typeof f.data === "string" ? f.data.replace(/^data:[^,]*,/, "") : "";
+      if (!(FILE_MIMES as readonly string[]).includes(mime) || !data) return fail("file_type", 415);
+      if (Math.floor((data.length * 3) / 4) > MAX_FILE_BYTES) return fail("file_too_big", 413);
+      fileInput = { mime, data };
     } else {
       policy = typeof body.text === "string" ? body.text.trim() : "";
       if (policy.length < MIN_POLICY_CHARS) return fail("text_too_short", 400);
@@ -79,12 +89,20 @@ export async function POST(req: Request) {
   try {
     // DEMO_CACHE_ONLY=1 makes demo buttons instant and offline-proof (handy on stage).
     if (demoId && process.env.DEMO_CACHE_ONLY === "1") throw new AnalyzeError("ai_failed", 200);
-    const { json, model } = await analyzeWithGemini(text, lang);
-    const report = normalizeReport(json, lang, text);
+    const { json, model } = await analyzeWithGemini(fileInput ?? { text }, lang);
+    // Quotes can only be checked against text we extracted ourselves, not against a PDF/photo.
+    const report = normalizeReport(json, lang, fileInput ? undefined : text);
     return Response.json({
       ok: true,
       report,
-      meta: { source: "live", truncated, originalChars, analyzedChars: text.length, sourceUrl, model },
+      meta: {
+        source: "live",
+        truncated: fileInput ? false : truncated,
+        originalChars,
+        analyzedChars: text.length,
+        sourceUrl,
+        model,
+      },
     } satisfies AnalyzeResponse);
   } catch (e) {
     const code: ErrorCode = e instanceof AnalyzeError ? e.code : "ai_failed";

@@ -5,6 +5,10 @@ import * as cheerio from "cheerio";
 import { AnalyzeError } from "./gemini";
 
 const MAX_HTML_BYTES = 3_000_000;
+/** PDFs go to Gemini as inline data; keep well under its request limit. */
+const MAX_PDF_BYTES = 15_000_000;
+
+type Fetched = { kind: "html"; html: string; finalUrl: URL } | { kind: "pdf"; data: string; finalUrl: URL };
 const FETCH_TIMEOUT_MS = 12_000;
 const UA =
   "Mozilla/5.0 (compatible; KalkanPrivacyBot/1.0; +https://github.com/) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36";
@@ -63,7 +67,7 @@ async function assertPublicHost(url: URL) {
 }
 
 /** Fetches a page server-side (no CORS issues), following redirects manually so each hop is checked. */
-async function fetchHtml(start: URL): Promise<{ html: string; finalUrl: URL }> {
+async function fetchHtml(start: URL): Promise<Fetched> {
   let url = start;
   for (let hop = 0; hop < 5; hop++) {
     await assertPublicHost(url);
@@ -73,7 +77,7 @@ async function fetchHtml(start: URL): Promise<{ html: string; finalUrl: URL }> {
         redirect: "manual",
         headers: {
           "User-Agent": UA,
-          Accept: "text/html,application/xhtml+xml,text/plain;q=0.9,*/*;q=0.5",
+          Accept: "text/html,application/xhtml+xml,application/pdf,text/plain;q=0.9,*/*;q=0.5",
           "Accept-Language": "ru,ky;q=0.9,en;q=0.8",
         },
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
@@ -91,15 +95,23 @@ async function fetchHtml(start: URL): Promise<{ html: string; finalUrl: URL }> {
     if (!res.ok) throw new AnalyzeError("fetch_status", 502);
 
     const type = res.headers.get("content-type") ?? "";
+    const len = Number(res.headers.get("content-length") ?? 0);
+
+    if (/application\/pdf/i.test(type) || (!type && url.pathname.toLowerCase().endsWith(".pdf"))) {
+      if (len > MAX_PDF_BYTES) throw new AnalyzeError("file_too_big", 413);
+      const buf = Buffer.from(await res.arrayBuffer());
+      if (buf.length > MAX_PDF_BYTES) throw new AnalyzeError("file_too_big", 413);
+      return { kind: "pdf", data: buf.toString("base64"), finalUrl: url };
+    }
+
     if (type && !/text\/html|application\/xhtml|text\/plain/i.test(type)) {
       throw new AnalyzeError("not_html", 415);
     }
 
-    const len = Number(res.headers.get("content-length") ?? 0);
     if (len > MAX_HTML_BYTES) throw new AnalyzeError("not_html", 413);
     const buf = await res.arrayBuffer();
     const html = new TextDecoder("utf-8").decode(buf.slice(0, MAX_HTML_BYTES));
-    return { html, finalUrl: url };
+    return { kind: "html", html, finalUrl: url };
   }
   throw new AnalyzeError("fetch_failed", 502);
 }
@@ -156,18 +168,23 @@ function findPolicyLink(html: string, base: URL): URL | null {
   return best;
 }
 
-export async function fetchPolicyText(input: string): Promise<{ text: string; url: string }> {
-  const url = parseUserUrl(input);
-  const { html, finalUrl } = await fetchHtml(url);
-  let text = htmlToText(html);
-  let used = finalUrl;
+export type FetchedPolicy = { text: string; url: string } | { pdf: string; url: string };
 
-  // Looks like a homepage rather than a policy → follow its "Privacy" link once.
+export async function fetchPolicyText(input: string): Promise<FetchedPolicy> {
+  const url = parseUserUrl(input);
+  const first = await fetchHtml(url);
+  if (first.kind === "pdf") return { pdf: first.data, url: first.finalUrl.href };
+
+  let text = htmlToText(first.html);
+  let used = first.finalUrl;
+
+  // Looks like a homepage rather than a policy → follow its "Privacy" link once (it may be a PDF).
   if (policyScore(text) < 5) {
-    const link = findPolicyLink(html, finalUrl);
-    if (link && link.href !== finalUrl.href) {
+    const link = findPolicyLink(first.html, first.finalUrl);
+    if (link && link.href !== first.finalUrl.href) {
       try {
         const second = await fetchHtml(link);
+        if (second.kind === "pdf") return { pdf: second.data, url: second.finalUrl.href };
         const t2 = htmlToText(second.html);
         if (policyScore(t2) > policyScore(text)) {
           text = t2;

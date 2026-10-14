@@ -57,8 +57,16 @@ export interface RedFlag {
   title: string;
   quote: string;
   explanation: string;
+  /** A concrete step the user can take about this flag. */
+  action: string;
   /** Server-side check: the quote really appears in the analysed text. */
   quote_verified?: boolean;
+}
+
+/** One line of "why this score": what the policy says and how many points it adds (+) or removes (−). */
+export interface RiskFactor {
+  factor: string;
+  points: number;
 }
 
 export interface UserRight {
@@ -73,6 +81,8 @@ export interface Report {
   summary: string;
   risk_score: number;
   risk_level: RiskLevel;
+  /** When present, risk_score = BASE_SCORE + sum(points), clamped to 0–100. */
+  risk_factors: RiskFactor[];
   data_categories: DataCategory[];
   other_data: string[];
   third_parties: ThirdParty[];
@@ -97,7 +107,9 @@ export type ErrorCode =
   | "ai_failed"
   | "ai_bad_json"
   | "network"
-  | "static_demo";
+  | "static_demo"
+  | "file_too_big"
+  | "file_type";
 
 export interface AnalyzeMeta {
   source: "live" | "demo-cache";
@@ -115,11 +127,24 @@ export type AnalyzeResponse =
   | { ok: false; error: { code: ErrorCode; status?: number } };
 
 export interface AnalyzeRequest {
-  mode: "url" | "text";
+  mode: "url" | "text" | "file";
   url?: string;
   text?: string;
+  file?: UploadedFile;
   lang: Lang;
   demoId?: DemoId;
 }
+
+/** A PDF or photo of a policy, sent as base64 and read by Gemini directly. */
+export interface UploadedFile {
+  name: string;
+  mime: string;
+  data: string;
+}
+
+export const FILE_MIMES = ["application/pdf", "image/png", "image/jpeg", "image/webp", "image/heic", "image/heif"] as const;
+/** Raw size limit; base64 adds ~33% and Vercel functions accept bodies up to ~4.5 MB. */
+export const MAX_FILE_BYTES = 3 * 1024 * 1024;
+export const BASE_SCORE = 20;
 
 export type DemoId = "social" | "taxi" | "shop";

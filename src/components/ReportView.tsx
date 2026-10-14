@@ -19,6 +19,7 @@ import {
   Info,
   Landmark,
   Languages,
+  Lightbulb,
   MapPin,
   Megaphone,
   PencilLine,
@@ -34,7 +35,7 @@ import { useLang } from "./LangProvider";
 import { Reveal } from "./Reveal";
 import { RiskGauge } from "./RiskGauge";
 import { LetterGenerator } from "./LetterGenerator";
-import type { AnalyzeMeta, CategoryId, Lang, RecipientType, Report, RightId, RiskLevel, TriState } from "@/lib/types";
+import { BASE_SCORE, type AnalyzeMeta, type CategoryId, type Lang, type RecipientType, type Report, type RightId, type RiskLevel, type TriState } from "@/lib/types";
 
 type IconT = React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
 
@@ -128,7 +129,9 @@ export function ReportView({
             </button>
           </Notice>
         )}
-        {meta.source === "demo-cache" && <Notice icon={Info}>{tr.demoCache}</Notice>}
+        {meta.source === "demo-cache" && (
+          <Notice icon={Info}>{meta.fallbackReason === "static_demo" ? tr.demoExample : tr.demoCache}</Notice>
+        )}
         {meta.truncated && (
           <Notice icon={Scissors} tone="warn">
             {tr.truncated(meta.analyzedChars, meta.originalChars)}
@@ -152,6 +155,39 @@ export function ReportView({
             <p className="mt-1.5 text-[17px] leading-relaxed">{r.summary}</p>
           </div>
         </div>
+
+        {r.risk_factors.length > 0 && (
+          <div className="mt-6 border-t border-line pt-5">
+            <h2 className="text-base font-semibold">{tr.factorsTitle}</h2>
+            <ul className="mt-3 space-y-2 text-sm">
+              <li className="flex items-center justify-between gap-3 text-muted">
+                <span>{tr.factorsBase}</span>
+                <span className="tabular-nums font-medium">{BASE_SCORE}</span>
+              </li>
+              {r.risk_factors.map((f, i) => {
+                const up = f.points > 0;
+                return (
+                  <li key={i} className="flex items-center gap-3">
+                    <span className="min-w-0 flex-1 leading-snug">{f.factor}</span>
+                    <span
+                      className={`chip shrink-0 tabular-nums ${up ? "chip-danger" : "chip-no"}`}
+                      aria-label={`${up ? "+" : "−"}${Math.abs(f.points)}`}
+                    >
+                      {up ? "+" : "−"}
+                      {Math.abs(f.points)}
+                    </span>
+                  </li>
+                );
+              })}
+              <li className="flex items-center justify-between gap-3 border-t border-line pt-2 font-semibold">
+                <span>{tr.factorsTotal}</span>
+                <span className="tabular-nums">
+                  {r.risk_score} {tr.of100}
+                </span>
+              </li>
+            </ul>
+          </div>
+        )}
       </section>
 
       {/* data categories */}
@@ -266,6 +302,15 @@ export function ReportView({
                   <div className="min-w-0 flex-1">
                     <h3 className="font-semibold leading-snug">{f.title}</h3>
                     <p className="mt-1.5 leading-relaxed">{f.explanation}</p>
+                    {f.action && (
+                      <div className="mt-3 flex gap-2.5 rounded-xl bg-primary-soft p-3">
+                        <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                        <p className="text-sm leading-snug">
+                          <span className="font-semibold text-primary">{tr.actionLabel}: </span>
+                          {f.action}
+                        </p>
+                      </div>
+                    )}
                     {f.quote && (
                       <figure className="mt-3 rounded-xl bg-subtle p-3">
                         <figcaption className="text-xs font-medium text-muted">{tr.quoteFrom}</figcaption>
