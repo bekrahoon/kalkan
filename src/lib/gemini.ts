@@ -5,6 +5,12 @@ import { NOT_SPECIFIED } from "./normalize";
 /** Current GA Flash model at the time of writing; override with GEMINI_MODEL if Google renames it. */
 export const DEFAULT_MODEL = "gemini-3.8-flash";
 
+/** Tried in order when the main model is overloaded. Override with GEMINI_FALLBACK_MODELS (comma-separated). */
+const FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS || "gemini-3.6-flash,gemini-3.5-flash-lite")
+  .split(",")
+  .map((m) => m.trim())
+  .filter(Boolean);
+
 export class AnalyzeError extends Error {
   constructor(
     public code: ErrorCode,
@@ -181,28 +187,50 @@ export async function analyzeWithGemini(input: PolicyInput, lang: Lang): Promise
     },
   };
 
-  let res: Response;
-  try {
-    res = await fetch(
-      `${(process.env.GEMINI_API_BASE || "https://generativelanguage.googleapis.com").replace(/\/$/, "")}/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(50_000),
-      },
-    );
-  } catch (e) {
-    console.error("[gemini] network error", e);
-    throw new AnalyzeError("ai_failed", 502);
+  // Overloaded (503) or rate-limited (429): retry, then fall back to lighter Flash models.
+  const models = [model, ...FALLBACK_MODELS.filter((m) => m !== model)];
+  const deadline = Date.now() + 52_000;
+  let res: Response | null = null;
+  let usedModel = model;
+  let lastStatus = 0;
+
+  outer: for (const m of models) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const left = deadline - Date.now();
+      if (left < 6_000) break outer;
+      try {
+        const r = await fetch(
+          `${(process.env.GEMINI_API_BASE || "https://generativelanguage.googleapis.com").replace(/\/$/, "")}/v1beta/models/${encodeURIComponent(m)}:generateContent`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+            body: JSON.stringify(body),
+            signal: AbortSignal.timeout(Math.min(left, 40_000)),
+          },
+        );
+        if (r.ok) {
+          res = r;
+          usedModel = m;
+          break outer;
+        }
+        lastStatus = r.status;
+        const detail = await r.text().catch(() => "");
+        console.error(`[gemini] ${m} HTTP ${r.status}`, detail.slice(0, 300));
+        if (r.status === 401 || r.status === 403 || /API key/i.test(detail)) throw new AnalyzeError("no_api_key", 503);
+        if (r.status === 404) continue outer; // model not available for this key → next model
+        if (r.status !== 503 && r.status !== 429 && r.status !== 500) throw new AnalyzeError("ai_failed", 502);
+        if (attempt === 0) await new Promise((ok) => setTimeout(ok, 1_500));
+      } catch (e) {
+        if (e instanceof AnalyzeError) throw e;
+        console.error(`[gemini] ${m} network error`, e);
+        lastStatus = 0;
+      }
+    }
   }
 
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    console.error(`[gemini] HTTP ${res.status}`, detail.slice(0, 500));
-    if (res.status === 429) throw new AnalyzeError("rate_limit", 429);
-    if (res.status === 401 || res.status === 403 || /API key/i.test(detail))
-      throw new AnalyzeError("no_api_key", 503);
+  if (!res) {
+    if (lastStatus === 429) throw new AnalyzeError("rate_limit", 429);
+    if (lastStatus === 503 || lastStatus === 500) throw new AnalyzeError("ai_busy", 503);
     throw new AnalyzeError("ai_failed", 502);
   }
 
@@ -215,7 +243,7 @@ export async function analyzeWithGemini(input: PolicyInput, lang: Lang): Promise
   try {
     // The schema makes Gemini return bare JSON, but strip code fences just in case.
     const cleaned = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/```$/, "");
-    return { json: JSON.parse(cleaned), model };
+    return { json: JSON.parse(cleaned), model: usedModel };
   } catch {
     console.error("[gemini] bad JSON", text.slice(0, 300));
     throw new AnalyzeError("ai_bad_json", 502);

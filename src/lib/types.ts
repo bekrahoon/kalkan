@@ -105,6 +105,7 @@ export type ErrorCode =
   | "too_many_requests"
   | "no_api_key"
   | "ai_failed"
+  | "ai_busy"
   | "ai_bad_json"
   | "network"
   | "static_demo"

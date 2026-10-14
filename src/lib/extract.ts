@@ -84,6 +84,7 @@ async function fetchHtml(start: URL): Promise<Fetched> {
       });
     } catch (e) {
       const name = (e as Error)?.name;
+      console.warn(`[fetch] ${url.hostname}: ${name} ${(e as Error)?.message ?? ""} ${String((e as { cause?: unknown })?.cause ?? "")}`.slice(0, 300));
       throw new AnalyzeError(name === "TimeoutError" ? "fetch_timeout" : "fetch_failed", 502);
     }
 
@@ -92,7 +93,10 @@ async function fetchHtml(start: URL): Promise<Fetched> {
       if (!["http:", "https:"].includes(url.protocol)) throw new AnalyzeError("blocked_url", 400);
       continue;
     }
-    if (!res.ok) throw new AnalyzeError("fetch_status", 502);
+    if (!res.ok) {
+      console.warn(`[fetch] ${url.hostname}: HTTP ${res.status}`);
+      throw new AnalyzeError("fetch_status", 502);
+    }
 
     const type = res.headers.get("content-type") ?? "";
     const len = Number(res.headers.get("content-length") ?? 0);
@@ -180,10 +184,15 @@ async function readViaReader(url: URL): Promise<string | null> {
     const headers: Record<string, string> = { Accept: "text/plain", "X-Return-Format": "text" };
     if (process.env.JINA_API_KEY) headers.Authorization = `Bearer ${process.env.JINA_API_KEY}`;
     const res = await fetch(`https://r.jina.ai/${url.href}`, { headers, signal: AbortSignal.timeout(25_000) });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.warn(`[reader] ${url.hostname}: HTTP ${res.status}`);
+      return null;
+    }
     const text = (await res.text()).replace(/\n{3,}/g, "\n\n").trim();
+    console.info(`[reader] ${url.hostname}: ${text.length} chars`);
     return text.length >= 400 ? text : null;
-  } catch {
+  } catch (e) {
+    console.warn(`[reader] ${url.hostname}: ${(e as Error)?.name}`);
     return null;
   }
 }

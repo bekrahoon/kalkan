@@ -134,7 +134,10 @@ export async function POST(req: Request) {
       if (policy.length < MIN_POLICY_CHARS) return fail("text_too_short", 400);
     }
   } catch (e) {
-    if (e instanceof AnalyzeError) return fail(e.code, e.status);
+    if (e instanceof AnalyzeError) {
+      console.warn(`[analyze] fetch stage: ${e.code}`, mode === "url" ? String(body.url ?? "").slice(0, 200) : mode);
+      return fail(e.code, e.status);
+    }
     console.error("[analyze] fetch stage", e);
     return fail("fetch_failed", 502);
   }
