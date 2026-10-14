@@ -168,11 +168,41 @@ function findPolicyLink(html: string, base: URL): URL | null {
   return best;
 }
 
+/**
+ * Fallback for pages that block simple requests or build their text with JavaScript:
+ * Jina Reader (r.jina.ai) opens the page in a real browser and returns its text.
+ * Free without a key (rate-limited); set JINA_API_KEY for higher limits, READER_FALLBACK=0 to turn it off.
+ */
+async function readViaReader(url: URL): Promise<string | null> {
+  if (process.env.READER_FALLBACK === "0") return null;
+  await assertPublicHost(url);
+  try {
+    const headers: Record<string, string> = { Accept: "text/plain", "X-Return-Format": "text" };
+    if (process.env.JINA_API_KEY) headers.Authorization = `Bearer ${process.env.JINA_API_KEY}`;
+    const res = await fetch(`https://r.jina.ai/${url.href}`, { headers, signal: AbortSignal.timeout(25_000) });
+    if (!res.ok) return null;
+    const text = (await res.text()).replace(/\n{3,}/g, "\n\n").trim();
+    return text.length >= 400 ? text : null;
+  } catch {
+    return null;
+  }
+}
+
 export type FetchedPolicy = { text: string; url: string } | { pdf: string; url: string };
 
 export async function fetchPolicyText(input: string): Promise<FetchedPolicy> {
   const url = parseUserUrl(input);
-  const first = await fetchHtml(url);
+  let first: Fetched;
+  try {
+    first = await fetchHtml(url);
+  } catch (e) {
+    // Blocked for bots or timed out → let a real browser try before giving up.
+    if (e instanceof AnalyzeError && ["fetch_status", "fetch_timeout", "fetch_failed"].includes(e.code)) {
+      const viaReader = await readViaReader(url);
+      if (viaReader) return { text: viaReader, url: url.href };
+    }
+    throw e;
+  }
   if (first.kind === "pdf") return { pdf: first.data, url: first.finalUrl.href };
 
   let text = htmlToText(first.html);
@@ -196,6 +226,11 @@ export async function fetchPolicyText(input: string): Promise<FetchedPolicy> {
     }
   }
 
+  if (text.length < 400 || policyScore(text) < 2) {
+    // Probably rendered by JavaScript: the HTML we got is an empty shell.
+    const viaReader = await readViaReader(used);
+    if (viaReader && viaReader.length > text.length) return { text: viaReader, url: used.href };
+  }
   if (text.length < 400) throw new AnalyzeError("too_little_text", 422);
   return { text, url: used.href };
 }

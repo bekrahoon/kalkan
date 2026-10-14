@@ -184,7 +184,7 @@ export async function analyzeWithGemini(input: PolicyInput, lang: Lang): Promise
   let res: Response;
   try {
     res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+      `${(process.env.GEMINI_API_BASE || "https://generativelanguage.googleapis.com").replace(/\/$/, "")}/v1beta/models/${encodeURIComponent(model)}:generateContent`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-goog-api-key": key },

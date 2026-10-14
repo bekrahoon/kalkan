@@ -20,6 +20,10 @@ import {
   Landmark,
   Languages,
   Lightbulb,
+  Check,
+  Share2,
+  Smartphone,
+  DatabaseZap,
   MapPin,
   Megaphone,
   PencilLine,
@@ -31,11 +35,12 @@ import {
   Wallet,
   Wrench,
 } from "lucide-react";
+import { useState } from "react";
 import { useLang } from "./LangProvider";
 import { Reveal } from "./Reveal";
 import { RiskGauge } from "./RiskGauge";
 import { LetterGenerator } from "./LetterGenerator";
-import { BASE_SCORE, type AnalyzeMeta, type CategoryId, type Lang, type RecipientType, type Report, type RightId, type RiskLevel, type TriState } from "@/lib/types";
+import { BASE_SCORE, type PlayInfo, type AnalyzeMeta, type CategoryId, type Lang, type RecipientType, type Report, type RightId, type RiskLevel, type TriState } from "@/lib/types";
 
 type IconT = React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
 
@@ -98,6 +103,90 @@ function Notice({ icon: Icon, children, tone = "neutral" }: { icon: IconT; child
   );
 }
 
+async function shareText(text: string): Promise<"shared" | "copied" | "failed"> {
+  try {
+    if (typeof navigator.share === "function") {
+      await navigator.share({ text });
+      return "shared";
+    }
+  } catch (e) {
+    if ((e as Error).name === "AbortError") return "failed";
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    return "copied";
+  } catch {
+    return "failed";
+  }
+}
+
+function PlaySection({ play }: { play: PlayInfo }) {
+  const { t } = useLang();
+  const tr = t.report;
+  const list = (items: { data: string; purpose: string }[]) =>
+    items.length ? (
+      <ul className="mt-2 space-y-1.5 text-sm">
+        {items.map((d, i) => (
+          <li key={i} className="leading-snug">
+            <span className="font-medium">{d.data}</span>
+            {d.purpose && <span className="text-muted"> — {d.purpose}</span>}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="mt-2 text-sm text-muted">{tr.playNothing}</p>
+    );
+
+  return (
+    <section className="mt-10" aria-labelledby="sec-play">
+      <h2 id="sec-play" className="mb-1 flex items-center gap-2.5 text-xl font-bold sm:text-2xl">
+        <span className="icon-badge h-9 w-9 bg-primary-soft text-primary">
+          <Smartphone className="h-[18px] w-[18px]" aria-hidden />
+        </span>
+        {tr.playTitle}
+      </h2>
+      <p className="mb-4 text-sm text-muted">
+        {play.title && <strong className="text-fg">{play.title}</strong>}
+        {play.developer && ` · ${play.developer}`}. {tr.playNote}
+      </p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="card p-4">
+          <h3 className="font-semibold">{tr.playShared}</h3>
+          {list(play.shared)}
+        </div>
+        <div className="card p-4">
+          <h3 className="font-semibold">{tr.playCollected}</h3>
+          {list(play.collected)}
+        </div>
+        <div className="card p-4 sm:col-span-2">
+          <h3 className="font-semibold">{tr.playPermissions}</h3>
+          {play.permissions.length ? (
+            <ul className="mt-2 flex flex-wrap gap-1.5">
+              {play.permissions.map((p) => (
+                <li key={p} className="rounded-full bg-subtle px-2.5 py-1 text-xs">
+                  {p}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-2 text-sm text-muted">{tr.playNothing}</p>
+          )}
+          {play.security.length > 0 && (
+            <>
+              <h3 className="mt-4 font-semibold">{tr.playSecurity}</h3>
+              <ul className="mt-1 list-disc pl-5 text-sm text-muted">
+                {play.security.map((x) => (
+                  <li key={x}>{x}</li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function ReportView({
   report: r,
   meta,
@@ -109,10 +198,26 @@ export function ReportView({
   meta: AnalyzeMeta;
   reportLang: Lang;
   onReset: () => void;
-  onRerun: () => void;
+  onRerun?: () => void;
 }) {
   const { t, lang } = useLang();
   const tr = t.report;
+  const [shareState, setShareState] = useState<"idle" | "copied">("idle");
+
+  const onShare = async () => {
+    const lines = [
+      `Калкан: ${tr.about(r.company_name)} — ${tr.level[r.risk_level]} (${r.risk_score}/100)`,
+      r.summary,
+      ...r.red_flags.slice(0, 3).map((f) => `• ${f.title}`),
+      "",
+      `${tr.shareCta} ${typeof location !== "undefined" ? location.origin + location.pathname : ""}`,
+    ];
+    const res = await shareText(lines.join("\n"));
+    if (res === "copied") {
+      setShareState("copied");
+      setTimeout(() => setShareState("idle"), 2200);
+    }
+  };
 
   return (
     <article className="mx-auto max-w-4xl px-4 pb-6 pt-6 sm:pt-10" aria-labelledby="report-title">
@@ -121,7 +226,7 @@ export function ReportView({
       </button>
 
       <div className="mb-5 space-y-2.5">
-        {reportLang !== lang && (
+        {reportLang !== lang && onRerun && (
           <Notice icon={Languages}>
             <span className="flex-1">{tr.otherLang}</span>
             <button type="button" onClick={onRerun} className="btn btn-primary min-h-[38px] px-3 py-1 text-sm">
@@ -129,6 +234,7 @@ export function ReportView({
             </button>
           </Notice>
         )}
+        {meta.cached && <Notice icon={DatabaseZap}>{tr.cached}</Notice>}
         {meta.source === "demo-cache" && (
           <Notice icon={Info}>{meta.fallbackReason === "static_demo" ? tr.demoExample : tr.demoCache}</Notice>
         )}
@@ -188,6 +294,16 @@ export function ReportView({
             </ul>
           </div>
         )}
+
+        <div className="mt-5 flex flex-wrap gap-2 border-t border-line pt-4">
+          <button type="button" onClick={onShare} className="btn btn-secondary min-h-[42px] text-sm">
+            {shareState === "copied" ? <Check className="h-4 w-4" aria-hidden /> : <Share2 className="h-4 w-4" aria-hidden />}
+            {shareState === "copied" ? tr.shared : tr.share}
+          </button>
+          <span aria-live="polite" className="sr-only">
+            {shareState === "copied" ? tr.shared : ""}
+          </span>
+        </div>
       </section>
 
       {/* data categories */}
@@ -228,6 +344,8 @@ export function ReportView({
           </div>
         )}
       </section>
+
+      {meta.play?.available && <PlaySection play={meta.play} />}
 
       {/* third parties + retention */}
       <div className="mt-10 grid gap-10 lg:grid-cols-[1.4fr_1fr]">

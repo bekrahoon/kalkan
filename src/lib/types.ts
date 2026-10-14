@@ -109,7 +109,8 @@ export type ErrorCode =
   | "network"
   | "static_demo"
   | "file_too_big"
-  | "file_type";
+  | "file_type"
+  | "play_no_policy";
 
 export interface AnalyzeMeta {
   source: "live" | "demo-cache";
@@ -118,8 +119,24 @@ export interface AnalyzeMeta {
   analyzedChars: number;
   sourceUrl?: string;
   model?: string;
+  /** Served from the server cache instead of a new AI request. */
+  cached?: boolean;
+  /** Extra facts from Google Play when the link was a Play Store page. */
+  play?: PlayInfo;
   /** Why we fell back to the cached demo report, if we did. */
   fallbackReason?: ErrorCode;
+}
+
+export interface PlayInfo {
+  appId: string;
+  title: string;
+  developer: string;
+  privacyPolicyUrl: string;
+  shared: { data: string; purpose: string; type: string }[];
+  collected: { data: string; purpose: string; type: string }[];
+  security: string[];
+  permissions: string[];
+  available: boolean;
 }
 
 export type AnalyzeResponse =

@@ -6,6 +6,9 @@ import { useLang } from "./LangProvider";
 import { ShieldLogo } from "./ShieldLogo";
 import { LoadingView } from "./LoadingView";
 import { ReportView } from "./ReportView";
+import { HistoryPanel } from "./HistoryPanel";
+import { CompareView } from "./CompareView";
+import { addToHistory, type HistoryItem } from "@/lib/history";
 import { DEMO_IDS, DEMO_TEXTS, getDemoReport } from "@/lib/demo";
 import {
   FILE_MIMES,
@@ -20,7 +23,7 @@ import {
   type UploadedFile,
 } from "@/lib/types";
 
-type Phase = "idle" | "loading" | "report";
+type Phase = "idle" | "loading" | "report" | "compare";
 type Mode = "url" | "text" | "file";
 const MODES: { id: Mode; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "url", icon: Link2 },
@@ -59,8 +62,13 @@ export function Checker() {
   const [url, setUrl] = useState("");
   const [text, setText] = useState("");
   const [error, setError] = useState<ErrorCode | null>(null);
-  const [result, setResult] = useState<{ report: Report; meta: AnalyzeMeta; lang: Lang } | null>(null);
-  const lastReq = useRef<Omit<AnalyzeRequest, "lang"> | null>(null);
+  const [result, setResult] = useState<{
+    report: Report;
+    meta: AnalyzeMeta;
+    lang: Lang;
+    request?: Omit<AnalyzeRequest, "lang">;
+  } | null>(null);
+  const [comparing, setComparing] = useState<[HistoryItem, HistoryItem] | null>(null);
   const abort = useRef<AbortController | null>(null);
   const errorRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
@@ -71,7 +79,6 @@ export function Checker() {
 
   const run = useCallback(
     async (req: Omit<AnalyzeRequest, "lang">, reqLang: Lang = lang) => {
-      lastReq.current = req;
       setError(null);
       setPhase("loading");
       topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -117,7 +124,25 @@ export function Checker() {
       if (ctrl.signal.aborted) return;
 
       if (data.ok) {
-        setResult({ report: data.report, meta: data.meta, lang: reqLang });
+        setResult({ report: data.report, meta: data.meta, lang: reqLang, request: req });
+        let host = "";
+        try {
+          host = req.url ? new URL(/^https?:/i.test(req.url) ? req.url : `https://${req.url}`).hostname : "";
+        } catch {
+          /* not a URL */
+        }
+        addToHistory({
+          lang: reqLang,
+          label: data.report.company_name || data.meta.play?.title || host || req.file?.name || t.hero.tabs.text,
+          report: data.report,
+          meta: data.meta,
+          example: Boolean(req.demoId),
+          request: req.demoId
+            ? { mode: "text", demoId: req.demoId, text: DEMO_TEXTS[req.demoId] }
+            : req.mode === "url"
+              ? { mode: "url", url: req.url }
+              : undefined,
+        });
         setPhase("report");
       } else {
         setError(data.error.code);
@@ -125,8 +150,20 @@ export function Checker() {
       }
       requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
     },
-    [lang],
+    [lang, t],
   );
+
+  const openHistory = (h: HistoryItem) => {
+    setResult({ report: h.report, meta: h.meta, lang: h.lang, request: h.request });
+    setPhase("report");
+    requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
+
+  const openCompare = (a: HistoryItem, b: HistoryItem) => {
+    setComparing([a, b]);
+    setPhase("compare");
+    requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,13 +216,15 @@ export function Checker() {
     <div ref={topRef} className="scroll-mt-20">
       {phase === "loading" && <LoadingView onCancel={cancel} />}
 
+      {phase === "compare" && comparing && <CompareView a={comparing[0]} b={comparing[1]} onBack={reset} />}
+
       {phase === "report" && result && (
         <ReportView
           report={result.report}
           meta={result.meta}
           reportLang={result.lang}
           onReset={reset}
-          onRerun={() => lastReq.current && run(lastReq.current, lang)}
+          onRerun={result.request ? () => result.request && run(result.request, lang) : undefined}
         />
       )}
 
@@ -350,6 +389,8 @@ export function Checker() {
               })}
             </div>
           </div>
+
+          <HistoryPanel onOpen={openHistory} onCompare={openCompare} />
 
           <ol className="mt-10 grid gap-3 sm:grid-cols-3">
             {t.hero.steps.map((s, i) => (
