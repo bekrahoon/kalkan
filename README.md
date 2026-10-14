@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Калкан — кто читает твои данные?
 
-## Getting Started
+ИИ-помощник, который простым языком (на русском и кыргызском) объясняет, что сайт или приложение делает с твоими персональными данными. Проект хакатона «Защита прав человека в эпоху ИИ».
 
-First, run the development server:
+## Запуск
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # вставь GEMINI_API_KEY
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Без ключа приложение тоже работает: кнопки «Пример: …» показывают заранее подготовленные отчёты.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Деплой на Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Залей папку в GitHub-репозиторий и импортируй его в Vercel (фреймворк определится сам).
+2. В Settings → Environment Variables добавь `GEMINI_API_KEY` (и при желании `GEMINI_MODEL`, `DEMO_CACHE_ONLY`).
+3. Deploy.
 
-## Learn More
+## Как устроено
 
-To learn more about Next.js, take a look at the following resources:
+| Что | Где |
+| --- | --- |
+| API: загрузка страницы, извлечение текста, запрос к Gemini | `src/app/api/analyze/route.ts` |
+| Загрузка и очистка HTML (cheerio), защита от внутренних адресов, поиск ссылки «Политика конфиденциальности» на главной | `src/lib/extract.ts` |
+| Промт, JSON-схема ответа, обработка ошибок Gemini | `src/lib/gemini.ts` |
+| Проверка ответа ИИ: уровень риска из балла, валидные категории, сверка цитат с оригиналом | `src/lib/normalize.ts` |
+| Тексты примеров и готовые отчёты (офлайн-резерв) | `src/lib/demo.ts` |
+| Все строки интерфейса RU/KG, шаблон письма об удалении (RU/KG/EN) | `src/lib/i18n.ts` |
+| Страницы «Твои права» и «О проекте», состав команды | `src/content/pages.ts` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Надёжность демо
+- Пример → запрос к Gemini → при любой ошибке (нет ключа, лимит, нет интернета) сервер отдаёт готовый отчёт с пометкой.
+- Если недоступен даже сервер, отчёт берётся прямо из бандла в браузере.
+- `DEMO_CACHE_ONLY=1` — примеры открываются мгновенно, без ИИ.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Ошибки, которые видит пользователь
+Сайт недоступен / долго отвечает / блокирует роботов / отдаёт PDF, слишком короткий текст, длинная политика (обрезается до 60 000 символов с предупреждением), лимит API, нет ключа, нет сети.
 
-## Deploy on Vercel
+## Что проверить команде перед питчем
+- **Кыргызские тексты** (`src/lib/i18n.ts`, `src/lib/demo.ts`, `src/content/pages.ts`) — вычитать носителю языка.
+- **Блок законодательства** на странице «Твои права» помечен как черновик: уточнить формулировки, добавить номера статей, название и контакты уполномоченного органа.
+- **Команда** — заменить заглушки в `TEAM` (`src/content/pages.ts`).
+- Название модели: по умолчанию `gemini-3.8-flash`; если Google переименует — поменять через `GEMINI_MODEL`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Технологии
+Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · cheerio · lucide-react · шрифты Oswald и Inter (Google Fonts, подключены локально через Fontsource — работают без интернета).
