@@ -12,6 +12,8 @@ export interface RatingService {
   query?: string;
   /** Or a direct policy URL. */
   url?: string;
+  /** Rated from a parent's point of view (apps used by children). */
+  forChild?: boolean;
 }
 
 const C = {
@@ -36,8 +38,8 @@ export const RATING_SERVICES: RatingService[] = [
   { id: "mbank", name: "MBANK", category: C.bank, query: "MBANK мобильный банк Кыргызстан" },
   { id: "megacom", name: "MegaCom", category: C.telecom, query: "MegaCom Кыргызстан" },
   { id: "2gis", name: "2ГИС", category: C.maps, appId: "ru.dublgis.dgismobile" },
-  { id: "youtube", name: "YouTube", category: C.kids, appId: "com.google.android.youtube" },
-  { id: "roblox", name: "Roblox", category: C.kids, appId: "com.roblox.client" },
-  { id: "brawl-stars", name: "Brawl Stars", category: C.kids, appId: "com.supercell.brawlstars" },
-  { id: "minecraft", name: "Minecraft", category: C.kids, appId: "com.mojang.minecraftpe" },
+  { id: "youtube", name: "YouTube", category: C.kids, appId: "com.google.android.youtube", forChild: true },
+  { id: "roblox", name: "Roblox", category: C.kids, appId: "com.roblox.client", forChild: true },
+  { id: "brawl-stars", name: "Brawl Stars", category: C.kids, appId: "com.supercell.brawlstars", forChild: true },
+  { id: "minecraft", name: "Minecraft", category: C.kids, appId: "com.mojang.minecraftpe", forChild: true },
 ];

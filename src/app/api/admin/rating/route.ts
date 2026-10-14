@@ -29,7 +29,7 @@ export async function GET(req: Request) {
       if (!appId) throw new AnalyzeError("play_no_policy", 404);
     }
     const url = appId ? `https://play.google.com/store/apps/details?id=${appId}` : service.url!;
-    const { report, meta } = await runAnalysis({ kind: "url", url }, lang);
+    const { report, meta } = await runAnalysis({ kind: "url", url }, lang, service.forChild === true);
     return Response.json({ ok: true, id: service.id, lang, appId, analyzedAt: new Date().toISOString(), report, meta });
   } catch (e) {
     const code = e instanceof AnalyzeError ? e.code : "ai_failed";
