@@ -46,3 +46,7 @@ npm run dev                  # http://localhost:3000
 
 ## Технологии
 Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · cheerio · lucide-react · шрифты Oswald и Inter (Google Fonts, подключены локально через Fontsource — работают без интернета).
+
+## Мобильная демо-версия без сервера
+
+`node mobile-build/build.mjs` собирает один файл `mobile-build/dist/kalkan.html` (примеры, права, письмо, RU/KG). Проверка своих ссылок в нём отключена — для неё нужен деплой с ключом Gemini.

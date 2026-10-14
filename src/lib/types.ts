@@ -96,7 +96,8 @@ export type ErrorCode =
   | "no_api_key"
   | "ai_failed"
   | "ai_bad_json"
-  | "network";
+  | "network"
+  | "static_demo";
 
 export interface AnalyzeMeta {
   source: "live" | "demo-cache";

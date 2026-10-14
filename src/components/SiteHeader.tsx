@@ -21,7 +21,7 @@ export function SiteHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b-[3px] border-black bg-ink/90 backdrop-blur-md">
+    <header className="sticky top-[env(safe-area-inset-top,0px)] z-40 border-b-[3px] border-black bg-ink/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-1 px-4 py-2 sm:py-3">
         <Link href="/" className="group flex items-center gap-2" aria-label="Калкан">
           <ShieldLogo size={30} />

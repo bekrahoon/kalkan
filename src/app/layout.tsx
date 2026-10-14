@@ -33,7 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <LangProvider>
           <CityBackdrop />
           <SiteHeader />
-          <main id="main" className="flex-1">
+          <main id="main" className="relative z-[1] flex-1">
             {children}
           </main>
           <SiteFooter />

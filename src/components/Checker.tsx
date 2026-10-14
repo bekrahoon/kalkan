@@ -11,6 +11,7 @@ import type { AnalyzeMeta, AnalyzeRequest, AnalyzeResponse, DemoId, ErrorCode, L
 
 type Phase = "idle" | "loading" | "report";
 const MIN_LOADING_MS = 2600;
+const STATIC_DEMO = process.env.NEXT_PUBLIC_KALKAN_STATIC === "1";
 const DEMO_ICONS: Record<DemoId, React.ComponentType<{ className?: string }>> = {
   social: Users,
   taxi: Car,
@@ -47,7 +48,16 @@ export function Checker() {
       const wait = () => new Promise((r) => setTimeout(r, Math.max(0, MIN_LOADING_MS - (Date.now() - started))));
 
       let data: AnalyzeResponse;
-      try {
+      if (STATIC_DEMO) {
+        // Serverless phone demo: examples come from the bundle, everything else needs the real deploy.
+        data = req.demoId
+          ? {
+              ok: true,
+              report: getDemoReport(req.demoId, reqLang),
+              meta: { source: "demo-cache", truncated: false, originalChars: 0, analyzedChars: 0, fallbackReason: "static_demo" },
+            }
+          : { ok: false, error: { code: "static_demo" } };
+      } else try {
         const res = await fetch("/api/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
