@@ -4,7 +4,7 @@ import { reportCount } from "../reports";
 import { VERDICT_RANK, type CheckResult, type Indicator, type Lang, type Signal, type Verdict } from "../types";
 import { aiForMessage } from "./ai-verdict";
 import { checkApp, parsePlayUrl } from "./app";
-import { checkLink, mergeVerdicts, sortSignals } from "./link";
+import { checkLink, isRestated, mergeVerdicts, sortSignals } from "./link";
 import { checkPhone, findPhones, looksLikePhone, normalizePhone, phoneIndicator } from "./phone";
 import { getDomain } from "tldts";
 import { brandForDomain } from "./official";
@@ -91,7 +91,8 @@ async function checkMessage(text: string, image: { mime: string; data: string } 
   const phoneIndicators = phones.map(phoneIndicator);
   const phoneCounts = await Promise.all(phoneIndicators.map((i) => reportCount([i])));
 
-  const signals: Signal[] = [...(ai?.signals ?? [])];
+  // Technical findings first; AI findings only if they add something new.
+  const signals: Signal[] = [];
   for (const q of qr) {
     if (!/^https?:\/\//i.test(q)) {
       signals.push({ level: "info", text: t.qrText(q.slice(0, 80)) });
@@ -112,6 +113,7 @@ async function checkMessage(text: string, image: { mime: string; data: string } 
   phoneIndicators.forEach((p, i) => {
     if (phoneCounts[i] > 0) signals.push({ level: phoneCounts[i] >= 3 ? "bad" : "warn", text: t.phoneInMessage(p.display, phoneCounts[i]) });
   });
+  for (const s of ai?.signals ?? []) if (!isRestated(s.text, signals)) signals.push(s);
 
   const risky: Verdict[] = links.map((l) => l.verdict).filter((v) => v === "danger" || v === "suspicious");
   if (phoneCounts.some((c) => c >= 3)) risky.push("danger");

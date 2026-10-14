@@ -98,13 +98,15 @@ async function ask(system: string, parts: GeminiPart[], lang: Lang, budgetMs: nu
   }
 }
 
-const RULES = `You are Kalkan, an anti-fraud assistant for people in Kyrgyzstan (Bishkek, regions). Be concrete and calm, address the reader informally ("ты"/"сен").
+const RULES_BASE = `You are Kalkan, an anti-fraud assistant for people in Kyrgyzstan (Bishkek, regions). Be concrete and calm, address the reader informally ("ты"/"сен").
 Verdicts: danger = clear signs of fraud; suspicious = worrying signs, be careful; safe = looks legitimate (never promise 100%); unknown = not enough information.
 Never invent facts that are not in the input. Never claim a site is official unless the input says so. If the technical facts say "official site", do not call it fraud because of normal login or payment forms.
 Real banks, Telegram and government bodies never ask for SMS codes, CVV or passwords by phone or messenger.`;
+const today = () => new Date().toISOString().slice(0, 10);
 
 export async function aiForLink(facts: Record<string, unknown>, lang: Lang, budgetMs: number): Promise<AiVerdict> {
-  const system = `${RULES}
+  const system = `${RULES_BASE}
+Today is ${today()}: do not call recent dates "future" dates.
 Task: judge one web link using the technical facts collected by our server and the text of the page.
 ${SCHEME_GUIDE}
 Write all human-readable fields in ${langName(lang)}. Leave urls and phones empty.`;
@@ -123,7 +125,8 @@ export async function aiForMessage(
   budgetMs: number,
   qr: string[] = [],
 ): Promise<AiVerdict> {
-  const system = `${RULES}
+  const system = `${RULES_BASE}
+Today is ${today()}: do not call recent dates "future" dates.
 Task: the user received a message (or a screenshot of a chat, SMS, e-mail, website or call screen) or a document, and asks whether it is a scam or a fake.
 Judge the message itself: who writes, what they want, pressure, requests for codes/cards/money, links.
 List every link and phone number you see in urls and phones exactly as written. Links will be checked separately by our server.
@@ -140,7 +143,8 @@ Write all human-readable fields in ${langName(lang)}.`;
 
 export async function aiForFacts(kind: "app" | "phone", facts: Record<string, unknown>, lang: Lang, budgetMs: number): Promise<AiVerdict> {
   const what = kind === "app" ? "one Android app from Google Play (facts from its store page and requested permissions)" : "one phone number";
-  const system = `${RULES}
+  const system = `${RULES_BASE}
+Today is ${today()}: do not call recent dates "future" dates.
 Task: judge ${what} using only the facts given.
 ${SCHEME_GUIDE}
 Write all human-readable fields in ${langName(lang)}. Leave urls and phones empty.`;
@@ -150,15 +154,17 @@ Write all human-readable fields in ${langName(lang)}. Leave urls and phones empt
 const LAT2CYR: Record<string, string> = {
   a: "а", b: "б", c: "с", d: "д", e: "е", f: "ф", g: "г", h: "х", i: "и", j: "ж", k: "к", l: "л", m: "м",
   n: "н", o: "о", p: "р", r: "р", s: "с", t: "т", u: "у", v: "в", w: "в", x: "х", y: "у", z: "з",
+  // Arabic letters the model sometimes slips into Kyrgyz words ("Жалغان").
+  "غ": "г", "ق": "к", "ك": "к", "ا": "а", "ن": "н",
 };
 /** The model sometimes slips Latin letters into Cyrillic words ("Расmiй"): fix words that mix both scripts. */
 export function fixMixedScript(text: string): string {
-  return text.replace(/[\p{L}]+/gu, (w) => {
+  return text.replace(/[\p{L}\p{M}]+/gu, (w) => {
     // Brand + Kyrgyz suffix ("Telegramга") starts with Latin and is fine; a Cyrillic word with Latin inside is not.
-    if (!/^[а-яёөүң]/i.test(w) || !/[a-z]/i.test(w)) return w;
-    return w.replace(/[a-z]/gi, (ch) => {
+    if (!/^[а-яёөүң]/i.test(w) || !/[a-z\u0600-\u06ff]/i.test(w)) return w;
+    return w.replace(/[a-z\u0600-\u06ff]/gi, (ch) => {
       const c = LAT2CYR[ch.toLowerCase()] ?? ch;
-      return ch === ch.toUpperCase() ? c.toUpperCase() : c;
+      return /[A-Z]/.test(ch) ? c.toUpperCase() : c;
     });
   });
 }
