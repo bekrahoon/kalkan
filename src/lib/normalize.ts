@@ -163,3 +163,39 @@ export function normalizeReport(raw: unknown, lang: Lang, sourceText?: string): 
     user_rights,
   };
 }
+
+/** Takes the translated texts, but every number, enum, quote and verification flag from the original report. */
+export function mergeTranslation(source: Report, translatedRaw: unknown, lang: Lang): Report {
+  const tr = normalizeReport(translatedRaw, lang);
+  const byIndex = <T,>(arr: T[], i: number): T | undefined => arr[i];
+  return {
+    ...source,
+    summary: tr.summary || source.summary,
+    risk_factors: source.risk_factors.map((f, i) => ({ ...f, factor: byIndex(tr.risk_factors, i)?.factor || f.factor })),
+    data_categories: source.data_categories.map((c) => ({
+      ...c,
+      details: tr.data_categories.find((x) => x.category === c.category)?.details || c.details,
+    })),
+    other_data: source.other_data.map((o, i) => byIndex(tr.other_data, i) || o),
+    third_parties: source.third_parties.map((p, i) => ({
+      ...p,
+      recipient: byIndex(tr.third_parties, i)?.recipient || p.recipient,
+      purpose: byIndex(tr.third_parties, i)?.purpose || p.purpose,
+    })),
+    retention: {
+      ...source.retention,
+      period: tr.retention.period || source.retention.period,
+      how_to_delete: tr.retention.how_to_delete || source.retention.how_to_delete,
+    },
+    red_flags: source.red_flags.map((f, i) => ({
+      ...f,
+      title: byIndex(tr.red_flags, i)?.title || f.title,
+      explanation: byIndex(tr.red_flags, i)?.explanation || f.explanation,
+      action: byIndex(tr.red_flags, i)?.action || f.action,
+    })),
+    user_rights: source.user_rights.map((u) => ({
+      ...u,
+      details: tr.user_rights.find((x) => x.right === u.right)?.details || u.details,
+    })),
+  };
+}

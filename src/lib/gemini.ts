@@ -156,17 +156,11 @@ interface GeminiResult {
 export type PolicyInput = { text: string } | { mime: string; data: string };
 
 export async function analyzeWithGemini(input: PolicyInput, lang: Lang): Promise<GeminiResult> {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) throw new AnalyzeError("no_api_key", 503);
-  const model = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
-
-  const body = {
-    systemInstruction: { parts: [{ text: systemPrompt(lang) }] },
-    contents: [
-      {
-        role: "user",
-        parts:
-          "text" in input
+  return generateReportJson(systemPrompt(lang), [
+    {
+      role: "user",
+      parts:
+        "text" in input
             ? [
                 {
                   text: `Analyse this privacy policy and return the JSON report.\n\n<<<POLICY_TEXT\n${input.text}\nPOLICY_TEXT>>>`,
@@ -178,8 +172,31 @@ export async function analyzeWithGemini(input: PolicyInput, lang: Lang): Promise
                   text: "The attached file (PDF or photo/screenshot) contains the privacy policy. Read all of its text and return the JSON report. Quotes must be copied verbatim from the document.",
                 },
               ],
-      },
-    ],
+    },
+  ]);
+}
+
+/**
+ * Translates a finished report into another interface language without re-analysing the policy,
+ * so both languages show exactly the same score, factors and quotes.
+ */
+export async function translateReportWithGemini(report: unknown, lang: Lang): Promise<GeminiResult> {
+  const langName = lang === "ky" ? "Kyrgyz (кыргыз тили, Cyrillic script)" : "Russian";
+  const sys = `You translate a privacy-policy report (JSON) into ${langName} for ordinary people.
+Rules: return the same JSON structure. Translate every human-readable text field naturally and simply (address the reader informally).
+Do NOT change: numbers (risk_score, points), enum values, booleans, company_name, contact_email, and every red_flags[].quote (quotes stay in the original language, verbatim).
+Keep the same number and order of items in every array.`;
+  return generateReportJson(sys, [{ role: "user", parts: [{ text: JSON.stringify(report) }] }]);
+}
+
+async function generateReportJson(system: string, contents: unknown[]): Promise<GeminiResult> {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new AnalyzeError("no_api_key", 503);
+  const model = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
+
+  const body = {
+    systemInstruction: { parts: [{ text: system }] },
+    contents,
     generationConfig: {
       temperature: 0.2,
       responseMimeType: "application/json",
