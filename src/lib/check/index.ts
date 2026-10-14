@@ -6,6 +6,9 @@ import { aiForMessage } from "./ai-verdict";
 import { checkApp, parsePlayUrl } from "./app";
 import { checkLink, mergeVerdicts, sortSignals } from "./link";
 import { checkPhone, findPhones, looksLikePhone, normalizePhone, phoneIndicator } from "./phone";
+import { getDomain } from "tldts";
+import { brandForDomain } from "./official";
+import { readQr } from "./qr";
 import { TX } from "./texts";
 
 export interface CheckInput {
@@ -63,10 +66,15 @@ async function checkMessage(text: string, image: { mime: string; data: string } 
   };
   textUrls.forEach(startLink);
 
+  // QR codes on documents and receipts: where they lead matters most, so they are checked first.
+  const qr = image ? readQr(image.mime, image.data) : [];
+  const qrUrls = qr.filter((q) => /^https?:\/\//i.test(q));
+  qrUrls.forEach(startLink);
+
   let ai: Awaited<ReturnType<typeof aiForMessage>> | null = null;
   let aiError: unknown = null;
   try {
-    ai = await aiForMessage(text, image, lang, 30_000);
+    ai = await aiForMessage(text, image, lang, 30_000, qr);
   } catch (e) {
     aiError = e;
   }
@@ -84,6 +92,20 @@ async function checkMessage(text: string, image: { mime: string; data: string } 
   const phoneCounts = await Promise.all(phoneIndicators.map((i) => reportCount([i])));
 
   const signals: Signal[] = [...(ai?.signals ?? [])];
+  for (const q of qr) {
+    if (!/^https?:\/\//i.test(q)) {
+      signals.push({ level: "info", text: t.qrText(q.slice(0, 80)) });
+      continue;
+    }
+    try {
+      const host = new URL(q).hostname.toLowerCase();
+      const reg = getDomain(host) ?? host;
+      const official = host.endsWith(".gov.kg") || host === "gov.kg" || Boolean(brandForDomain(reg));
+      signals.push({ level: official ? "good" : "warn", text: official ? t.qrOfficial(host) : t.qrOther(host) });
+    } catch {
+      /* not a valid URL */
+    }
+  }
   for (const l of links) {
     if (l.verdict !== "safe") signals.push({ level: l.verdict === "danger" ? "bad" : l.verdict === "suspicious" ? "warn" : "info", text: t.linkInMessage(l.subject, l.verdict) });
   }
@@ -99,16 +121,25 @@ async function checkMessage(text: string, image: { mime: string; data: string } 
   const aiMatches = ai && ai.verdict === verdict;
 
   const indicators: Indicator[] = [...links.flatMap((l) => l.indicators), ...phoneIndicators];
+  const doc = ai?.doc.isDocument ? ai.doc : null;
+  const facts = doc
+    ? [
+        ...(doc.type ? [{ label: t.f.docType, value: doc.type }] : []),
+        ...(doc.issuer ? [{ label: t.f.issuer, value: doc.issuer }] : []),
+        ...qr.map((q) => ({ label: t.f.qr, value: q.length > 90 ? `${q.slice(0, 87)}…` : q })),
+      ]
+    : [];
   return {
-    kind: "message",
+    kind: doc ? "document" : "message",
+    verify: doc?.verifyHow || undefined,
     verdict,
     title: (aiMatches ? ai!.title : "") || t.titles[verdict],
     summary: (ai && (aiMatches || VERDICT_RANK[ai.verdict] >= VERDICT_RANK.suspicious) ? ai.summary : "") || t.summaries[verdict],
-    subject: image ? t.subject.screenshot : t.subject.message,
+    subject: doc ? doc.type || t.subject.document : image ? t.subject.screenshot : t.subject.message,
     scheme: verdict === "safe" ? null : (ai?.scheme ?? links.find((l) => l.scheme)?.scheme ?? null),
     signals: sortSignals(signals),
     advice: (aiMatches && ai!.advice.length ? ai!.advice : t.advice[verdict]),
-    facts: [],
+    facts,
     indicators,
     reports: phoneCounts.reduce((a, b) => a + b, 0) + links.reduce((a, l) => a + l.reports, 0),
     links,

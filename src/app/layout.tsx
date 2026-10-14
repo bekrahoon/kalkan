@@ -4,6 +4,7 @@ import "./globals.css";
 import { LangProvider } from "@/components/LangProvider";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { ConsentModal } from "@/components/Consent";
 
 export const metadata: Metadata = {
   title: "Калкан — проверь, прежде чем нажать",
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f5f7fa" },
+    { media: "(prefers-color-scheme: light)", color: "#f4f6fa" },
     { media: "(prefers-color-scheme: dark)", color: "#12161d" },
   ],
   width: "device-width",
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             {children}
           </main>
           <SiteFooter />
+          <ConsentModal />
         </LangProvider>
       </body>
     </html>

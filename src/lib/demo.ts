@@ -5,11 +5,12 @@ import type { CheckResult, DemoId, Lang } from "./types";
  * The domains are made up for the demo.
  */
 
-export const DEMO_IDS: DemoId[] = ["bank", "voting", "real"];
+export const DEMO_IDS: DemoId[] = ["bank", "voting", "fine", "real"];
 
 export const DEMO_INPUTS: Record<DemoId, string> = {
   bank: "https://mbank-bonus.top/login",
   voting: "Привет! Проголосуй, пожалуйста, за мою племянницу в конкурсе, очень нужно 🙏 https://golos-konkurs.online/vote",
+  fine: "📄 Пример: «Постановление о штрафе» с оплатой на карту инспектора",
   real: "https://optimabank.kg",
 };
 
@@ -17,7 +18,7 @@ export const isDemoId = (v: unknown): v is DemoId => typeof v === "string" && (D
 
 const base = { indicators: [] as CheckResult["indicators"], reports: 0, links: [] as CheckResult[], demo: true };
 
-const RU: Record<DemoId, CheckResult> = {
+const RU = {
   bank: {
     ...base,
     kind: "link",
@@ -99,7 +100,31 @@ const RU: Record<DemoId, CheckResult> = {
   },
 };
 
-const KY: Record<DemoId, CheckResult> = {
+const RU_FINE: CheckResult = {
+  ...base,
+  kind: "document",
+  lang: "ru",
+  verdict: "danger",
+  title: "Поддельное постановление о штрафе",
+  summary: "Настоящие штрафы не оплачивают переводом на карту инспектора и не решают через WhatsApp. Это схема от имени госорганов.",
+  subject: "Постановление о штрафе",
+  scheme: "fake_gov",
+  signals: [
+    { level: "bad", text: "Оплату просят перевести на личную карту «инспектора»." },
+    { level: "bad", text: "Угрожают уголовным делом и тройным штрафом, если не заплатить за 24 часа." },
+    { level: "warn", text: "Связь только через WhatsApp с мобильного номера, а не через официальный телефон." },
+    { level: "warn", text: "QR-код ведёт не на официальный госсайт, а на shtraf-mvd-kg.online." },
+  ],
+  advice: ["Ничего не переводи по этому документу.", "Не звони и не пиши на номер из документа.", "Предупреди близких: такие «штрафы» рассылают многим."],
+  facts: [
+    { label: "Тип документа", value: "Постановление о штрафе" },
+    { label: "От кого", value: "«Министерство внутренних дел»" },
+    { label: "QR-код", value: "https://shtraf-mvd-kg.online/check?id=4471" },
+  ],
+  verify: "Проверь штрафы на официальном портале госуслуг или позвони в милицию по номеру с официального сайта МВД. Настоящий штраф оплачивается через банк или терминал по реквизитам госоргана.",
+};
+
+const KY = {
   bank: {
     ...RU.bank,
     lang: "ky",
@@ -164,6 +189,32 @@ const KY: Record<DemoId, CheckResult> = {
   },
 };
 
+const KY_FINE: CheckResult = {
+  ...RU_FINE,
+  lang: "ky",
+  title: "Айып боюнча жасалма токтом",
+  summary: "Чыныгы айыптар инспектордун картасына которуу менен төлөнбөйт жана WhatsApp аркылуу чечилбейт. Бул мамлекеттик органдардын атынан схема.",
+  subject: "Айып боюнча токтом",
+  signals: [
+    { level: "bad", text: "Төлөмдү «инспектордун» жеке картасына которууну сурашат." },
+    { level: "bad", text: "24 саатта төлөбөсөң, кылмыш иши жана үч эсе айып менен коркутушат." },
+    { level: "warn", text: "Расмий телефон аркылуу эмес, мобилдик номерден WhatsApp аркылуу гана байланыш." },
+    { level: "warn", text: "QR-код расмий мамлекеттик сайтка эмес, shtraf-mvd-kg.online дарегине алып барат." },
+  ],
+  advice: ["Бул документ боюнча эч нерсе которбо.", "Документтеги номерге чалба жана жазба.", "Жакындарыңды эскерт: мындай «айыптарды» көп адамга жөнөтүшөт."],
+  facts: [
+    { label: "Документтин түрү", value: "Айып боюнча токтом" },
+    { label: "Кимден", value: "«Ички иштер министрлиги»" },
+    { label: "QR-код", value: "https://shtraf-mvd-kg.online/check?id=4471" },
+  ],
+  verify: "Айыптарды мамлекеттик кызматтардын расмий порталынан текшер же ИИМдин расмий сайтындагы номерге чал. Чыныгы айып банк же терминал аркылуу мамлекеттик органдын реквизиттери боюнча төлөнөт.",
+};
+
+const ALL: Record<Lang, Record<DemoId, CheckResult>> = {
+  ru: { ...(RU as Record<Exclude<DemoId, "fine">, CheckResult>), fine: RU_FINE },
+  ky: { ...(KY as Record<Exclude<DemoId, "fine">, CheckResult>), fine: KY_FINE },
+};
+
 export function getDemoResult(id: DemoId, lang: Lang): CheckResult {
-  return (lang === "ky" ? KY : RU)[id];
+  return ALL[lang][id];
 }

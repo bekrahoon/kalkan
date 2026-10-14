@@ -1,21 +1,23 @@
 @import "tailwindcss";
 
-/* Calm, simple look: soft neutral background, white cards, one sea-green accent.
+/* Calm, simple look: soft neutral background, white cards, one blue accent. Green only means "safe".
    Amber = "collected / be careful", red = only for red flags. Light by default, dark follows the system. */
 :root {
-  --bg: #f5f7fa;
+  --bg: #f4f6fa;
   --surface: #ffffff;
   --subtle: #eef2f6;
   --line: #e1e6ed;
   --fg: #1d2433;
   --muted: #5e6878;
-  --primary: #1f8a7a;
-  --primary-hover: #187264;
-  --primary-soft: #e3f3f0;
+  --primary: #1f5fd6;
+  --primary-hover: #194eb4;
+  --primary-soft: #e8effc;
   --on-primary: #ffffff;
   --warn: #9a6212;
   --warn-soft: #fdf1dc;
   --meter-medium: #e3a52e;
+  --ok: #1e8a52;
+  --ok-soft: #e3f4ea;
   --danger: #c0392f;
   --danger-soft: #fbeae8;
   --shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 4px 16px rgba(16, 24, 40, 0.04);
@@ -30,13 +32,15 @@
     --line: #2c3542;
     --fg: #e7ecf2;
     --muted: #9aa5b4;
-    --primary: #4cc2ae;
-    --primary-hover: #66d0be;
-    --primary-soft: #17332e;
-    --on-primary: #0d1b18;
+    --primary: #6ea4ff;
+    --primary-hover: #8db8ff;
+    --primary-soft: #172640;
+    --on-primary: #0b1424;
     --warn: #e7b45a;
     --warn-soft: #3a2e17;
     --meter-medium: #e7b45a;
+    --ok: #4cc38a;
+    --ok-soft: #16301f;
     --danger: #ef7a71;
     --danger-soft: #3d1f1d;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -50,14 +54,16 @@
   --line: #2c3542;
   --fg: #e7ecf2;
   --muted: #9aa5b4;
-  --primary: #4cc2ae;
-  --primary-hover: #66d0be;
-  --primary-soft: #17332e;
-  --on-primary: #0d1b18;
+  --primary: #6ea4ff;
+  --primary-hover: #8db8ff;
+  --primary-soft: #172640;
+  --on-primary: #0b1424;
   --warn: #e7b45a;
   --warn-soft: #3a2e17;
   --meter-medium: #e7b45a;
-  --danger: #ef7a71;
+  --ok: #4cc38a;
+    --ok-soft: #16301f;
+    --danger: #ef7a71;
   --danger-soft: #3d1f1d;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   color-scheme: dark;
@@ -75,6 +81,8 @@
   --color-on-primary: var(--on-primary);
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;

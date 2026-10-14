@@ -12,6 +12,7 @@ export interface AiVerdict {
   advice: string[];
   urls: string[];
   phones: string[];
+  doc: { isDocument: boolean; type: string; issuer: string; verifyHow: string };
 }
 
 const SCHEMA = {
@@ -33,8 +34,19 @@ const SCHEMA = {
     advice: { type: "ARRAY", description: "2–4 concrete next steps, imperative, short.", items: { type: "STRING" } },
     urls: { type: "ARRAY", description: "Every web link visible in the message or image (empty if none).", items: { type: "STRING" } },
     phones: { type: "ARRAY", description: "Phone numbers visible in the message or image (empty if none).", items: { type: "STRING" } },
+    document: {
+      type: "OBJECT",
+      description: "Only for documents (contract, certificate, letter, summons, fine, invoice, receipt, statement…).",
+      properties: {
+        is_document: { type: "BOOLEAN" },
+        doc_type: { type: "STRING", description: "Short type, e.g. 'Повестка', 'Кредитный договор', 'Чек об оплате'. Empty if not a document." },
+        issuer: { type: "STRING", description: "Organisation the document claims to come from, or empty." },
+        verify_how: { type: "STRING", description: "1–2 sentences: how to verify this document officially. Empty if not a document." },
+      },
+      required: ["is_document", "doc_type", "issuer", "verify_how"],
+    },
   },
-  required: ["verdict", "title", "summary", "scheme", "signals", "advice", "urls", "phones"],
+  required: ["verdict", "title", "summary", "scheme", "signals", "advice", "urls", "phones", "document"],
 };
 
 const SCHEME_GUIDE = `Schemes (pick the closest or "none"):
@@ -99,17 +111,30 @@ Write all human-readable fields in ${langName(lang)}. Leave urls and phones empt
   return ask(system, [{ text: JSON.stringify(facts) }], lang, budgetMs);
 }
 
-export async function aiForMessage(text: string, image: { mime: string; data: string } | null, lang: Lang, budgetMs: number): Promise<AiVerdict> {
+const DOCUMENT_RULES = `If the content is a DOCUMENT (contract, certificate/справка, court or police letter, summons/повестка, fine/штраф, invoice, receipt/чек, bank statement, loan approval, power of attorney, letter on letterhead), set document.is_document=true and judge it for signs of forgery or fraud:
+requests to pay to a personal card, by a link or in crypto; urgency and threats; missing or odd official details (full organisation name, address, registration numbers, signature, stamp); contacts via messengers or personal mobile numbers; spelling and grammar mistakes in official text; inconsistent dates, sums or names; a QR code that does not lead to an official domain (*.gov.kg or the organisation's own site).
+You can NOT confirm from an image that a document is genuine: never say it is authentic. At best say no signs of forgery were found (verdict safe) and explain in verify_how exactly how to verify it officially (call the organisation using the number from its official website, check on the official portal, visit in person).
+Never repeat personal data from the document (passport or ID numbers, private addresses, birth dates) in your answer.`;
+
+export async function aiForMessage(
+  text: string,
+  image: { mime: string; data: string } | null,
+  lang: Lang,
+  budgetMs: number,
+  qr: string[] = [],
+): Promise<AiVerdict> {
   const system = `${RULES}
-Task: the user received a message (or a screenshot of a chat, SMS, e-mail, website or call screen) and asks whether it is a scam.
+Task: the user received a message (or a screenshot of a chat, SMS, e-mail, website or call screen) or a document, and asks whether it is a scam or a fake.
 Judge the message itself: who writes, what they want, pressure, requests for codes/cards/money, links.
 List every link and phone number you see in urls and phones exactly as written. Links will be checked separately by our server.
-If the content is an ordinary harmless message, say safe; if it is not a message at all or unreadable, say unknown.
+If the content is an ordinary harmless message, say safe; if it is unreadable, say unknown.
+${DOCUMENT_RULES}
 ${SCHEME_GUIDE}
 Write all human-readable fields in ${langName(lang)}.`;
   const parts: GeminiPart[] = [];
   if (image) parts.push({ inlineData: { mimeType: image.mime, data: image.data } });
-  parts.push({ text: text ? `<<<MESSAGE\n${text.slice(0, 6000)}\nMESSAGE>>>` : "Check the attached screenshot." });
+  parts.push({ text: text ? `<<<MESSAGE\n${text.slice(0, 6000)}\nMESSAGE>>>` : "Check the attached file." });
+  if (qr.length) parts.push({ text: `QR code(s) decoded by our server from the image: ${qr.join(" | ")}` });
   return ask(system, parts, lang, budgetMs);
 }
 
@@ -159,5 +184,11 @@ function clean(j: Record<string, unknown>): AiVerdict {
     advice: list(j.advice, 4, 240),
     urls: raw(j.urls, 5, 500),
     phones: raw(j.phones, 5, 40),
+    doc: {
+      isDocument: Boolean((j.document as Record<string, unknown> | undefined)?.is_document),
+      type: s((j.document as Record<string, unknown> | undefined)?.doc_type, 80),
+      issuer: s((j.document as Record<string, unknown> | undefined)?.issuer, 120),
+      verifyHow: s((j.document as Record<string, unknown> | undefined)?.verify_how, 400),
+    },
   };
 }

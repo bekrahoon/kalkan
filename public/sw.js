@@ -1,6 +1,6 @@
 // Kalkan service worker: makes the site installable and shows a friendly page when offline.
 // Pages and the API always go to the network — reports must never come from a stale cache.
-const OFFLINE = "kalkan-offline-v1";
+const OFFLINE = "kalkan-offline-v2";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(OFFLINE).then((c) => c.addAll(["/offline.html", "/icon-192.png"])));

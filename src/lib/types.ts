@@ -5,7 +5,7 @@ export type Verdict = "danger" | "suspicious" | "safe" | "unknown";
 export const VERDICT_RANK: Record<Verdict, number> = { safe: 0, unknown: 1, suspicious: 2, danger: 3 };
 export const VERDICTS = ["danger", "suspicious", "safe", "unknown"] as const;
 
-export type CheckKind = "link" | "message" | "app" | "phone";
+export type CheckKind = "link" | "message" | "app" | "phone" | "document";
 
 /** One reason behind the verdict. bad = clear sign of fraud, warn = be careful, good = reassuring fact. */
 export type SignalLevel = "bad" | "warn" | "good" | "info";
@@ -67,6 +67,8 @@ export interface CheckResult {
   demo?: boolean;
   /** The AI part failed, the verdict is based on technical checks only. */
   aiSkipped?: boolean;
+  /** Documents: how to verify officially (we never confirm authenticity ourselves). */
+  verify?: string;
 }
 
 export type ErrorCode =
@@ -100,9 +102,9 @@ export interface UploadedImage {
   data: string;
 }
 
-export const IMAGE_MIMES = ["image/png", "image/jpeg", "image/webp", "image/heic", "image/heif"] as const;
+export const IMAGE_MIMES = ["image/png", "image/jpeg", "image/webp", "image/heic", "image/heif", "application/pdf"] as const;
 /** Raw size limit; base64 adds ~33% and Vercel functions accept bodies up to ~4.5 MB. */
 export const MAX_FILE_BYTES = 3 * 1024 * 1024;
 export const MAX_TEXT_CHARS = 6000;
 
-export type DemoId = "bank" | "voting" | "real";
+export type DemoId = "bank" | "voting" | "fine" | "real";

@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AlertCircle, ClipboardPaste, ImagePlus, Link2, MessageSquareText, Phone, Send, Smartphone, X } from "lucide-react";
+import { AlertCircle, ClipboardPaste, FileText, Link2, MessageSquareText, Paperclip, Send, Smartphone, X } from "lucide-react";
 import { InstallCard } from "./PwaSetup";
+import { ConsentDeclined, readConsentNow, setConsent, useConsent } from "./Consent";
 import { useLang } from "./LangProvider";
 import { ShieldLogo } from "./ShieldLogo";
 import { LoadingView } from "./LoadingView";
@@ -18,7 +19,7 @@ type Req = { text?: string; image?: UploadedImage; demoId?: DemoId };
 
 const MIN_LOADING_MS = 1400;
 const STATIC_DEMO = process.env.NEXT_PUBLIC_KALKAN_STATIC === "1";
-const WHAT_ICONS = [Link2, MessageSquareText, Phone, Smartphone];
+const WHAT_ICONS = [Link2, MessageSquareText, FileText, Smartphone];
 
 function readAsDataUrl(f: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -32,6 +33,11 @@ function readAsDataUrl(f: Blob): Promise<string> {
 /** Screenshots are often large PNGs: shrink to a JPEG the server and the AI read just as well. */
 async function prepareImage(f: File): Promise<UploadedImage | "file_type" | "file_too_big"> {
   const mime = (f.type || "").toLowerCase() || (/\.(heic|heif)$/i.test(f.name) ? "image/heic" : "");
+  if (mime === "application/pdf" || /\.pdf$/i.test(f.name)) {
+    if (f.size > MAX_FILE_BYTES) return "file_too_big";
+    const url = await readAsDataUrl(f);
+    return { name: f.name || "document.pdf", mime: "application/pdf", data: url.replace(/^data:[^,]*,/, "") };
+  }
   if (!mime.startsWith("image/")) return "file_type";
   try {
     const bmp = await createImageBitmap(f);
@@ -55,6 +61,7 @@ async function prepareImage(f: File): Promise<UploadedImage | "file_type" | "fil
 
 export function Checker() {
   const { t, lang } = useLang();
+  const consent = useConsent();
   const [phase, setPhase] = useState<Phase>("idle");
   const [text, setText] = useState("");
   const [image, setImage] = useState<UploadedImage | null>(null);
@@ -76,6 +83,10 @@ export function Checker() {
 
   const run = useCallback(
     async (req: Req, reqLang: Lang = lang) => {
+      if (readConsentNow() !== "yes") {
+        setConsent("unknown");
+        return;
+      }
       setError(null);
       setPhase("loading");
       topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -207,6 +218,9 @@ export function Checker() {
             <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-muted sm:text-lg">{t.hero.subtitle}</p>
           </div>
 
+          {consent === "no" ? (
+            <ConsentDeclined />
+          ) : (
           <form onSubmit={onSubmit} className="card mt-7 p-4 sm:p-5" noValidate>
             <label htmlFor="check-input" className="sr-only">
               {t.hero.label}
@@ -238,7 +252,7 @@ export function Checker() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={`data:${image.mime};base64,${image.data}`} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover" />
                 ) : (
-                  <ImagePlus className="m-3 h-6 w-6 shrink-0 text-primary" aria-hidden />
+                  <FileText className="m-3 h-6 w-6 shrink-0 text-primary" aria-hidden />
                 )}
                 <span className="min-w-0 flex-1 truncate text-sm font-medium">{image.name}</span>
                 <button
@@ -258,11 +272,11 @@ export function Checker() {
                   <ClipboardPaste className="h-4 w-4" aria-hidden /> {t.hero.paste}
                 </button>
               )}
-              <label className="btn btn-secondary min-h-[44px] flex-1 cursor-pointer px-3 text-sm focus-within:border-primary sm:flex-none">
-                <ImagePlus className="h-4 w-4" aria-hidden /> {t.hero.screenshot}
+              <label className="btn btn-secondary min-h-[44px] flex-1 cursor-pointer whitespace-nowrap px-3 text-sm focus-within:border-primary sm:flex-none">
+                <Paperclip className="h-4 w-4" aria-hidden /> {t.hero.screenshot}
                 <input
                   type="file"
-                  accept="image/*,.heic,.heif"
+                  accept="image/*,application/pdf,.pdf,.heic,.heif"
                   className="sr-only"
                   onChange={(e) => {
                     attach(e.target.files?.[0]);
@@ -275,6 +289,7 @@ export function Checker() {
               </button>
             </div>
           </form>
+          )}
 
           {error && (
             <div

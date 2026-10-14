@@ -105,7 +105,7 @@ export async function POST(req: Request) {
   // Hidden links: "нажми здесь" with the real address only in the formatting.
   const hidden = [...(msg.entities ?? []), ...(msg.caption_entities ?? [])].filter((e) => e.type === "text_link" && e.url).map((e) => e.url!);
   const text = [raw, ...hidden.filter((u) => !raw.includes(u))].join("\n").trim();
-  const imageDoc = doc?.mime_type?.startsWith("image/") ? doc : null;
+  const imageDoc = doc?.mime_type?.startsWith("image/") || doc?.mime_type === "application/pdf" ? doc : null;
   const photo = msg.photo?.length ? msg.photo[msg.photo.length - 1] : null;
   const image = imageDoc ?? photo;
 

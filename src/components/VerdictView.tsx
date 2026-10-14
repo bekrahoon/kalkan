@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   AlertTriangle,
   ArrowLeft,
+  BadgeCheck,
   CheckCircle2,
   ChevronDown,
   Flag,
@@ -26,14 +27,14 @@ const SITE = "https://kalkan-sigma.vercel.app";
 export const VERDICT_STYLE: Record<Verdict, { band: string; text: string; Icon: typeof ShieldAlert }> = {
   danger: { band: "bg-danger-soft", text: "text-danger", Icon: ShieldAlert },
   suspicious: { band: "bg-warn-soft", text: "text-warn", Icon: AlertTriangle },
-  safe: { band: "bg-primary-soft", text: "text-primary", Icon: ShieldCheck },
+  safe: { band: "bg-ok-soft", text: "text-ok", Icon: ShieldCheck },
   unknown: { band: "bg-subtle", text: "text-muted", Icon: ShieldQuestion },
 };
 
 const SIGNAL_ICON: Record<SignalLevel, { Icon: typeof Info; cls: string }> = {
   bad: { Icon: XCircle, cls: "text-danger" },
   warn: { Icon: AlertTriangle, cls: "text-warn" },
-  good: { Icon: CheckCircle2, cls: "text-primary" },
+  good: { Icon: CheckCircle2, cls: "text-ok" },
   info: { Icon: Info, cls: "text-muted" },
 };
 
@@ -64,7 +65,9 @@ export function VerdictView({
               <style.Icon className="h-7 w-7" aria-hidden />
             </span>
             <div className="min-w-0">
-              <p className={`text-sm font-bold uppercase tracking-wide ${style.text}`}>{tv.label[result.verdict]}</p>
+              <p className={`text-sm font-bold uppercase tracking-wide ${style.text}`}>
+                {result.kind === "document" && result.verdict === "safe" ? tv.docSafe : tv.label[result.verdict]}
+              </p>
               <p className="truncate text-sm text-muted" title={result.subject}>
                 {result.subject}
               </p>
@@ -153,6 +156,17 @@ export function VerdictView({
               ))}
             </ol>
           </section>
+
+          {result.kind === "document" && (
+            <section aria-labelledby="verify" className="rounded-2xl bg-primary-soft p-4">
+              <h2 id="verify" className="flex items-center gap-2 font-bold">
+                <BadgeCheck className="h-5 w-5 text-primary" aria-hidden />
+                {tv.verify}
+              </h2>
+              {result.verify && <p className="mt-1.5 leading-snug">{result.verify}</p>}
+              <p className="mt-2 text-sm leading-snug text-muted">{tv.docNote}</p>
+            </section>
+          )}
 
           {result.facts.length > 0 && <Facts result={result} title={tv.details} />}
         </div>
@@ -259,8 +273,8 @@ function Actions({ result }: { result: CheckResult }) {
       {canReport && (
         <div>
           {report === "done" ? (
-            <p role="status" className="flex gap-2 rounded-2xl bg-primary-soft p-4 text-sm">
-              <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" aria-hidden /> {tv.reported}
+            <p role="status" className="flex gap-2 rounded-2xl bg-ok-soft p-4 text-sm">
+              <CheckCircle2 className="h-5 w-5 shrink-0 text-ok" aria-hidden /> {tv.reported}
             </p>
           ) : (
             <>
