@@ -16,6 +16,7 @@ export function SiteHeader() {
   const path = usePathname();
   const links = [
     { href: "/", label: t.nav.check },
+    { href: "/rating", label: t.nav.rating },
     { href: "/rights", label: t.nav.rights },
     { href: "/about", label: t.nav.about },
   ];

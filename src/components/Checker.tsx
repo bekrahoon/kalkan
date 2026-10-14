@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AlertCircle, Car, FileText, FileUp, Link2, ShoppingBag, Upload, Users } from "lucide-react";
+import { AlertCircle, Car, ChevronRight, FileText, FileUp, Link2, ShoppingBag, Trophy, Upload, Users } from "lucide-react";
+import Link from "next/link";
+import { InstallCard } from "./PwaSetup";
 import { useLang } from "./LangProvider";
 import { ShieldLogo } from "./ShieldLogo";
 import { LoadingView } from "./LoadingView";
@@ -152,6 +154,29 @@ export function Checker() {
     },
     [lang, t],
   );
+
+  // Opened via "Share → Kalkan" (/share redirects here with ?check=<link> or ?text=<policy>).
+  const sharedHandled = useRef(false);
+  useEffect(() => {
+    if (sharedHandled.current) return;
+    sharedHandled.current = true;
+    const params = new URLSearchParams(window.location.search);
+    const shared = params.get("check");
+    const sharedText = params.get("text");
+    if (!shared && !sharedText) return;
+    window.history.replaceState(null, "", window.location.pathname);
+    const t = setTimeout(() => {
+      if (shared) {
+        setMode("url");
+        setUrl(shared);
+        run({ mode: "url", url: shared });
+      } else if (sharedText) {
+        setMode("text");
+        setText(sharedText);
+      }
+    }, 0);
+    return () => clearTimeout(t);
+  }, [run]);
 
   const openHistory = (h: HistoryItem) => {
     setResult({ report: h.report, meta: h.meta, lang: h.lang, request: h.request });
@@ -389,6 +414,19 @@ export function Checker() {
               })}
             </div>
           </div>
+
+          <Link href="/rating" className="card mt-6 flex items-center gap-3 p-4 hover:border-primary">
+            <span className="icon-badge bg-primary-soft text-primary">
+              <Trophy className="h-5 w-5" aria-hidden />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold">{t.rating.homeLink}</span>
+              <span className="block text-sm text-muted">{t.rating.homeHint}</span>
+            </span>
+            <ChevronRight className="h-5 w-5 shrink-0 text-muted" aria-hidden />
+          </Link>
+
+          <InstallCard />
 
           <HistoryPanel onOpen={openHistory} onCompare={openCompare} />
 

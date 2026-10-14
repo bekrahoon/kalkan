@@ -193,12 +193,14 @@ export function ReportView({
   reportLang,
   onReset,
   onRerun,
+  backLabel,
 }: {
   report: Report;
   meta: AnalyzeMeta;
   reportLang: Lang;
   onReset: () => void;
   onRerun?: () => void;
+  backLabel?: string;
 }) {
   const { t, lang } = useLang();
   const tr = t.report;
@@ -222,7 +224,7 @@ export function ReportView({
   return (
     <article className="mx-auto max-w-4xl px-4 pb-6 pt-6 sm:pt-10" aria-labelledby="report-title">
       <button type="button" onClick={onReset} className="mb-5 inline-flex min-h-[44px] items-center gap-2 text-sm font-medium text-primary hover:underline">
-        <ArrowLeft className="h-4 w-4" aria-hidden /> {tr.again}
+        <ArrowLeft className="h-4 w-4" aria-hidden /> {backLabel ?? tr.again}
       </button>
 
       <div className="mb-5 space-y-2.5">
@@ -484,7 +486,7 @@ export function ReportView({
         )}
         <p className="mx-auto max-w-2xl text-xs leading-relaxed text-muted">{tr.disclaimer}</p>
         <button type="button" onClick={onReset} className="btn btn-primary mt-2">
-          {tr.again}
+          {backLabel ?? tr.again}
         </button>
       </footer>
     </article>

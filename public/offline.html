@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Калкан — нет интернета</title>
+<style>
+  :root { --bg:#f5f7fa; --fg:#1d2433; --muted:#5e6878; --primary:#1f8a7a; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#12161d; --fg:#e7ecf2; --muted:#9aa5b4; --primary:#4cc2ae; color-scheme: dark; } }
+  body { margin:0; min-height:100dvh; display:grid; place-items:center; background:var(--bg); color:var(--fg);
+         font-family:system-ui,-apple-system,"Segoe UI",sans-serif; padding:24px; text-align:center; }
+  img { width:72px; height:72px; border-radius:18px; }
+  h1 { font-size:1.4rem; margin:16px 0 8px; }
+  p { color:var(--muted); max-width:30ch; margin:0 auto 20px; line-height:1.5; }
+  button { background:var(--primary); color:#fff; border:0; border-radius:12px; padding:12px 20px; font-size:1rem; font-weight:600; }
+</style>
+</head>
+<body>
+  <main>
+    <img src="/icon-192.png" alt="">
+    <h1>Нет подключения к интернету</h1>
+    <p>Калкану нужен интернет, чтобы прочитать политику. Интернет жок — кайра аракет кыл.</p>
+    <button onclick="location.reload()">Повторить</button>
+  </main>
+</body>
+</html>

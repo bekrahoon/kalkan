@@ -2,7 +2,7 @@
 /** Phone-demo shim for next/navigation: the "pathname" is derived from the URL hash. */
 import { useSyncExternalStore } from "react";
 
-const ROUTES = ["rights", "about"];
+const ROUTES = ["rating", "rights", "about"];
 
 export function hashToPath(): string {
   const h = typeof location === "undefined" ? "" : location.hash.replace(/^#/, "");

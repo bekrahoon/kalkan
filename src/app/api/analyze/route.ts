@@ -1,9 +1,8 @@
-import { getDemoReport, isDemoId, DEMO_TEXTS } from "@/lib/demo";
-import { fetchPolicyText } from "@/lib/extract";
-import { AnalyzeError, analyzeWithGemini, type PolicyInput } from "@/lib/gemini";
-import { normalizeReport } from "@/lib/normalize";
-import { getPlayInfo, parsePlayUrl } from "@/lib/playstore";
 import { createHash } from "node:crypto";
+import { getDemoReport, isDemoId, DEMO_TEXTS } from "@/lib/demo";
+import { AnalyzeError, analyzeWithGemini } from "@/lib/gemini";
+import { normalizeReport } from "@/lib/normalize";
+import { runAnalysis, type AnalysisInput } from "@/lib/pipeline";
 import {
   FILE_MIMES,
   MAX_FILE_BYTES,
@@ -11,40 +10,55 @@ import {
   type AnalyzeResponse,
   type ErrorCode,
   type Lang,
-  type PlayInfo,
   type Report,
 } from "@/lib/types";
 
 /** Gemini can be slow at peak times; Vercel Hobby with Fluid compute allows up to 300 s. */
 export const maxDuration = 300;
 
-/**
- * ~50–60k tokens. Gemini Flash reads far more, but this keeps one request inside free-tier
- * per-minute limits while covering practically every real privacy policy in full.
- */
-const MAX_POLICY_CHARS = 200_000;
 const MIN_POLICY_CHARS = 200;
 /** Room for a 3 MB file as base64 (~4 MB of JSON). */
 const MAX_BODY_CHARS = 4_300_000;
 
-/* Light per-instance rate limit so one visitor can't burn the shared free quota. */
+/*
+ * Abuse protection for the shared free Gemini key (per server instance; the Vercel Firewall
+ * rate-limit rule adds a global per-IP limit in front of this):
+ *  - only requests coming from the Kalkan page itself,
+ *  - at most PER_MINUTE AI checks per minute and PER_DAY per day per IP.
+ */
+const PER_MINUTE = 6;
+const PER_DAY = Number(process.env.DAILY_LIMIT_PER_IP || 40);
 const hits = new Map<string, number[]>();
 function tooMany(ip: string): boolean {
   const now = Date.now();
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < 60_000);
-  recent.push(now);
-  hits.set(ip, recent);
-  if (hits.size > 5000) hits.clear();
-  return recent.length > 8;
+  const day = (hits.get(ip) ?? []).filter((t) => now - t < 86_400_000);
+  const minute = day.filter((t) => now - t < 60_000);
+  if (minute.length >= PER_MINUTE || day.length >= PER_DAY) return true;
+  day.push(now);
+  hits.set(ip, day);
+  if (hits.size > 20_000) hits.clear();
+  return false;
+}
+
+function sameOrigin(req: Request): boolean {
+  const origin = req.headers.get("origin");
+  const site = req.headers.get("sec-fetch-site");
+  if (site && site !== "same-origin") return false;
+  if (!origin) return false;
+  try {
+    const o = new URL(origin);
+    const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
+    return o.host === host || o.hostname === "localhost" || o.hostname === "127.0.0.1";
+  } catch {
+    return false;
+  }
 }
 
 /* Same input + language → same report for a day, without spending the AI quota again.
    In-memory per server instance: on Vercel it survives warm invocations, which is what demos hit. */
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const cache = new Map<string, { at: number; report: Report; meta: AnalyzeMeta }>();
-function cacheKey(parts: string[]): string {
-  return createHash("sha256").update(parts.join("\u0000")).digest("hex");
-}
+const sha = (s: string) => createHash("sha256").update(s).digest("hex");
 function cacheGet(key: string) {
   const hit = cache.get(key);
   if (!hit) return null;
@@ -65,15 +79,9 @@ function fail(code: ErrorCode, status: number) {
   return Response.json({ ok: false, error: { code, status } } satisfies AnalyzeResponse, { status });
 }
 
-/** Cut at a paragraph/sentence boundary near the limit rather than mid-word. */
-function truncate(text: string): { text: string; truncated: boolean } {
-  if (text.length <= MAX_POLICY_CHARS) return { text, truncated: false };
-  const slice = text.slice(0, MAX_POLICY_CHARS);
-  const cut = Math.max(slice.lastIndexOf("\n\n"), slice.lastIndexOf(". "));
-  return { text: cut > MAX_POLICY_CHARS * 0.8 ? slice.slice(0, cut + 1) : slice, truncated: true };
-}
-
 export async function POST(req: Request) {
+  if (!sameOrigin(req)) return fail("bad_request", 403);
+
   let body: Record<string, unknown>;
   try {
     const raw = await req.text();
@@ -85,103 +93,70 @@ export async function POST(req: Request) {
 
   const lang: Lang = body.lang === "ky" ? "ky" : "ru";
   const demoId = isDemoId(body.demoId) ? body.demoId : undefined;
-  const mode = body.mode === "url" || body.mode === "file" ? body.mode : "text";
+  if (demoId) return runDemo(demoId, lang);
+
+  // Validate and build the input.
+  let input: AnalysisInput;
+  if (body.mode === "url") {
+    const url = typeof body.url === "string" ? body.url.trim() : "";
+    if (!url) return fail("invalid_url", 400);
+    input = { kind: "url", url };
+  } else if (body.mode === "file") {
+    const f = (body.file ?? {}) as Record<string, unknown>;
+    const mime = typeof f.mime === "string" ? f.mime.toLowerCase() : "";
+    const data = typeof f.data === "string" ? f.data.replace(/^data:[^,]*,/, "") : "";
+    if (!(FILE_MIMES as readonly string[]).includes(mime) || !data) return fail("file_type", 415);
+    if (Math.floor((data.length * 3) / 4) > MAX_FILE_BYTES) return fail("file_too_big", 413);
+    input = { kind: "file", mime, data };
+  } else {
+    const text = typeof body.text === "string" ? body.text.trim() : "";
+    if (text.length < MIN_POLICY_CHARS) return fail("text_too_short", 400);
+    input = { kind: "text", text };
+  }
 
   // Cache lookup before the rate limit: repeated checks of the same thing cost nothing.
-  const fileData = mode === "file" && body.file && typeof (body.file as Record<string, unknown>).data === "string"
-    ? String((body.file as Record<string, unknown>).data)
-    : "";
-  const key = demoId
-    ? null
-    : cacheKey([lang, mode, mode === "url" ? String(body.url ?? "").trim().toLowerCase() : mode === "file" ? createHash("sha256").update(fileData).digest("hex") : String(body.text ?? "").trim()]);
-  const hit = key ? cacheGet(key) : null;
+  const key = sha(
+    [lang, input.kind, input.kind === "url" ? input.url.toLowerCase() : input.kind === "file" ? sha(input.data) : input.text].join("\u0000"),
+  );
+  const hit = cacheGet(key);
   if (hit) return Response.json({ ok: true, report: hit.report, meta: { ...hit.meta, cached: true } } satisfies AnalyzeResponse);
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-  if (!demoId && tooMany(ip)) return fail("too_many_requests", 429);
-
-  let policy = "";
-  let fileInput: PolicyInput | null = null;
-  let sourceUrl: string | undefined;
-  let play: PlayInfo | undefined;
+  if (tooMany(ip)) return fail("too_many_requests", 429);
 
   try {
-    if (demoId) {
-      policy = DEMO_TEXTS[demoId];
-    } else if (mode === "url") {
-      const url = typeof body.url === "string" ? body.url : "";
-      if (!url.trim()) return fail("invalid_url", 400);
-      let policyUrl = url;
-      // A Google Play link: take Play's own data-safety info + permissions, then read the app's policy.
-      const appId = parsePlayUrl(url);
-      if (appId) {
-        play = await getPlayInfo(appId, lang);
-        if (!play.privacyPolicyUrl) return fail("play_no_policy", 422);
-        policyUrl = play.privacyPolicyUrl;
-      }
-      const fetched = await fetchPolicyText(policyUrl);
-      sourceUrl = fetched.url;
-      if ("pdf" in fetched) fileInput = { mime: "application/pdf", data: fetched.pdf };
-      else policy = fetched.text;
-    } else if (mode === "file") {
-      const f = (body.file ?? {}) as Record<string, unknown>;
-      const mime = typeof f.mime === "string" ? f.mime.toLowerCase() : "";
-      const data = typeof f.data === "string" ? f.data.replace(/^data:[^,]*,/, "") : "";
-      if (!(FILE_MIMES as readonly string[]).includes(mime) || !data) return fail("file_type", 415);
-      if (Math.floor((data.length * 3) / 4) > MAX_FILE_BYTES) return fail("file_too_big", 413);
-      fileInput = { mime, data };
-    } else {
-      policy = typeof body.text === "string" ? body.text.trim() : "";
-      if (policy.length < MIN_POLICY_CHARS) return fail("text_too_short", 400);
-    }
-  } catch (e) {
-    if (e instanceof AnalyzeError) {
-      console.warn(`[analyze] fetch stage: ${e.code}`, mode === "url" ? String(body.url ?? "").slice(0, 200) : mode);
-      return fail(e.code, e.status);
-    }
-    console.error("[analyze] fetch stage", e);
-    return fail("fetch_failed", 502);
-  }
-
-  const originalChars = policy.length;
-  const { text, truncated } = truncate(policy);
-
-  try {
-    // DEMO_CACHE_ONLY=1 makes demo buttons instant and offline-proof (handy on stage).
-    if (demoId && process.env.DEMO_CACHE_ONLY === "1") throw new AnalyzeError("ai_failed", 200);
-    const { json, model } = await analyzeWithGemini(fileInput ?? { text }, lang);
-    // Quotes can only be checked against text we extracted ourselves, not against a PDF/photo.
-    const report = normalizeReport(json, lang, fileInput ? undefined : text);
-    const meta: AnalyzeMeta = {
-      source: "live",
-      truncated: fileInput ? false : truncated,
-      originalChars,
-      analyzedChars: text.length,
-      sourceUrl,
-      model,
-      play,
-    };
-    if (key) cacheSet(key, report, meta);
+    const { report, meta } = await runAnalysis(input, lang);
+    cacheSet(key, report, meta);
     return Response.json({ ok: true, report, meta } satisfies AnalyzeResponse);
   } catch (e) {
-    const code: ErrorCode = e instanceof AnalyzeError ? e.code : "ai_failed";
-    const status = e instanceof AnalyzeError ? e.status : 502;
-    if (!(e instanceof AnalyzeError)) console.error("[analyze] ai stage", e);
+    if (e instanceof AnalyzeError) return fail(e.code, e.status);
+    console.error("[analyze]", e);
+    return fail("ai_failed", 502);
+  }
+}
 
-    // Demo must never break in front of the jury: fall back to the prepared report.
-    if (demoId) {
-      return Response.json({
-        ok: true,
-        report: getDemoReport(demoId, lang),
-        meta: {
-          source: "demo-cache",
-          truncated: false,
-          originalChars,
-          analyzedChars: originalChars,
-          fallbackReason: code,
-        },
-      } satisfies AnalyzeResponse);
-    }
-    return fail(code, status);
+/** Demo buttons: live analysis of the sample text, falling back to the prepared report so the demo never breaks. */
+async function runDemo(demoId: Parameters<typeof getDemoReport>[0], lang: Lang) {
+  const text = DEMO_TEXTS[demoId];
+  const fallback = (code: ErrorCode) =>
+    Response.json({
+      ok: true,
+      report: getDemoReport(demoId, lang),
+      meta: { source: "demo-cache", truncated: false, originalChars: text.length, analyzedChars: text.length, fallbackReason: code },
+    } satisfies AnalyzeResponse);
+
+  // DEMO_CACHE_ONLY=1 makes demo buttons instant and offline-proof (handy on stage).
+  if (process.env.DEMO_CACHE_ONLY === "1") return fallback("ai_failed");
+  const key = `demo:${demoId}:${lang}`;
+  const hit = cacheGet(key);
+  if (hit) return Response.json({ ok: true, report: hit.report, meta: { ...hit.meta, cached: true } } satisfies AnalyzeResponse);
+  try {
+    const { json, model } = await analyzeWithGemini({ text }, lang);
+    const report = normalizeReport(json, lang, text);
+    const meta: AnalyzeMeta = { source: "live", truncated: false, originalChars: text.length, analyzedChars: text.length, model };
+    cacheSet(key, report, meta);
+    return Response.json({ ok: true, report, meta } satisfies AnalyzeResponse);
+  } catch (e) {
+    return fallback(e instanceof AnalyzeError ? e.code : "ai_failed");
   }
 }

@@ -9,7 +9,8 @@ export const metadata: Metadata = {
   title: "Калкан — кто читает твои данные?",
   description:
     "ИИ-помощник, который простым языком объясняет, что сайт или приложение делает с твоими персональными данными. Русский и кыргызский.",
-  icons: { icon: "/icon.svg" },
+  icons: { icon: "/icon.svg", apple: "/apple-touch-icon.png" },
+  appleWebApp: { capable: true, title: "Калкан", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
