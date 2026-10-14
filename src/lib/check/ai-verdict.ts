@@ -95,7 +95,23 @@ Write all human-readable fields in ${langName(lang)}. Leave urls and phones empt
   return clean(json);
 }
 
-const s = (v: unknown, max = 400) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+const LAT2CYR: Record<string, string> = {
+  a: "а", b: "б", c: "с", d: "д", e: "е", f: "ф", g: "г", h: "х", i: "и", j: "ж", k: "к", l: "л", m: "м",
+  n: "н", o: "о", p: "р", r: "р", s: "с", t: "т", u: "у", v: "в", w: "в", x: "х", y: "у", z: "з",
+};
+/** The model sometimes slips Latin letters into Cyrillic words ("Расmiй"): fix words that mix both scripts. */
+export function fixMixedScript(text: string): string {
+  return text.replace(/[\p{L}]+/gu, (w) => {
+    // Brand + Kyrgyz suffix ("Telegramга") starts with Latin and is fine; a Cyrillic word with Latin inside is not.
+    if (!/^[а-яёөүң]/i.test(w) || !/[a-z]/i.test(w)) return w;
+    return w.replace(/[a-z]/gi, (ch) => {
+      const c = LAT2CYR[ch.toLowerCase()] ?? ch;
+      return ch === ch.toUpperCase() ? c.toUpperCase() : c;
+    });
+  });
+}
+
+const s = (v: unknown, max = 400) => (typeof v === "string" ? fixMixedScript(v.trim()).slice(0, max) : "");
 
 function clean(j: Record<string, unknown>): AiVerdict {
   const verdict = (VERDICTS as readonly string[]).includes(j.verdict as string) ? (j.verdict as Verdict) : "unknown";
@@ -104,6 +120,8 @@ function clean(j: Record<string, unknown>): AiVerdict {
     .map((x) => ({ level: ["bad", "warn", "good"].includes(x?.level) ? x.level : "warn", text: s(x?.text, 300) }) as Signal)
     .filter((x) => x.text)
     .slice(0, 5);
+  const raw = (v: unknown, n: number, max: number) =>
+    Array.isArray(v) ? v.map((x) => (typeof x === "string" ? x.trim().slice(0, max) : "")).filter(Boolean).slice(0, n) : [];
   const list = (v: unknown, n: number, max: number) => (Array.isArray(v) ? v.map((x) => s(x, max)).filter(Boolean).slice(0, n) : []);
   return {
     verdict,
@@ -112,7 +130,7 @@ function clean(j: Record<string, unknown>): AiVerdict {
     scheme,
     signals,
     advice: list(j.advice, 4, 240),
-    urls: list(j.urls, 5, 500),
-    phones: list(j.phones, 5, 40),
+    urls: raw(j.urls, 5, 500),
+    phones: raw(j.phones, 5, 40),
   };
 }

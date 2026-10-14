@@ -241,7 +241,9 @@ export async function checkLink(raw: string, lang: Lang, opts: { ai?: boolean; b
         title = ai.title;
         summary = ai.summary;
         advice = ai.advice;
-        for (const s of ai.signals) if (s.level !== "good" || next === "safe") add(s.level, s.text);
+        for (const s of ai.signals.slice(0, 3)) {
+          if ((s.level !== "good" || next === "safe") && !isRestated(s.text, signals)) add(s.level, s.text);
+        }
         if (ai.scheme && next !== "safe") scheme = ai.scheme;
       }
       verdict = next;
@@ -291,6 +293,21 @@ function ruleVerdict(signals: Signal[], final: DomainInfo, page: FetchedPage, fe
   if (warn - good >= 1) return "suspicious";
   if (good > 0 && page.ok) return "safe";
   return "unknown";
+}
+
+const words = (s: string) => new Set(s.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length > 3));
+/** AI signals often restate a technical one in other words: skip those. */
+export function isRestated(text: string, existing: Signal[]): boolean {
+  const a = words(text);
+  if (!a.size) return true;
+  return existing.some((e) => {
+    const b = words(e.text);
+    let common = 0;
+    a.forEach((w) => {
+      if ([...b].some((x) => x.slice(0, 5) === w.slice(0, 5))) common++;
+    });
+    return common / Math.min(a.size, b.size || 1) >= 0.3;
+  });
 }
 
 const ORDER: Record<Signal["level"], number> = { bad: 0, warn: 1, info: 2, good: 3 };

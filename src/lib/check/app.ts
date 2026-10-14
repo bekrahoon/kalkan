@@ -4,7 +4,7 @@ import { CheckError } from "../ai";
 import { reportCount } from "../reports";
 import { VERDICT_RANK, type CheckResult, type Fact, type Lang, type Signal, type Verdict } from "../types";
 import { aiForFacts } from "./ai-verdict";
-import { sortSignals } from "./link";
+import { isRestated, sortSignals } from "./link";
 import { BRANDS } from "./official";
 import { fmtDate, TX } from "./texts";
 
@@ -122,7 +122,7 @@ export async function checkApp(appId: string, lang: Lang, budgetMs = 35_000): Pr
       aiTitle = ai.title;
       summary = ai.summary;
       advice = ai.advice;
-      for (const s of ai.signals) if (!signals.some((x) => x.text === s.text)) signals.push(s);
+      for (const s of ai.signals.slice(0, 3)) if (!isRestated(s.text, signals)) signals.push(s);
       if (ai.scheme && verdict !== "safe") scheme = ai.scheme;
     }
   } catch (e) {

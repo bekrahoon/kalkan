@@ -52,7 +52,7 @@ export async function checkPhone(raw: string, lang: Lang): Promise<CheckResult> 
     subject: indicator.display,
     scheme: null,
     signals,
-    advice: t.advice[verdict === "unknown" ? "suspicious" : verdict],
+    advice: t.phoneAdvice,
     facts: [{ label: t.f.phone, value: indicator.display }],
     indicators: [indicator],
     reports,
