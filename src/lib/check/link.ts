@@ -116,7 +116,7 @@ export async function checkLink(raw: string, lang: Lang, opts: { ai?: boolean; b
   // Network work in parallel: open the page, look up the domain's age, check phishing lists.
   const [page, startAge, feedStart] = await Promise.all([
     fetchPage(url, 12_000),
-    trusted(start) || start.known || start.shortener || start.isIp ? Promise.resolve(null) : domainAge(start.reg),
+    trusted(start) || start.known || start.shortener || start.isIp || start.hosting ? Promise.resolve(null) : domainAge(start.reg),
     checkFeeds([url], (h) => describe(new URL(`https://${h}`)).known),
   ]);
 
@@ -124,7 +124,7 @@ export async function checkLink(raw: string, lang: Lang, opts: { ai?: boolean; b
   const moved = final.site !== start.site;
   const [finalAge, feedFinal] = moved
     ? await Promise.all([
-        trusted(final) || final.known || final.isIp ? Promise.resolve(null) : domainAge(final.reg),
+        trusted(final) || final.known || final.isIp || final.hosting ? Promise.resolve(null) : domainAge(final.reg),
         checkFeeds([page.finalUrl], (h) => describe(new URL(`https://${h}`)).known),
       ])
     : [startAge, null];
