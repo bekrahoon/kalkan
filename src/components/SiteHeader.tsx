@@ -21,16 +21,11 @@ export function SiteHeader() {
   ];
 
   return (
-    <header className="sticky top-[env(safe-area-inset-top,0px)] z-40 border-b-[3px] border-black bg-ink/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-1 px-4 py-2 sm:py-3">
-        <Link href="/" className="group flex items-center gap-2" aria-label="Калкан">
-          <ShieldLogo size={30} />
-          <span className="leading-none">
-            <span className="display slant inked block text-2xl tracking-wide text-white group-hover:text-teal">
-              Калкан
-            </span>
-            <span className="hidden text-[11px] font-medium text-muted sm:block">{t.brandTagline}</span>
-          </span>
+    <header className="sticky top-[env(safe-area-inset-top,0px)] z-40 border-b border-line bg-surface/90 backdrop-blur-md">
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-1 px-4 py-2.5">
+        <Link href="/" className="flex items-center gap-2" aria-label="Калкан">
+          <ShieldLogo size={26} />
+          <span className="text-lg font-bold tracking-tight">Калкан</span>
         </Link>
 
         <nav aria-label={t.nav.menu} className="order-3 -mx-1 flex w-full gap-1 overflow-x-auto sm:order-none sm:mx-0 sm:w-auto">
@@ -41,8 +36,8 @@ export function SiteHeader() {
                 key={l.href}
                 href={l.href}
                 aria-current={active ? "page" : undefined}
-                className={`display shrink-0 rounded px-2.5 py-2 text-sm tracking-wider transition-colors ${
-                  active ? "bg-teal text-black" : "text-fg hover:text-teal"
+                className={`shrink-0 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  active ? "bg-primary-soft text-primary" : "text-muted hover:text-fg"
                 }`}
               >
                 {l.label}
@@ -51,11 +46,7 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div
-          role="group"
-          aria-label={t.nav.langSwitch}
-          className="ml-auto flex overflow-hidden rounded-md border-[3px] border-black shadow-[3px_3px_0_#000]"
-        >
+        <div role="group" aria-label={t.nav.langSwitch} className="ml-auto flex rounded-lg bg-subtle p-1">
           {LANGS.map((l) => (
             <button
               key={l.id}
@@ -63,8 +54,8 @@ export function SiteHeader() {
               onClick={() => setLang(l.id)}
               aria-pressed={lang === l.id}
               title={l.full}
-              className={`display min-h-[40px] min-w-[46px] px-2 text-sm tracking-wider ${
-                lang === l.id ? "bg-amber text-black" : "bg-ink-3 text-fg hover:text-amber"
+              className={`min-h-[34px] min-w-[42px] rounded-md px-2 text-sm font-semibold transition-colors ${
+                lang === l.id ? "bg-surface text-fg shadow-sm" : "text-muted hover:text-fg"
               }`}
             >
               <span aria-hidden>{l.label}</span>

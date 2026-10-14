@@ -60,7 +60,7 @@ export function LetterGenerator({ company, contact }: { company: string; contact
   if (!open) {
     return (
       <div className="text-center">
-        <button type="button" onClick={() => setOpen(true)} className="btn btn-amber text-base sm:text-lg" aria-expanded={false}>
+        <button type="button" onClick={() => setOpen(true)} className="btn btn-primary w-full sm:w-auto" aria-expanded={false}>
           <MailWarning className="h-5 w-5" aria-hidden />
           {t.letter.open}
         </button>
@@ -69,39 +69,39 @@ export function LetterGenerator({ company, contact }: { company: string; contact
   }
 
   return (
-    <div className="panel panel-halftone tilt-r p-4 sm:p-6">
-      <span className="caption">{t.letter.title}</span>
+    <div className="card fade-in p-4 sm:p-6">
+      <h2 className="text-xl font-bold">{t.letter.title}</h2>
       <p className="mt-3 text-sm text-muted">{t.letter.intro}</p>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div>
-          <label htmlFor={`${id}-name`} className="mb-1 block text-sm font-semibold">
+          <label htmlFor={`${id}-name`} className="mb-1 block text-sm font-medium">
             {t.letter.name}
           </label>
           <input id={`${id}-name`} className="field" value={name} onChange={(e) => setName(e.target.value)} placeholder={t.letter.namePh} autoComplete="name" />
         </div>
         <div>
-          <label htmlFor={`${id}-acc`} className="mb-1 block text-sm font-semibold">
+          <label htmlFor={`${id}-acc`} className="mb-1 block text-sm font-medium">
             {t.letter.email}
           </label>
           <input id={`${id}-acc`} className="field" value={account} onChange={(e) => setAccount(e.target.value)} placeholder={t.letter.emailPh} autoComplete="email" />
         </div>
         <div>
-          <label htmlFor={`${id}-co`} className="mb-1 block text-sm font-semibold">
+          <label htmlFor={`${id}-co`} className="mb-1 block text-sm font-medium">
             {t.letter.company}
           </label>
           <input id={`${id}-co`} className="field" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
         </div>
         <fieldset>
-          <legend className="mb-1 block text-sm font-semibold">{t.letter.letterLang}</legend>
-          <div className="flex overflow-hidden rounded-md border-[3px] border-black">
+          <legend className="mb-1 block text-sm font-medium">{t.letter.letterLang}</legend>
+          <div className="flex rounded-xl bg-subtle p-1">
             {LETTER_LANGS.map((l) => (
               <button
                 key={l.id}
                 type="button"
                 onClick={() => setLetterLang(l.id)}
                 aria-pressed={letterLang === l.id}
-                className={`min-h-[46px] flex-1 px-2 text-sm font-semibold ${letterLang === l.id ? "bg-teal text-black" : "bg-ink-3 text-fg"}`}
+                className={`min-h-[40px] flex-1 rounded-lg px-2 text-sm font-medium ${letterLang === l.id ? "bg-surface text-fg shadow-sm" : "text-muted"}`}
               >
                 {l.label}
               </button>
@@ -111,8 +111,8 @@ export function LetterGenerator({ company, contact }: { company: string; contact
       </div>
 
       <p className="mt-4 text-sm">
-        <span className="font-semibold text-muted">{t.letter.to} </span>
-        {contact ? <span className="font-mono text-teal">{contact}</span> : <span className="text-amber">{t.letter.noContact}</span>}
+        <span className="font-medium text-muted">{t.letter.to} </span>
+        {contact ? <span className="select-all font-medium text-primary">{contact}</span> : <span className="text-warn">{t.letter.noContact}</span>}
       </p>
 
       <label htmlFor={`${id}-body`} className="sr-only">
@@ -123,7 +123,7 @@ export function LetterGenerator({ company, contact }: { company: string; contact
         readOnly
         value={full}
         rows={14}
-        className="field mt-2 resize-y font-mono text-[13px] leading-relaxed"
+        className="field mt-2 resize-y bg-subtle text-sm leading-relaxed"
       />
 
       <div className="mt-4 flex flex-wrap gap-3">
@@ -132,7 +132,7 @@ export function LetterGenerator({ company, contact }: { company: string; contact
           {copied ? t.letter.copied : t.letter.copy}
         </button>
         {mailto && (
-          <a href={mailto} className="btn btn-ghost">
+          <a href={mailto} className="btn btn-secondary">
             <Mail className="h-5 w-5" aria-hidden />
             {t.letter.mail}
           </a>

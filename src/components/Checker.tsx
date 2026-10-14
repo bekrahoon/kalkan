@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AlertTriangle, FileText, Link2, MessageSquareText, ShoppingBag, Car, Users } from "lucide-react";
+import { AlertCircle, ArrowRightLeft, Car, FileText, Link2, ShoppingBag, Users } from "lucide-react";
 import { useLang } from "./LangProvider";
 import { ShieldLogo } from "./ShieldLogo";
-import { LoadingComic } from "./LoadingComic";
+import { LoadingView } from "./LoadingView";
 import { ReportView } from "./ReportView";
 import { DEMO_IDS, DEMO_TEXTS, getDemoReport } from "@/lib/demo";
 import type { AnalyzeMeta, AnalyzeRequest, AnalyzeResponse, DemoId, ErrorCode, Lang, Report } from "@/lib/types";
@@ -57,7 +57,8 @@ export function Checker() {
               meta: { source: "demo-cache", truncated: false, originalChars: 0, analyzedChars: 0, fallbackReason: "static_demo" },
             }
           : { ok: false, error: { code: "static_demo" } };
-      } else try {
+      } else {
+        try {
         const res = await fetch("/api/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -75,6 +76,7 @@ export function Checker() {
               meta: { source: "demo-cache", truncated: false, originalChars: 0, analyzedChars: 0, fallbackReason: "network" },
             }
           : { ok: false, error: { code: "network" } };
+        }
       }
 
       await wait();
@@ -126,8 +128,8 @@ export function Checker() {
   };
 
   return (
-    <div ref={topRef} className="scroll-mt-24">
-      {phase === "loading" && <LoadingComic onCancel={cancel} />}
+    <div ref={topRef} className="scroll-mt-20">
+      {phase === "loading" && <LoadingView onCancel={cancel} />}
 
       {phase === "report" && result && (
         <ReportView
@@ -140,191 +142,136 @@ export function Checker() {
       )}
 
       {phase === "idle" && (
-        <section className="relative overflow-hidden">
-          <div aria-hidden className="speed-lines absolute inset-0" />
-          <div aria-hidden className="diag-lines absolute inset-0 opacity-60" />
+        <section className="mx-auto max-w-2xl px-4 pb-6 pt-10 sm:pt-16">
+          <div className="text-center">
+            <ShieldLogo size={52} className="mx-auto" />
+            <p className="eyebrow mt-5">{t.hero.kicker}</p>
+            <h1 className="mt-2 text-[clamp(2rem,7vw,3rem)] font-bold leading-tight">{t.hero.title}</h1>
+            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted sm:text-lg">{t.hero.subtitle}</p>
+          </div>
 
-          <div className="relative mx-auto grid max-w-6xl gap-10 px-4 pb-10 pt-8 sm:pt-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-            <div>
-              <span className="caption">{t.hero.kicker}</span>
-              <h1
-                className="display hero-title glitch slant mt-5 text-[clamp(2.9rem,11vw,5.6rem)]"
-                data-text={t.hero.title}
-              >
-                {t.hero.title.split(" ").map((w, i, a) => (
-                  <span key={i} className={i === a.length - 1 ? "hl" : undefined}>
-                    {w}
-                    {i < a.length - 1 ? " " : ""}
-                  </span>
-                ))}
-              </h1>
-              <p className="mt-5 max-w-xl text-base leading-relaxed text-fg/90 sm:text-lg">{t.hero.subtitle}</p>
-
-              <form onSubmit={onSubmit} className="panel panel-halftone tilt-l mt-7 p-4 sm:p-5" noValidate>
-                {mode === "url" ? (
-                  <div>
-                    <label htmlFor="url" className="mb-2 flex items-center gap-2 text-sm font-semibold">
-                      <Link2 className="h-4 w-4 text-teal" aria-hidden />
-                      {t.hero.urlLabel}
-                    </label>
-                    <div className="flex flex-col gap-3 sm:flex-row">
-                      <input
-                        id="url"
-                        type="text"
-                        inputMode="url"
-                        autoComplete="url"
-                        spellCheck={false}
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                        placeholder={t.hero.urlPlaceholder}
-                        className="field flex-1"
-                        aria-describedby={error ? "form-error" : undefined}
-                        aria-invalid={error === "invalid_url" || undefined}
-                      />
-                      <button type="submit" className="btn btn-primary text-lg">
-                        {t.hero.check}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <label htmlFor="policy" className="mb-2 flex items-center gap-2 text-sm font-semibold">
-                      <FileText className="h-4 w-4 text-teal" aria-hidden />
-                      {t.hero.textLabel}
-                    </label>
-                    <textarea
-                      id="policy"
-                      value={text}
-                      onChange={(e) => setText(e.target.value)}
-                      placeholder={t.hero.textPlaceholder}
-                      rows={7}
-                      className="field resize-y font-mono text-sm leading-relaxed"
-                      aria-describedby={error ? "form-error" : "policy-count"}
-                    />
-                    <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                      <span id="policy-count" className="text-xs text-muted">
-                        {t.hero.chars(text.length)}
-                      </span>
-                      <button type="submit" className="btn btn-primary text-lg" disabled={!text.trim()}>
-                        {t.hero.check}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 border-t-2 border-dashed border-white/10 pt-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMode(mode === "url" ? "text" : "url");
-                      setError(null);
-                    }}
-                    className="inline-flex min-h-[44px] items-center gap-2 text-sm font-semibold text-teal underline decoration-2 underline-offset-4 hover:text-amber"
-                    aria-pressed={mode === "text"}
-                  >
-                    <MessageSquareText className="h-4 w-4" aria-hidden />
-                    {mode === "url" ? t.hero.toManual : t.hero.toUrl}
+          <form onSubmit={onSubmit} className="card mt-8 p-4 sm:p-5" noValidate>
+            {mode === "url" ? (
+              <div>
+                <label htmlFor="url" className="mb-2 flex items-center gap-2 text-sm font-medium">
+                  <Link2 className="h-4 w-4 text-primary" aria-hidden />
+                  {t.hero.urlLabel}
+                </label>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <input
+                    id="url"
+                    type="text"
+                    inputMode="url"
+                    autoComplete="url"
+                    spellCheck={false}
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    placeholder={t.hero.urlPlaceholder}
+                    className="field flex-1"
+                    aria-describedby={error ? "form-error" : undefined}
+                    aria-invalid={error === "invalid_url" || undefined}
+                  />
+                  <button type="submit" className="btn btn-primary">
+                    {t.hero.check}
                   </button>
-                  {mode === "url" && <span className="text-xs text-muted">{t.hero.manualHint}</span>}
                 </div>
-              </form>
+              </div>
+            ) : (
+              <div>
+                <label htmlFor="policy" className="mb-2 flex items-center gap-2 text-sm font-medium">
+                  <FileText className="h-4 w-4 text-primary" aria-hidden />
+                  {t.hero.textLabel}
+                </label>
+                <textarea
+                  id="policy"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder={t.hero.textPlaceholder}
+                  rows={7}
+                  className="field resize-y text-sm leading-relaxed"
+                  aria-describedby={error ? "form-error" : "policy-count"}
+                />
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                  <span id="policy-count" className="text-xs text-muted">
+                    {t.hero.chars(text.length)}
+                  </span>
+                  <button type="submit" className="btn btn-primary" disabled={!text.trim()}>
+                    {t.hero.check}
+                  </button>
+                </div>
+              </div>
+            )}
 
-              {error && (
-                <div
-                  ref={errorRef}
-                  tabIndex={-1}
-                  id="form-error"
-                  role="alert"
-                  className="bubble bubble-up mt-8 max-w-xl pop-in"
-                >
-                  <p className="display flex items-center gap-2 text-lg">
-                    <AlertTriangle className="h-5 w-5 text-[#b4001a]" aria-hidden />
-                    {t.errors.title}
-                  </p>
-                  <p className="mt-1 text-[15px] leading-snug">{t.errors[error]}</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {mode === "url" && error !== "invalid_url" && (
-                      <button type="button" onClick={switchToManual} className="btn btn-amber min-h-[40px] px-3 py-1 text-sm">
-                        {t.errors.toManual}
-                      </button>
-                    )}
-                    <button type="button" onClick={() => setError(null)} className="btn btn-ghost min-h-[40px] px-3 py-1 text-sm">
-                      {t.errors.retry}
+            <button
+              type="button"
+              onClick={() => {
+                setMode(mode === "url" ? "text" : "url");
+                setError(null);
+              }}
+              className="mt-3 inline-flex min-h-[44px] items-center gap-2 text-sm font-medium text-primary hover:underline"
+              aria-pressed={mode === "text"}
+            >
+              <ArrowRightLeft className="h-4 w-4" aria-hidden />
+              {mode === "url" ? t.hero.toManual : t.hero.toUrl}
+            </button>
+            {mode === "url" && <p className="text-xs text-muted">{t.hero.manualHint}</p>}
+          </form>
+
+          {error && (
+            <div
+              ref={errorRef}
+              tabIndex={-1}
+              id="form-error"
+              role="alert"
+              className="fade-in mt-4 flex gap-3 rounded-2xl border border-line bg-warn-soft p-4"
+            >
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warn" aria-hidden />
+              <div className="min-w-0">
+                <p className="font-semibold">{t.errors.title}</p>
+                <p className="mt-1 text-sm leading-snug">{t.errors[error]}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {mode === "url" && error !== "invalid_url" && error !== "static_demo" && (
+                    <button type="button" onClick={switchToManual} className="btn btn-primary min-h-[40px] px-3 py-1 text-sm">
+                      {t.errors.toManual}
                     </button>
-                  </div>
+                  )}
+                  <button type="button" onClick={() => setError(null)} className="btn btn-secondary min-h-[40px] px-3 py-1 text-sm">
+                    {t.errors.retry}
+                  </button>
                 </div>
-              )}
-
-              <div className="mt-8">
-                <p className="text-sm font-semibold text-muted">{t.hero.demosTitle}</p>
-                <div className="mt-3 flex flex-wrap gap-3">
-                  {DEMO_IDS.map((id) => {
-                    const Icon = DEMO_ICONS[id];
-                    return (
-                      <button key={id} type="button" onClick={() => runDemo(id)} className="btn btn-ghost min-h-[44px] px-3 text-sm">
-                        <Icon className="h-4 w-4 text-amber" aria-hidden />
-                        {t.hero.demos[id]}
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="mt-4 text-xs text-muted">{t.hero.privacyNote}</p>
               </div>
             </div>
+          )}
 
-            <HeroArt />
+          <div className="mt-8">
+            <p className="text-center text-sm text-muted">{t.hero.demosTitle}</p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+              {DEMO_IDS.map((id) => {
+                const Icon = DEMO_ICONS[id];
+                return (
+                  <button key={id} type="button" onClick={() => runDemo(id)} className="btn btn-secondary justify-start text-sm sm:justify-center">
+                    <Icon className="h-4 w-4 text-primary" aria-hidden />
+                    {t.hero.demos[id]}
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          <ol className="mt-10 grid gap-3 sm:grid-cols-3">
+            {t.hero.steps.map((s, i) => (
+              <li key={i} className="flex items-center gap-3 rounded-2xl bg-subtle p-3 text-sm">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface text-xs font-bold text-primary">
+                  {i + 1}
+                </span>
+                {s}
+              </li>
+            ))}
+          </ol>
+
+          <p className="mt-6 text-center text-xs text-muted">{t.hero.privacyNote}</p>
         </section>
       )}
-    </div>
-  );
-}
-
-function HeroArt() {
-  const { t } = useLang();
-  return (
-    <div className="relative mx-auto w-full max-w-md">
-      <div className="panel tilt-r overflow-hidden p-0">
-        <div
-          aria-hidden
-          className="relative flex aspect-[4/4.3] items-center justify-center bg-[radial-gradient(circle_at_50%_40%,#123a44_0%,#0b0f1a_65%)]"
-        >
-          <div className="speed-lines absolute inset-0 [mask-image:none] opacity-80" style={{ backgroundPosition: "center" }} />
-          {/* data streams aimed at the shield */}
-          <svg viewBox="0 0 300 320" className="absolute inset-0 h-full w-full">
-            {[
-              [0, 40, "#FFB627"],
-              [0, 160, "#FF4458"],
-              [0, 280, "#FFB627"],
-              [300, 60, "#FFB627"],
-              [300, 250, "#FF4458"],
-            ].map(([x, y, c], i) => (
-              <g key={i}>
-                <path
-                  d={`M${x} ${y} L150 160`}
-                  stroke={c as string}
-                  strokeWidth="2"
-                  strokeDasharray="4 7"
-                  opacity="0.6"
-                />
-                <circle cx={x as number} cy={y as number} r="0" fill={c as string} />
-              </g>
-            ))}
-          </svg>
-          <ShieldLogo size={190} animated className="relative drop-shadow-[0_0_30px_rgba(0,229,212,0.35)]" />
-        </div>
-        <ol className="flex border-t-[3px] border-black">
-          {t.hero.steps.map((s, i) => (
-            <li key={i} className={`flex-1 p-3 text-xs font-semibold leading-tight ${i ? "border-l-[3px] border-black" : ""}`}>
-              <span className="display mb-1 block text-2xl text-teal">{i + 1}</span>
-              {s}
-            </li>
-          ))}
-        </ol>
-      </div>
-      <div aria-hidden className="absolute -top-4 left-2 sm:-left-6">
-        <span className="caption caption-teal">{t.loading.title}</span>
-      </div>
     </div>
   );
 }

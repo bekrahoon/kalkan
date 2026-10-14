@@ -45,7 +45,7 @@ npm run dev                  # http://localhost:3000
 - Название модели: по умолчанию `gemini-3.8-flash`; если Google переименует — поменять через `GEMINI_MODEL`.
 
 ## Технологии
-Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · cheerio · lucide-react · шрифты Oswald и Inter (Google Fonts, подключены локально через Fontsource — работают без интернета).
+Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · cheerio · lucide-react · шрифт Inter (Google Fonts, подключён локально через Fontsource — работает без интернета).
 
 ## Мобильная демо-версия без сервера
 

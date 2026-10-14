@@ -55,7 +55,7 @@ function faces(pkg) {
       return `url(data:font/woff2;base64,${data})`;
     });
 }
-const fonts = faces("inter") + "\n" + faces("oswald");
+const fonts = faces("inter");
 
 const html = `<title>Калкан</title>
 <meta name="description" content="ИИ-помощник: кто читает твои данные. Мобильная демо-версия.">
