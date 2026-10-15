@@ -60,6 +60,9 @@ export const SHORTENERS = new Set([
 
 /** Free website builders and hosting: fine for hobby sites, but a bank never lives there. */
 export const FREE_HOSTING = [
+  // dynamic DNS and instant site builders, popular with phishing kits
+  "duckdns.org", "ddns.net", "hopto.org", "zapto.org", "no-ip.org", "freeddns.org", "dynu.net", "abrdns.com", "typedream.app",
+  "glide.page", "weeblysite.com", "mystrikingly.com", "godaddysites.com", "start.page", "linktr.ee", "ipfs.io", "r2.dev",
   "vercel.app", "netlify.app", "github.io", "pages.dev", "workers.dev", "web.app", "firebaseapp.com", "glitch.me",
   "tilda.ws", "wixsite.com", "weebly.com", "000webhostapp.com", "blogspot.com", "ngrok-free.app", "ngrok.io",
   "trycloudflare.com", "onrender.com", "replit.app", "repl.co", "herokuapp.com", "framer.website", "webflow.io",

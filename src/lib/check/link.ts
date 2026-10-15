@@ -59,6 +59,18 @@ function describe(url: URL): DomainInfo {
   };
 }
 
+/** "qkbzp", "tchhnxn", "dtwyiqnl9ods": names nobody would choose for a real business. */
+function looksRandom(label: string): boolean {
+  return label.toLowerCase().split("-").some(randomPart);
+}
+function randomPart(l: string): boolean {
+  if (l.length < 5 || /[^a-z0-9]/.test(l)) return false;
+  const letters = l.replace(/\d/g, "");
+  const vowels = (letters.match(/[aeiouy]/g) ?? []).length;
+  const digitMix = /\d/.test(l) && /[a-z]/.test(l) && l.length >= 10 && (l.match(/\d/g) ?? []).length >= 2;
+  return (letters.length >= 5 && vowels === 0) || (letters.length >= 7 && vowels / letters.length < 0.15) || /[^aeiouy]{5,}/.test(letters) || digitMix;
+}
+
 const trusted = (d: DomainInfo) => Boolean(d.brand) || d.gov;
 
 interface PageScan {
@@ -160,6 +172,8 @@ export async function checkLink(
       if (RISKY_TLDS.has(d.tld)) add("warn", t.riskyTld(d.tld));
       if (d.host.includes("xn--")) add("warn", t.idn);
       if (d.isIp) add("warn", t.ip);
+      else if (looksRandom(parseDomain(d.host).domainWithoutSuffix || "")) add("warn", t.randomName);
+      if (d.url.port && !["80", "443"].includes(d.url.port)) add("warn", t.oddPort(d.url.port));
     }
   }
 
@@ -176,7 +190,7 @@ export async function checkLink(
   }
   if (scan) {
     if (!trusted(final)) {
-      const mentioned = brandMentioned(`${scan.title} ${scan.text.slice(0, 1500)}`);
+      const mentioned = brandMentioned(scan.title);
       if (mentioned && !mentioned.domains.includes(final.reg) && (sensitiveForm || scan.phone)) {
         add("bad", t.pageBrand(mentioned.name, mentioned.domains[0]));
       }
@@ -193,7 +207,7 @@ export async function checkLink(
   } else if (page.problem === "not_html") {
     add(/\.apk$/i.test(page.finalUrl.pathname) ? "bad" : "warn", /\.apk$/i.test(page.finalUrl.pathname) ? t.apk : t.download);
   } else if (page.problem === "dns") {
-    add("warn", t.noDns);
+    add("info", t.noDns);
   } else if (!page.ok) {
     add("info", t.unreachable);
   }
