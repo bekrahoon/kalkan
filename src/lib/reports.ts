@@ -4,8 +4,8 @@ import { del, get, put } from "@vercel/blob";
 import type { Indicator } from "./types";
 
 /*
- * Community reports: "this link / number / app is fraud".
- * One small private JSON per indicator in Vercel Blob. Phones are stored only as a hash plus a masked form.
+ * Community reports: "this site / app is fraud". Never phone numbers: a false report would harm a real person.
+ * One small private JSON per indicator in Vercel Blob.
  * Without BLOB_READ_WRITE_TOKEN everything still works, just without reports.
  */
 

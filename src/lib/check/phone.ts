@@ -1,6 +1,5 @@
 import "server-only";
-import { reportCount } from "../reports";
-import type { CheckResult, Indicator, Lang } from "../types";
+import type { CheckResult, Lang } from "../types";
 import { TX } from "./texts";
 
 /** "0555 12-34-56", "+996 (555) 123456", "996555123456" → "+996555123456". */
@@ -28,34 +27,26 @@ export function findPhones(text: string): string[] {
   return [...new Set(found.map(normalizePhone).filter((p): p is string => Boolean(p)))].slice(0, 5);
 }
 
-export function phoneIndicator(p: string): Indicator {
-  return { type: "phone", value: p, display: maskPhone(p) };
-}
-
-export async function checkPhone(raw: string, lang: Lang): Promise<CheckResult> {
+/**
+ * Kalkan deliberately keeps no database of phone numbers: a false report would brand an honest person
+ * as a scammer. A bare number gets the rules that protect from phone fraud instead.
+ */
+export function checkPhone(raw: string, lang: Lang): CheckResult {
   const t = TX[lang];
   const phone = normalizePhone(raw)!;
-  const indicator = phoneIndicator(phone);
-  const reports = await reportCount([indicator]);
-  const signals: CheckResult["signals"] = [];
-  if (reports >= 3) signals.push({ level: "bad", text: t.reportsMany(reports) });
-  else if (reports > 0) signals.push({ level: "warn", text: t.reportsFew(reports) });
-  else signals.push({ level: "info", text: t.phoneNoReports });
-  if (!phone.startsWith("+996")) signals.push({ level: "info", text: t.phoneForeign(phone.startsWith("+7") ? "+7" : phone.startsWith("+1") ? "+1" : phone.slice(0, 4)) });
-
-  const verdict = reports >= 3 ? "danger" : reports > 0 ? "suspicious" : "unknown";
+  const display = maskPhone(phone);
   return {
     kind: "phone",
-    verdict,
-    title: verdict === "unknown" ? t.phoneTitleNone : t.titles[verdict],
-    summary: verdict === "unknown" ? t.phoneSummaryNone : t.phoneSummaryReported(reports),
-    subject: indicator.display,
+    verdict: "unknown",
+    title: t.phoneTitleNone,
+    summary: t.phoneSummaryNone,
+    subject: display,
     scheme: null,
-    signals,
+    signals: phone.startsWith("+996") ? [] : [{ level: "info", text: t.phoneForeign(phone.startsWith("+7") ? "+7" : phone.startsWith("+1") ? "+1" : phone.slice(0, 4)) }],
     advice: t.phoneAdvice,
-    facts: [{ label: t.f.phone, value: indicator.display }],
-    indicators: [indicator],
-    reports,
+    facts: [],
+    indicators: [],
+    reports: 0,
     links: [],
     lang,
   };

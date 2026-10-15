@@ -34,7 +34,7 @@ export type SchemeId = (typeof SCHEME_IDS)[number];
 
 /** Something users can report as fraud. Values are normalised (domain = registrable domain, phone = +996…). */
 export interface Indicator {
-  type: "domain" | "phone" | "app";
+  type: "domain" | "app";
   value: string;
   /** Safe to show (phones are masked). */
   display: string;

@@ -1,11 +1,10 @@
 import "server-only";
 import { CheckError } from "../ai";
-import { reportCount } from "../reports";
 import { VERDICT_RANK, type CheckResult, type Indicator, type Lang, type Signal, type Verdict } from "../types";
 import { aiForMessage } from "./ai-verdict";
 import { checkApp, parsePlayUrl } from "./app";
 import { checkLink, isRestated, mergeVerdicts, sortSignals } from "./link";
-import { checkPhone, findPhones, looksLikePhone, normalizePhone, phoneIndicator } from "./phone";
+import { checkPhone, looksLikePhone } from "./phone";
 import { getDomain } from "tldts";
 import { brandForDomain } from "./official";
 import { readQr } from "./qr";
@@ -87,9 +86,7 @@ async function checkMessage(text: string, image: { mime: string; data: string } 
 
   if (!ai && !links.length) throw aiError instanceof CheckError ? aiError : new CheckError("ai_failed", 502);
 
-  const phones = [...new Set([...findPhones(text), ...(ai?.phones.map(normalizePhone).filter((p): p is string => Boolean(p)) ?? [])])].slice(0, 3);
-  const phoneIndicators = phones.map(phoneIndicator);
-  const phoneCounts = await Promise.all(phoneIndicators.map((i) => reportCount([i])));
+
 
   // Technical findings first; AI findings only if they add something new.
   const signals: Signal[] = [];
@@ -110,19 +107,14 @@ async function checkMessage(text: string, image: { mime: string; data: string } 
   for (const l of links) {
     if (l.verdict !== "safe") signals.push({ level: l.verdict === "danger" ? "bad" : l.verdict === "suspicious" ? "warn" : "info", text: t.linkInMessage(l.subject, l.verdict) });
   }
-  phoneIndicators.forEach((p, i) => {
-    if (phoneCounts[i] > 0) signals.push({ level: phoneCounts[i] >= 3 ? "bad" : "warn", text: t.phoneInMessage(p.display, phoneCounts[i]) });
-  });
   for (const s of ai?.signals ?? []) if (!isRestated(s.text, signals)) signals.push(s);
 
   const risky: Verdict[] = links.map((l) => l.verdict).filter((v) => v === "danger" || v === "suspicious");
-  if (phoneCounts.some((c) => c >= 3)) risky.push("danger");
-  else if (phoneCounts.some((c) => c > 0)) risky.push("suspicious");
   const base: Verdict = ai?.verdict ?? "unknown";
   const verdict = mergeVerdicts([base, ...risky]);
   const aiMatches = ai && ai.verdict === verdict;
 
-  const indicators: Indicator[] = [...links.flatMap((l) => l.indicators), ...phoneIndicators];
+  const indicators: Indicator[] = links.flatMap((l) => l.indicators);
   const doc = ai?.doc.isDocument ? ai.doc : null;
   const facts = doc
     ? [
@@ -143,7 +135,7 @@ async function checkMessage(text: string, image: { mime: string; data: string } 
     advice: (aiMatches && ai!.advice.length ? ai!.advice : t.advice[verdict]),
     facts,
     indicators,
-    reports: phoneCounts.reduce((a, b) => a + b, 0) + links.reduce((a, l) => a + l.reports, 0),
+    reports: links.reduce((a, l) => a + l.reports, 0),
     links,
     lang,
     aiSkipped: !ai,

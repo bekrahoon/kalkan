@@ -15,13 +15,13 @@ export async function POST(req: Request) {
 
 /**
  * Moderation for false reports (official sites can't be reported at all):
- *   DELETE /api/report?key=ADMIN_KEY&type=domain|phone|app&value=…
+ *   DELETE /api/report?key=ADMIN_KEY&type=domain|app&value=…
  */
 export async function DELETE(req: Request) {
   const u = new URL(req.url);
   if (!process.env.ADMIN_KEY || u.searchParams.get("key") !== process.env.ADMIN_KEY) return new Response("Not found", { status: 404 });
   const type = u.searchParams.get("type");
   const value = u.searchParams.get("value") ?? "";
-  const ok = await clearReports({ type: type as "domain" | "phone" | "app", value, display: value });
+  const ok = await clearReports({ type: type as "domain" | "app", value, display: value });
   return Response.json({ ok });
 }

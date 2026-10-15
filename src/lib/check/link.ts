@@ -101,9 +101,14 @@ function scanPage(html: string): PageScan {
 
 const cache = new Map<string, { at: number; r: CheckResult }>();
 
-export async function checkLink(raw: string, lang: Lang, opts: { ai?: boolean; budgetMs?: number } = {}): Promise<CheckResult> {
+export async function checkLink(
+  raw: string,
+  lang: Lang,
+  /** feeds=false: judge only by our own checks (used to measure accuracy without the phishing lists). */
+  opts: { ai?: boolean; budgetMs?: number; feeds?: boolean } = {},
+): Promise<CheckResult> {
   const url = parseUserUrl(raw.replace(/[).,;!?»"']+$/, ""));
-  const key = `${lang}:${opts.ai === false ? "noai" : "ai"}:${url.href}`;
+  const key = `${lang}:${opts.ai === false ? "noai" : "ai"}:${opts.feeds === false ? "nofeed" : "feed"}:${url.href}`;
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < 30 * 60_000) return hit.r;
 
@@ -117,7 +122,7 @@ export async function checkLink(raw: string, lang: Lang, opts: { ai?: boolean; b
   const [page, startAge, feedStart] = await Promise.all([
     fetchPage(url, 12_000),
     trusted(start) || start.known || start.shortener || start.isIp || start.hosting ? Promise.resolve(null) : domainAge(start.reg),
-    checkFeeds([url], (h) => describe(new URL(`https://${h}`)).known),
+    opts.feeds === false ? Promise.resolve(null) : checkFeeds([url], (h) => describe(new URL(`https://${h}`)).known),
   ]);
 
   const final = page.hops.length ? describe(page.finalUrl) : start;
@@ -125,7 +130,7 @@ export async function checkLink(raw: string, lang: Lang, opts: { ai?: boolean; b
   const [finalAge, feedFinal] = moved
     ? await Promise.all([
         trusted(final) || final.known || final.isIp || final.hosting ? Promise.resolve(null) : domainAge(final.reg),
-        checkFeeds([page.finalUrl], (h) => describe(new URL(`https://${h}`)).known),
+        opts.feeds === false ? Promise.resolve(null) : checkFeeds([page.finalUrl], (h) => describe(new URL(`https://${h}`)).known),
       ])
     : [startAge, null];
   const feed = feedStart ?? feedFinal;
