@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { BrainCircuit, Info, KeyRound, ScanSearch, UserRound, Wallet } from "lucide-react";
+import { BrainCircuit, ChevronDown, Info, KeyRound, ScanSearch, UserRound, Wallet } from "lucide-react";
 import { useLang } from "./LangProvider";
 import { ShieldLogo } from "./ShieldLogo";
 import { ABOUT_PAGE, TEAM } from "@/content/pages";
+import { ACCURACY_TEXT } from "@/content/accuracy";
 
 const WHY_ICONS = [Wallet, KeyRound, BrainCircuit];
 
 export function AboutContent() {
   const { lang } = useLang();
   const c = ABOUT_PAGE[lang];
+  const acc = ACCURACY_TEXT[lang];
 
   return (
     <div className="mx-auto max-w-3xl px-4 pt-10 sm:pt-14">
@@ -26,6 +28,32 @@ export function AboutContent() {
       <section className="mt-8 rounded-2xl bg-primary-soft p-5 sm:p-6">
         <h2 className="text-xl font-bold">{c.missionTitle}</h2>
         <p className="mt-2 leading-relaxed">{c.mission}</p>
+      </section>
+
+      <section className="mt-10" aria-labelledby="accuracy">
+        <h2 id="accuracy" className="text-2xl font-bold">
+          {acc.title}
+        </h2>
+        <p className="mt-2 leading-relaxed text-muted">{acc.lead}</p>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+          {acc.tiles.map(([value, label]) => (
+            <li key={label} className="card p-4">
+              <p className="text-3xl font-bold tabular-nums text-primary">{value}</p>
+              <p className="mt-1 text-sm leading-snug text-muted">{label}</p>
+            </li>
+          ))}
+        </ul>
+        <details className="group mt-3 rounded-2xl bg-subtle">
+          <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between gap-2 px-4 font-medium">
+            {acc.methodTitle}
+            <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" aria-hidden />
+          </summary>
+          <ul className="list-disc space-y-2 px-4 pb-4 pl-9 text-sm leading-snug marker:text-muted">
+            {acc.method.map((m) => (
+              <li key={m}>{m}</li>
+            ))}
+          </ul>
+        </details>
       </section>
 
       <section className="mt-10" aria-labelledby="why">
