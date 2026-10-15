@@ -1,0 +1,2622 @@
+{
+ "summary": {
+  "date": "2026-10-15",
+  "phishing": 200,
+  "legit": 100,
+  "phishDangerWithLists": 120,
+  "phishWarnedWithLists": 180,
+  "phishDangerOwnOnly": 63,
+  "phishWarnedOwnOnly": 171,
+  "phishUnreachable": 0,
+  "legitDanger": 0,
+  "legitSuspicious": 0,
+  "legitSafe": 85,
+  "legitUnknown": 15
+ },
+ "phishing": [
+  {
+   "url": "http://sp19ct-narek-biz-lovin-zema.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://metamask-docs-ldkp21iks-consensys-ddffed67.vercel.app/agent-wallet/reference/architecture",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (vercel.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://ledger-login-start-auth-us.typedream.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (typedream.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://us06-web-zoom.us/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://sunriselawgroupscom.sunriselawgroups.com/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт молодой: создан 20.05.2026."
+   ]
+  },
+  {
+   "url": "https://playful-bluetebeneficia.netlify.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (netlify.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://qkbzp.com/newlp/auto2.html?lptoken=17e491db61de57848390",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://roof.premieragemanagement.top/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Доменная зона .top дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 07.08.2026."
+   ]
+  },
+  {
+   "url": "http://sp10ct10-jarnak-biz-lumari-kemvo.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://sp10ct10-relnak-biz-luravo-zemri.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://mihiso.ipv64.de/samo/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "https://gedivan.duckdns.org/dijep/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (duckdns.org). Банки и госорганы так не делают.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://m.dtwyiqnl9ods.com:9229/account/reg?code=49430",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт работает на нестандартном порту :9229 — обычные сайты так не делают.",
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "https://kufsdoinlodind.godaddysites.com/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (godaddysites.com). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://www.webdisk.codashop-371.duckdns.org/login",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (duckdns.org). Банки и госорганы так не делают.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Страница просит пароль.",
+    "Нет шифрования (http): введённые данные можно перехватить."
+   ]
+  },
+  {
+   "url": "http://ip7gs-njt-zwea-0re7c-30-09-2026-hh.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://bexfaro-mpt-zunqeli-p6d7ka91.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://sp15ct-kunvax-biz-rolzen-tavex.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://gfvsa-9y2-ntxb-xik1p-30-09-2026-hh.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://sp10ct10-jorvek-biz-zurevi-kemko.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://pro-help-suite-cdn.typedream.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (typedream.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://berquni-kxt-qorfeta-p8t2fc63.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://zaimacodes.github.io/amazon-clone",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (github.io). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://cpsgift.com/guides/guides/blackops6/blackops6/blog",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "https://szlxskj.com/newlp/2/xkmd13.html?lptoken=175f91a098c6887f05f9",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "http://ledgerdownloads.com/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Сайт создан всего 4 дн. назад. Мошеннические сайты почти всегда новые."
+   ]
+  },
+  {
+   "url": "https://cn.mpmxzu.com/home/register?code=49430",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "safe",
+   "reasons": [
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://inova-lab.com/vir-3/?stjk0=17916f8640feca6abca6a02dd977e54befd1c86258",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "http://learn-liveledger-eng.typedream.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (typedream.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://credito-ecuador-prestamo--victorvicenso12.replit.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (replit.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://soft-caramel-01ec87.netlify.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (netlify.app). Банки и госорганы так не делают.",
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "http://tokenimgo1-cdn-cache-hk48.lol/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Сайт создан всего 5 дн. назад. Мошеннические сайты почти всегда новые.",
+    "Доменная зона .lol дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "http://sp19ct-karel-biz-vorin-lano.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://sp18ct10-xelvak-biz-vunero.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://shimmering-gaufre-10edda.netlify.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (netlify.app). Банки и госорганы так не делают.",
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "http://www.cutt.ly/ZyWDEv25/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Сайт создан всего 11 дн. назад. Мошеннические сайты почти всегда новые.",
+    "Доменная зона .xyz дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "http://autumn-sunset-301e.cloudrix.workers.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (workers.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://51jx-q.vercel.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Ссылка перенаправляет на другой сайт: video18.me.",
+    "Сайт сделан на бесплатном хостинге (vercel.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://help.steampowered.com.im/en/wizard/HelpRequest/HT-E8JJ-I6WP-QJ2C/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус»."
+   ]
+  },
+  {
+   "url": "https://hnjiangyi.com/Alert2/glow.html?lptoken=173391ce81f853d74755&cep=N4Igdgpg7g%2BgFgSwC4wQExALhAFgOwAMAnAIwCsATAQLQnkDM1OARgBwnXNoBsHZAZnnrMcZNK0J4QAGhAA3BAGdkqDNhz0IzCEX6tq9CmUY4Ahqe6cK%2FAMbUKJfvyLNupiHmb0Z8pSqQIALYQikimgQAOWCBUFJYkNCQUACok9JhkRJgE3AB0RPRkAFo%2BCspIAPYATqrRbPSmrGhG1KzsFExkOPycrBR2NuYkaEQW3PwkrD6DkaYIAOZgtdhuzKYEzKMEeKZO9AQESQSG%2FGQkPmAVaBDLIAQw57KX1zBIAJ4RENEAMqZgaAgwPMLlcbjY4HMwFgANp3B4gAC6sgiVRCEAANhAbEgIGgYM8vphQO9Pj8%2FgCgT4wlV5hAUOhoqtTDgCCybMwuKZCIcjMx%2BGhCCCXgzsPdHuAIAAPJBYYkfQkgADyTggVSpphpdNubhsNhZ3C4WKcBx53DIhwINiFNxFcPu9xgYsdMCkTylMswYAAruj0QBfP2ycGQmARCrlBAVKFEkA2L1VVFgJAAOVBAEl%2FlKsARZMwqn9wRmATYQjCEYGQEoYKiAajsVgkFUvRBZABHRRRIkVquQKBYfimdGKCB%2BoA%3D&cpid=6aba0b9a07aff30012032f51",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://www.roblox.com.mu/users/5757654538/profile",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт молодой: создан 06.06.2026."
+   ]
+  },
+  {
+   "url": "https://www.roblox.ly/users/4688794542/profile",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт молодой: создан 14.07.2026."
+   ]
+  },
+  {
+   "url": "http://us02-web-zoom.us/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://rgeoy-m1j-lgkt-6uifr-30-09-2026-hh.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://nimble-monstera-94026a.netlify.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (netlify.app). Банки и госорганы так не делают.",
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "http://nestli.pro/concluded.php?k=8d42705de66c8cafebf1de700bf52b15612973ad",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "http://deft-mooncake-21b98a.netlify.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (netlify.app). Банки и госорганы так не делают.",
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "https://wihedejo.dyn-ip24.de/jocuki/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "https://illustrious-bienenstitch-801c80.netlify.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (netlify.app). Банки и госорганы так не делают.",
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "http://sp18ct10-purnok-biz-vilami.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://oruvisese.ipv64.net/ezoz/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "safe",
+   "reasons": [
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "http://eibze-tb1-cvfq-alhn1-03-10-2026-aa.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://instalgram.vercel.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (vercel.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://ome.bhbor.top/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .top дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 31.07.2026."
+   ]
+  },
+  {
+   "url": "http://graceful-stardust-2d69e7.netlify.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (netlify.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://sy2t6-08t-4lp3-jn6n2-30-09-2026-hh.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://sp18ct10-surnok-biz-qaveli.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://zulqeni-mpt-vafmuro-k8x3pe91.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://www.leanl.vercel.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (vercel.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://kuucioinlogin.webflow.io/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (webflow.io). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://portalonlinedaweb.com/portalonlinedaweb.com/inicio.html",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Сайт создан всего 7 дн. назад. Мошеннические сайты почти всегда новые."
+   ]
+  },
+  {
+   "url": "http://sp15ct-vexren-biz-kulzak-norvi.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://kidifoze.duckdns.org/asuho/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (duckdns.org). Банки и госорганы так не делают.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://www.roblox.com.mu/users/7938726259/profile",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт молодой: создан 06.06.2026."
+   ]
+  },
+  {
+   "url": "https://bitly.cx/pusatbantuan-tokopedia-resmi",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Ссылка перенаправляет на другой сайт: pusatbantuantokopedia.daftar-id.biz.id."
+   ]
+  },
+  {
+   "url": "https://qorzami-kxt-zelquro-p8t3hq91.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://sp15ct-melzak-biz-vurven-qolra.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://sp18ct10-narnok-biz-viremi.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://sp15ct-telven-biz-qurix-zavlo.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://bomobazi.abrdns.com/giguv/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (abrdns.com). Банки и госорганы так не делают.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "https://sp10ct10-yavlek-biz-rumari-zavvo.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://nbsde-21j-ikt9-z8p92-02-10-2026-aa.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://cap-learn-livlgr-logn.pages.dev/0x.htm",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://cont17ct-zavren-biz-qelto-mivra.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://br3.workonea.top/brgtm/?pixel=1028995350153553&ef=1",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Сайт создан всего 10 дн. назад. Мошеннические сайты почти всегда новые.",
+    "Доменная зона .top дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "http://us07-web-zoom.us/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "http://cpsgift.com/guides/guides/blackops6",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "https://sp15ct-nureli-biz-vemax-kulor.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://mvdcy4158lk-sxfzkpli-8eg51d-mvd92c.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://rohitvarma2657.github.io/Amazon-Homepage-Clone/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (github.io). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://strong-crisp-e17e60.netlify.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (netlify.app). Банки и госорганы так не делают.",
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "https://paziduc.duckdns.org/lufu/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (duckdns.org). Банки и госорганы так не делают.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://metamask-docs-ldkp21iks-consensys-ddffed67.vercel.app/embedded-wallets/sdk/vue",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (vercel.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://offer-rfp.sunriselawgroups.com/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт молодой: создан 20.05.2026."
+   ]
+  },
+  {
+   "url": "https://vormavi-zxt-belfora-c3x6dp79.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://flybuysmember.netlify.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (netlify.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://ws-wm.checkandbalancefirm.top/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .top дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 18.08.2026."
+   ]
+  },
+  {
+   "url": "https://casemegewa.loseyourip.com/sisu/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "http://vormita-kxt-qelmora-r2t6dp94.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://https--www--roblox.com/login?returnUrl=1717572407",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Страница просит номер телефона и код — так крадут аккаунты Telegram и WhatsApp.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Сайт молодой: создан 02.09.2026."
+   ]
+  },
+  {
+   "url": "https://befolewaco.ddnss.de/vohen/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "https://app.mimisa.xyz/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Сайт создан всего 11 дн. назад. Мошеннические сайты почти всегда новые.",
+    "Доменная зона .xyz дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "http://onl1ne-whatsapp.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "В адресе есть «WhatsApp», но сайт не принадлежит WhatsApp (официальный — whatsapp.com).",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://qkbzp.com/newlp/news2.html?lptoken=173a917a186314438937&cep=N4Igdgpg7g%2BgFgSwC4wQExALhGtEICMAZgOwCcAtKWgCwU0Rl1lol0FoEAMARgEwkAxgDYIXDABoQANwQBnZKgzY%2BgohACGRLgFYKQ4UXppBaCgA4CEYRQhEyGkkTREeENMJBTZClEgQAthBySBoBAA5YIHxcfDbcFLoAKrqYOjSYNGQAdADMBDoAWl4gEAAeSBAATmAaADZKUcCCdQiCANZKAL4lPsgA9lWN2MKCPOqGZoS5dDTCXJQOJCQUSzrmbAQaPBoEJYJh4RoIAOZgwyDCGubOnDzC94Lm81wEfATCOnwQJCVg%2FXgLlwYHwQX8ARAYEgAJ7hCBRAAyGjAaAQYBO4MBgjgxzAWAA2iBgaC%2BCAALpScJVYIQOoQQSVNAwf54LCgGFwxHI1HokqhKonCAodBRK4aQT4dw0HRWGhceVvETEGjmTGQkXYYlgqSQCpskAc%2BHYADyRHUVT5GgFQouVx4WT44vGkvMCpiGmE5kYaqBIJgwOB%2Fr9BCDQZJQb2OvKSCwYAArnU6l0ulJsbiYOF%2Br4EP08ZhQII41VqWAkAA5CEASRR5SwXCkPCqyOx1dRErkBLJKZA8hg1NR1IZWCQVTjECkAEc5JF8yAWm1OhqQM1Wh1uvtqRp%2FNJ1cpl4JN9vdz0pBo0NIYAcIsczhdgGeL1ejqdzugT3PDwgd8ywkb95%2Fv1qIJ3zjOMl2AUC3xKB8YH6M1qjvGC4PNdcpGQhCgL%2FYB0KGTD3y0IgEFaLddyaAiiIQEjUJ7FwNCadAiA0d85EEKIAFkkgAcRgFICBof1chKE5jj3YBhKgqRxKZAI0B0JopJgGSdHfQIIAQeiggQFTNMU2SNLU3TlOglEqn6dBEJMsymQkkBuVM8zzKUsjLIc6TZPfAJxSaTzBA88VDO8%2FylPffoRKaUKbIity5OwbCRMMkC6NiuMmJAbte0gKAsEYuo5AgLogA%3D%3D%3D&cpid=6a8fdd1b6b6c8600121652e7",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "http://www.webdisk.codashop-371.duckdns.org/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (duckdns.org). Банки и госорганы так не делают.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Страница просит пароль.",
+    "Нет шифрования (http): введённые данные можно перехватить."
+   ]
+  },
+  {
+   "url": "https://center-feature-update-hu658.vercel.app/privacy-centers.html",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (vercel.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://hoo-8zn-0b4k-nes-ixwq-7yfyeh.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "http://www.metaclaim.vercel.app/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (vercel.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://vugamop.dyn.ddnss.de/anosi/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "https://sp15ct-zureli-biz-morax-pelun.pages.dev/",
+   "source": "openphish",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://alpbitrexai.digital",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://nr-28432ms8423.lol",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .lol дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Сайт молодой: создан 23.07.2026."
+   ]
+  },
+  {
+   "url": "https://luloleu.com",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://yihwnnfj.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://aunveldr0k-denmark.com",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Страница просит номер телефона и код — так крадут аккаунты Telegram и WhatsApp.",
+    "Сайт молодой: создан 22.07.2026."
+   ]
+  },
+  {
+   "url": "https://allegro.6450t230t2j6.mom",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .mom дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Сайт молодой: создан 08.09.2026."
+   ]
+  },
+  {
+   "url": "https://diament-lokatren.net",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт молодой: создан 24.06.2026."
+   ]
+  },
+  {
+   "url": "https://tradefuseai-engine.com",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://koelemarktholm-ai.com",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт молодой: создан 21.05.2026."
+   ]
+  },
+  {
+   "url": "https://skleptio.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://sugarflicker.com",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://xyberorendatrade.com",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://allegrolokainie.pl-599185798124.lol",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .lol дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 30.04.2026."
+   ]
+  },
+  {
+   "url": "https://guest-pend77540.com",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт молодой: создан 06.06.2026."
+   ]
+  },
+  {
+   "url": "https://fortup.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://linen-bloom.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://danalevy.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://flaconi.mom",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .mom дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 16.07.2026."
+   ]
+  },
+  {
+   "url": "https://alebilet.pl-oferta762818.sbs",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Сайт создан всего 2 дн. назад. Мошеннические сайты почти всегда новые.",
+    "Доменная зона .sbs дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://brighthearthco.eu",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://dpdlocorv.top",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .top дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 15.05.2026."
+   ]
+  },
+  {
+   "url": "https://rivieramatrixai.com",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт молодой: создан 14.09.2026."
+   ]
+  },
+  {
+   "url": "https://kroger.co.com",
+   "source": "phishing.army",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "https://fixmycomp.live",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .live дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 04.08.2026."
+   ]
+  },
+  {
+   "url": "https://texeaxqmvk.shop",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Доменная зона .shop дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://gdzieswkorytarzu.top",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .top дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 04.06.2026."
+   ]
+  },
+  {
+   "url": "https://vireluneqastorix.live",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Доменная зона .live дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 11.05.2026."
+   ]
+  },
+  {
+   "url": "https://btc-adverant-ai.com",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт молодой: создан 18.07.2026."
+   ]
+  },
+  {
+   "url": "https://severe-copper-y92uxuu9.edgeone.dev",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://globalfcu.gr.com",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://rascalsnft.web.app",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (web.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://alebilet.pl-85563.click",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .click дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 02.07.2026."
+   ]
+  },
+  {
+   "url": "https://restrokarte.com",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://x8ndfm.work",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Доменная зона .work дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://pewnyprofil-9366.fun",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .fun дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 15.09.2026."
+   ]
+  },
+  {
+   "url": "https://mavilia.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://olx.pl-58918795212.lol",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .lol дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 30.04.2026."
+   ]
+  },
+  {
+   "url": "https://theamalficoastweddingplanner.mom",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .mom дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 02.07.2026."
+   ]
+  },
+  {
+   "url": "https://benji.webdesignminneapolis.info",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .info дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://vagnortexapp.live",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Доменная зона .live дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 22.06.2026."
+   ]
+  },
+  {
+   "url": "https://homeorae.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://skernelvarn.com",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Сайт создан всего 12 дн. назад. Мошеннические сайты почти всегда новые."
+   ]
+  },
+  {
+   "url": "https://prywatne0953474.help",
+   "source": "phishing.army",
+   "withLists": "error",
+   "ownOnly": "error",
+   "reasons": []
+  },
+  {
+   "url": "https://autoiormes.autos",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .autos дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 03.08.2026."
+   ]
+  },
+  {
+   "url": "https://vuhewau.pro",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт молодой: создан 03.06.2026."
+   ]
+  },
+  {
+   "url": "https://welcome-trezr-suite.square.site",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (square.site). Банки и госорганы так не делают.",
+    "Доменная зона .site дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://btcaurovantepro.com",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт молодой: создан 20.05.2026."
+   ]
+  },
+  {
+   "url": "https://herzenatrade.com",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт молодой: создан 14.05.2026."
+   ]
+  },
+  {
+   "url": "https://meritscior.cyou",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .cyou дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 20.07.2026."
+   ]
+  },
+  {
+   "url": "https://qdhxhz.com",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://pl-ballet.online",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .online дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 01.08.2026."
+   ]
+  },
+  {
+   "url": "https://torenrentiek.net",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт молодой: создан 26.06.2026."
+   ]
+  },
+  {
+   "url": "https://swapkapidexhex.sbs",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .sbs дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://finance25-ut38.sbs",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .sbs дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 06.07.2026."
+   ]
+  },
+  {
+   "url": "https://get-a-room-89012.help",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Доменная зона .help дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 14.07.2026."
+   ]
+  },
+  {
+   "url": "https://flarex400.live",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Доменная зона .live дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 01.06.2026."
+   ]
+  },
+  {
+   "url": "https://wertbundor-de.com",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт молодой: создан 05.05.2026."
+   ]
+  },
+  {
+   "url": "https://artiumcapital.com",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт молодой: создан 17.06.2026."
+   ]
+  },
+  {
+   "url": "https://nausicomociare.site",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .site дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 29.04.2026."
+   ]
+  },
+  {
+   "url": "https://kiospsosoifodsksfo.site",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .site дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Сайт молодой: создан 13.07.2026."
+   ]
+  },
+  {
+   "url": "https://glintor-gear.com",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://cumbreveloria.digital",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт молодой: создан 07.06.2026."
+   ]
+  },
+  {
+   "url": "https://invitale.xyz",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .xyz дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://weryflkuje-27642.eu.cc",
+   "source": "phishing.army",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "https://evolt.com",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://serviceappsm.blogspot.com",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (blogspot.com). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://xbitcoinai.com",
+   "source": "phishing.army",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "https://allegrolokalnie.wakacje-2026-14302.click",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .click дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 06.06.2026."
+   ]
+  },
+  {
+   "url": "https://redorange-54175.firebaseapp.com",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (firebaseapp.com). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://ironwavebase.site",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .site дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 15.05.2026."
+   ]
+  },
+  {
+   "url": "https://aldideals.garmart.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://9206qwr.hair",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .hair дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 26.05.2026."
+   ]
+  },
+  {
+   "url": "https://sp3ct-lanvik-biz8-forsel-qadun.pages.dev",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт сделан на бесплатном хостинге (pages.dev). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://allegro-lokalnie.392897h4537.xyz",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .xyz дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Сайт молодой: создан 01.07.2026."
+   ]
+  },
+  {
+   "url": "https://allegrolokalnie.aukcja321512.cfd",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .cfd дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Сайт молодой: создан 19.04.2026."
+   ]
+  },
+  {
+   "url": "https://jjoojusqua.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://bgrezcfglounha.firebaseapp.com",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (firebaseapp.com). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://goknartur.com",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://ecjysxkewc.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://kucoinelgiun.webflow.io",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт сделан на бесплатном хостинге (webflow.io). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://6861693947-firmy.storage.googleapis.com",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": [
+    "Ссылка скачивает файл, а не открывает страницу."
+   ]
+  },
+  {
+   "url": "https://overcoatstore.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://y0uzam0wlen1e24756.sbs",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .sbs дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Сайт молодой: создан 12.09.2026."
+   ]
+  },
+  {
+   "url": "https://pl-sklep2oferta76959134.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://kelvoryqen.net",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Сайт создан всего 7 дн. назад. Мошеннические сайты почти всегда новые."
+   ]
+  },
+  {
+   "url": "https://ihmag.com",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Сайт молодой: создан 24.04.2026."
+   ]
+  },
+  {
+   "url": "https://ca.dmvyev.sbs",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .sbs дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 13.06.2026."
+   ]
+  },
+  {
+   "url": "https://ximocraftnext.site",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .site дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 13.08.2026."
+   ]
+  },
+  {
+   "url": "https://hscptg.com",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://allegrolokalnie.172579g7.lat",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт молодой: создан 05.05.2026."
+   ]
+  },
+  {
+   "url": "https://bikezoneplus.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга."
+   ]
+  },
+  {
+   "url": "https://tepqlxvnra.help",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .help дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Сайт молодой: создан 29.05.2026."
+   ]
+  },
+  {
+   "url": "https://lumventaroprime.net",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Сайт молодой: создан 22.07.2026."
+   ]
+  },
+  {
+   "url": "https://alebilet.ploferta844389.shop",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .shop дешёвая и часто используется для фишинга.",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты."
+   ]
+  },
+  {
+   "url": "https://assimomos.firebaseapp.com",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Ссылка перенаправляет на другой сайт: assimoszf1.web.app.",
+    "Сайт сделан на бесплатном хостинге (firebaseapp.com). Банки и госорганы так не делают.",
+    "Сайт сделан на бесплатном хостинге (web.app). Банки и госорганы так не делают."
+   ]
+  },
+  {
+   "url": "https://klelnanzeigen-deutch.pobolx.com",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://zjptq.com",
+   "source": "phishing.army",
+   "withLists": "danger",
+   "ownOnly": "danger",
+   "reasons": [
+    "Хостинг сайта сам показывает предупреждение: «подозрение на фишинг или вирус».",
+    "Имя сайта — бессмысленный набор букв. Так выглядят одноразовые мошеннические сайты.",
+    "Сайт молодой: создан 22.04.2026."
+   ]
+  },
+  {
+   "url": "https://da.desczr8.vu",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "https://zedrhome.sbs",
+   "source": "phishing.army",
+   "withLists": "suspicious",
+   "ownOnly": "suspicious",
+   "reasons": [
+    "Доменная зона .sbs дешёвая и часто используется для фишинга.",
+    "Сайт молодой: создан 16.07.2026."
+   ]
+  },
+  {
+   "url": "https://karpatrentovanz.com",
+   "source": "phishing.army",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  }
+ ],
+ "legit": [
+  {
+   "url": "mbank.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "optimabank.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "demirbank.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "kicb.net",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "bakai.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "rsk.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": [
+    "Ссылка перенаправляет на другой сайт: eldik.kg."
+   ]
+  },
+  {
+   "url": "ab.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": [
+    "Ссылка перенаправляет на другой сайт: abank.kg."
+   ]
+  },
+  {
+   "url": "keremetbank.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "kompanion.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "elsom.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "balance.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "dcb.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "fincabank.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "bai-tushum.kg",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "ecoislamicbank.kg",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "halykbank.kg",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "kkb.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "tolubaybank.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "capitalbank.kg",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "nbkr.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "megacom.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": [
+    "Ссылка перенаправляет на другой сайт: mega24.kg."
+   ]
+  },
+  {
+   "url": "beeline.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "o.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "nurtelecom.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": [
+    "Ссылка перенаправляет на другой сайт: o.kg."
+   ]
+  },
+  {
+   "url": "elcat.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "kt.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "aknet.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "gov.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "tunduk.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": [
+    "Ссылка перенаправляет на другой сайт: tunduk.gov.kg."
+   ]
+  },
+  {
+   "url": "salyk.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "mvd.gov.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "mfa.gov.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "president.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "kenesh.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "minfin.gov.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "edu.gov.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "sti.gov.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "customs.gov.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "stat.gov.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "shailoo.gov.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "sf.kg",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "infocom.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": [
+    "Ссылка перенаправляет на другой сайт: gukyzmat.gov.kg."
+   ]
+  },
+  {
+   "url": "minjust.gov.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "mchs.gov.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "bishkek.gov.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "24.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "kaktus.media",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "akipress.org",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "kabar.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "azattyk.org",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "sputnik.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "kloop.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "vb.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "knews.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "economist.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "super.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": [
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "ktrk.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": [
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "aprel.kg",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "tazabek.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": [
+    "Страница просит пароль."
+   ]
+  },
+  {
+   "url": "limon.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "factcheck.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "lalafo.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "house.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "mashina.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "doska.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "namba.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "2gis.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "sulpak.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "kivano.kg",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "enter.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "softech.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "iuca.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "auca.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "manas.edu.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "knu.kg",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "krsu.edu.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": [
+    "Ссылка перенаправляет на другой сайт: www.krsu.kg."
+   ]
+  },
+  {
+   "url": "ucentralasia.org",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "kstu.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "airmanas.com",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "kumtor.kg",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "kyrgyzaltyn.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "glovoapp.com",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "yandex.ru",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "google.com",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "youtube.com",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "instagram.com",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "wikipedia.org",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "telegram.org",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "whatsapp.com",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "tiktok.com",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "wildberries.ru",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "ozon.ru",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "kaspi.kz",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "olx.kz",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "hh.kg",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "diesel.elcat.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "vesti.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  },
+  {
+   "url": "today.kg",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "kloop.media",
+   "source": "legit",
+   "withLists": "unknown",
+   "ownOnly": "unknown",
+   "reasons": []
+  },
+  {
+   "url": "zanoza.kg",
+   "source": "legit",
+   "withLists": "safe",
+   "ownOnly": "safe",
+   "reasons": []
+  }
+ ]
+}
