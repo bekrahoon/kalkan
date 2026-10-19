@@ -5,22 +5,17 @@ import type { Lang } from "@/lib/types";
 export interface TeamMember {
   name: string;
   role: string;
+  links?: { label: string; href: string }[];
 }
 
-/** Edit this list with the real team. */
+const AUTHOR_LINKS = [
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/aba-bekrahoon-umurjanov-183b39352" },
+  { label: "GitHub", href: "https://github.com/bekrahoon" },
+];
+
 export const TEAM: Record<Lang, TeamMember[]> = {
-  ru: [
-    { name: "Участник 1", role: "Капитан, продукт и питч" },
-    { name: "Участник 2", role: "Фронтенд и дизайн" },
-    { name: "Участник 3", role: "Бэкенд и ИИ" },
-    { name: "Участник 4", role: "Право и тексты" },
-  ],
-  ky: [
-    { name: "Катышуучу 1", role: "Капитан, продукт жана питч" },
-    { name: "Катышуучу 2", role: "Фронтенд жана дизайн" },
-    { name: "Катышуучу 3", role: "Бэкенд жана ЖИ" },
-    { name: "Катышуучу 4", role: "Укук жана тексттер" },
-  ],
+  ru: [{ name: "Аба-Бекрахун Умуржанов", role: "Идея, дизайн и разработка", links: AUTHOR_LINKS }],
+  ky: [{ name: "Аба-Бекрахун Умуржанов", role: "Идея, дизайн жана иштеп чыгуу", links: AUTHOR_LINKS }],
 };
 
 export const ABOUT_PAGE = {
@@ -50,7 +45,7 @@ export const ABOUT_PAGE = {
       "Подлинность документа по фото мы не определяем: это невозможно сделать надёжно.",
       "Мы храним только жалобы на сайты и приложения — без данных о том, кто пожаловался. Жалобы на номера телефонов не принимаем: ложная метка могла бы навредить честному человеку.",
     ],
-    teamTitle: "Команда",
+    teamTitle: "Автор",
     cta: "Проверить что-нибудь",
   },
   ky: {
@@ -79,7 +74,7 @@ export const ABOUT_PAGE = {
       "Документтин чыныгы экенин сүрөт боюнча аныктабайбыз: муну ишенимдүү жасоо мүмкүн эмес.",
       "Сайттарга жана тиркемелерге даттанууларды гана сактайбыз — ким даттанганы тууралуу маалыматсыз. Телефон номерлерине даттанууларды кабыл албайбыз: жалган белги чынчыл адамга зыян келтириши мүмкүн.",
     ],
-    teamTitle: "Команда",
+    teamTitle: "Автор",
     cta: "Бир нерсе текшерүү",
   },
 } satisfies Record<Lang, unknown>;

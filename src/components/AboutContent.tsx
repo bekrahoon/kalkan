@@ -108,7 +108,7 @@ export function AboutContent() {
         <h2 id="team" className="mb-4 text-2xl font-bold">
           {c.teamTitle}
         </h2>
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <ul className={TEAM[lang].length > 1 ? "grid grid-cols-2 gap-3 sm:grid-cols-4" : "grid max-w-xs gap-3"}>
           {TEAM[lang].map((m, i) => (
             <li key={i} className="card p-4 text-center">
               <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-subtle text-muted">
@@ -116,6 +116,15 @@ export function AboutContent() {
               </span>
               <p className="mt-2 font-semibold">{m.name}</p>
               <p className="mt-0.5 text-xs text-muted">{m.role}</p>
+              {m.links && (
+                <p className="mt-2 flex justify-center gap-3 text-sm">
+                  {m.links.map((l) => (
+                    <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
+                      {l.label}
+                    </a>
+                  ))}
+                </p>
+              )}
             </li>
           ))}
         </ul>

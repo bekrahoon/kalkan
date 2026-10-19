@@ -1,75 +1,98 @@
-# Калкан — кто читает твои данные?
+# Kalkan — check before you click
 
-ИИ-помощник, который простым языком (на русском и кыргызском) объясняет, что сайт или приложение делает с твоими персональными данными. Проект хакатона «Защита прав человека в эпоху ИИ».
+**Live:** https://kalkan-sigma.vercel.app · **Telegram bot:** [@kalkan_kgs_bot](https://t.me/kalkan_kgs_bot)
 
-## Возможности
+Kalkan ("shield" in Kyrgyz) tells people in a few seconds whether a link, a
+message, a screenshot, a document or an app looks like a scam, and what to do
+about it. It answers in Russian and Kyrgyz.
 
-- Проверка по ссылке (HTML-страница или PDF), по вставленному тексту или по файлу: PDF, скриншот, фото экрана (до 3 МБ).
-- Оценка риска 0–100 с разбивкой «Почему такой балл»: стартовый уровень 20 плюс/минус баллы за каждый пункт политики.
-- Красные флаги с цитатой из политики, объяснением и конкретным советом «Что сделать».
-- Какие данные собирают, кому передают, сколько хранят, какие права есть, письмо на удаление данных (RU/KG/EN).
-- Ссылка на приложение в Google Play: берётся раздел «Безопасность данных», разрешения приложения и его политика.
-- Сайты, которые блокируют роботов или собираются скриптами, читаются через запасной браузерный ридер (Jina Reader).
-- Длинные политики до 200 000 символов анализируются целиком.
-- Кэш на сервере: повторная проверка того же самого в течение суток не тратит лимит ИИ.
-- История проверок на устройстве, сравнение двух сервисов, кнопка «Поделиться».
-- Рейтинг популярных в Кыргызстане приложений (Telegram, Instagram, Яндекс Go, MBANK и др.), заранее проверенных Калканом.
-- Устанавливается на телефон как приложение; на Android ссылку из любого приложения можно отправить в Калкан через «Поделиться».
-- Защита общего ключа ИИ: запросы принимаются только со страницы Калкана, лимит проверок на человека в минуту и в день.
-- Интерфейс на русском и кыргызском, светлая и тёмная тема.
+Online fraud in Kyrgyzstan almost doubled in early 2026: fake bank pages, fake
+"vote for my niece" polls, messages from "relatives" asking for money. People
+decide in a second whether to tap a link. Kalkan is built to answer in that
+second.
 
-## Запуск
+> Калкан проверяет ссылки, сообщения, скриншоты, документы и приложения и за
+> несколько секунд говорит, похоже ли это на мошенников. На русском и кыргызском.
+
+## What it checks
+
+| Input | How |
+|---|---|
+| **Link** | The server opens it like a phone would, follows every redirect and looks at what the final page asks for (card number, password, SMS code). It checks domain age (RDAP, with WHOIS fallback for `.kg`), look-alikes of banks and well-known brands, phishing feeds (OpenPhish, optional Google Safe Browsing) and user reports. |
+| **Message or screenshot** | Gemini Flash reads the text or image, recognises known scam schemes and explains the verdict in plain words. Links found inside are checked as above. |
+| **QR code** | Decoded from the photo, then checked as a link. |
+| **Document photo or PDF** | Summons, fines, contracts, receipts: Kalkan explains what to verify. It does not claim to prove a document is genuine. |
+| **Google Play app** | Developer, install count, rating, release date, permissions and user reports. |
+| **Phone number** | Recognises the number, flags foreign country codes and explains what to do. Kalkan deliberately keeps no reports on numbers: a false label could hurt an honest person. |
+
+If the AI is unavailable, links still get a verdict from the technical checks
+alone.
+
+## Measured accuracy
+
+Measured on 15 October 2026 with [`scripts/eval-links.mts`](scripts/eval-links.mts)
+(raw results in [`docs/eval`](docs/eval)). Technical checks only, no AI.
+
+| | Result |
+|---|---|
+| Real phishing links flagged (OpenPhish + Phishing Army) | **180 of 200 (90%)** |
+| Flagged by Kalkan's own checks, without the phishing lists | **171 of 200 (86%)** |
+| False alarms on real Kyrgyz bank, government, media and shop sites | **0 of 100** |
+
+The second row matters: it shows the engine catches new phishing that is not
+yet on any blocklist.
+
+## Features
+
+- Web app in Russian and Kyrgyz, light and dark theme, installable as a PWA
+- Android share sheet: send a link from any app straight to Kalkan
+- Telegram bot, including a "chat guard" mode that quietly checks links in family or neighbourhood groups and warns about dangerous ones
+- Library of common scam schemes in Kyrgyzstan
+- History of checks kept on the device only
+- User reports on sites and apps, stored without any data about who reported
+- Abuse protection for the shared AI key: same-origin requests only, per-IP limits per minute and per day
+
+## Stack
+
+Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · Gemini Flash API ·
+cheerio · tldts · jsQR · google-play-scraper · Vercel Blob · Telegram Bot API ·
+deployed on Vercel.
+
+## Project layout
+
+| What | Where |
+|---|---|
+| Entry point that routes any input to the right check | `src/lib/check/index.ts` |
+| Link engine: redirects, page signals, brand look-alikes | `src/lib/check/link.ts`, `official.ts` |
+| Domain age (RDAP / WHOIS) | `src/lib/check/domain-age.ts` |
+| Phishing feeds | `src/lib/check/feeds.ts` |
+| Apps, phone numbers, QR codes | `src/lib/check/app.ts`, `phone.ts`, `qr.ts` |
+| AI verdict and prompts | `src/lib/check/ai-verdict.ts`, `src/lib/ai.ts` |
+| API routes | `src/app/api/check`, `src/app/api/report`, `src/app/api/telegram` |
+| Rate limits and origin checks | `src/lib/guard.ts` |
+| UI strings (RU/KG) | `src/lib/i18n.ts` |
+
+## Run locally
 
 ```bash
 npm install
-cp .env.example .env.local   # вставь GEMINI_API_KEY
+cp .env.example .env.local   # add GEMINI_API_KEY
 npm run dev                  # http://localhost:3000
 ```
 
-Без ключа приложение тоже работает: кнопки «Пример: …» показывают заранее подготовленные отчёты.
+Without a key the link checks still work, and the example buttons show prepared reports.
 
-## Деплой на Vercel
+Re-run the accuracy evaluation:
 
-1. Залей папку в GitHub-репозиторий и импортируй его в Vercel (фреймворк определится сам).
-2. В Settings → Environment Variables добавь `GEMINI_API_KEY` (и при желании `GEMINI_MODEL`, `DEMO_CACHE_ONLY`).
-3. Deploy.
+```bash
+NODE_OPTIONS=--conditions=react-server npx tsx scripts/eval-links.mts > eval.json
+```
 
-## Как устроено
+## Honest limits
 
-| Что | Где |
-| --- | --- |
-| API: загрузка страницы, извлечение текста, запрос к Gemini | `src/app/api/analyze/route.ts` |
-| Загрузка и очистка HTML (cheerio), защита от внутренних адресов, поиск ссылки «Политика конфиденциальности» на главной | `src/lib/extract.ts` |
-| Промт, JSON-схема ответа, обработка ошибок Gemini | `src/lib/gemini.ts` |
-| Проверка ответа ИИ: уровень риска из балла, валидные категории, сверка цитат с оригиналом | `src/lib/normalize.ts` |
-| Тексты примеров и готовые отчёты (офлайн-резерв) | `src/lib/demo.ts` |
-| Все строки интерфейса RU/KG, шаблон письма об удалении (RU/KG/EN) | `src/lib/i18n.ts` |
-| Страницы «Твои права» и «О проекте», состав команды | `src/content/pages.ts` |
+Kalkan works from signals and can be wrong. "No signs of fraud" is not a
+guarantee. It cannot verify whether a document in a photo is genuine.
 
-### Надёжность демо
-- Пример → запрос к Gemini → при любой ошибке (нет ключа, лимит, нет интернета) сервер отдаёт готовый отчёт с пометкой.
-- Если недоступен даже сервер, отчёт берётся прямо из бандла в браузере.
-- `DEMO_CACHE_ONLY=1` — примеры открываются мгновенно, без ИИ.
+## Author
 
-### Ошибки, которые видит пользователь
-Сайт недоступен / долго отвечает / блокирует роботов / отдаёт PDF, слишком короткий текст, длинная политика (обрезается до 60 000 символов с предупреждением), лимит API, нет ключа, нет сети.
-
-## Что проверить команде перед питчем
-- **Кыргызские тексты** (`src/lib/i18n.ts`, `src/lib/demo.ts`, `src/content/pages.ts`) — вычитать носителю языка.
-- **Блок законодательства** на странице «Твои права» помечен как черновик: уточнить формулировки, добавить номера статей, название и контакты уполномоченного органа.
-- **Команда** — заменить заглушки в `TEAM` (`src/content/pages.ts`).
-- Название модели: по умолчанию `gemini-3.8-flash`; если Google переименует — поменять через `GEMINI_MODEL`.
-
-## Технологии
-Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · cheerio · lucide-react · шрифт Inter (Google Fonts, подключён локально через Fontsource — работает без интернета).
-
-## Обновить рейтинг
-
-Список сервисов — `src/content/rating-services.ts`. Отчёты лежат в `src/content/rating-data.json`.
-Чтобы пересобрать одну запись, на развёрнутом сайте откройте
-`/api/admin/rating?key=<ADMIN_KEY>&id=telegram&lang=ru` (переменная `ADMIN_KEY` задаётся в Vercel; без неё маршрут выключен)
-и сохраните ответ в `rating-data.json`.
-
-## Мобильная демо-версия без сервера
-
-`node mobile-build/build.mjs` собирает один файл `mobile-build/dist/kalkan.html` (примеры, права, письмо, RU/KG). Проверка своих ссылок в нём отключена — для неё нужен деплой с ключом Gemini.
+Aba Bekrahoon Umurjanov — [LinkedIn](https://www.linkedin.com/in/aba-bekrahoon-umurjanov-183b39352) · [GitHub](https://github.com/bekrahoon)
