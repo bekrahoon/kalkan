@@ -11,7 +11,7 @@ interface InstallEvent extends Event {
 
 const DISMISS_KEY = "kalkan-install-dismissed";
 
-/** Registers the service worker and offers "Install Kalkan" (Android/desktop) or an iPhone hint. */
+/** Registers the service worker and offers "Install KalkanCheck" (Android/desktop) or an iPhone hint. */
 const STATIC_DEMO = process.env.NEXT_PUBLIC_KALKAN_STATIC === "1";
 
 export function InstallCard() {

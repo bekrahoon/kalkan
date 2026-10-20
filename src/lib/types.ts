@@ -65,7 +65,7 @@ export interface CheckResult {
   advice: string[];
   facts: Fact[];
   indicators: Indicator[];
-  /** How many times Kalkan users reported the main indicator(s). */
+  /** How many times KalkanCheck users reported the main indicator(s). */
   reports: number;
   /** Links found inside a message, each checked on its own. */
   links: CheckResult[];

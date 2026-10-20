@@ -19,21 +19,21 @@ const SCAM_WORDS =
 const T = {
   ru: {
     intro:
-      "🛡 <b>Калкан охраняет этот чат.</b>\n\nЯ молча проверяю ссылки и подозрительные сообщения и пишу, только если нашёл опасность. Ничего настраивать не нужно.",
+      "🛡 <b>KalkanCheck охраняет этот чат.</b>\n\nЯ молча проверяю ссылки и подозрительные сообщения и пишу, только если нашёл опасность. Ничего настраивать не нужно.",
     title: "⚠️ <b>Осторожно, похоже на мошенников</b>",
     footer: "Не переходите по ссылке, не вводите данные и не переводите деньги.",
     more: "Подробнее",
   },
   ky: {
     intro:
-      "🛡 <b>Калкан бул чатты коргойт.</b>\n\nШилтемелерди жана шектүү билдирүүлөрдү унчукпай текшерем, коркунуч тапсам гана жазам. Эч нерсе жөндөөнүн кереги жок.",
+      "🛡 <b>KalkanCheck бул чатты коргойт.</b>\n\nШилтемелерди жана шектүү билдирүүлөрдү унчукпай текшерем, коркунуч тапсам гана жазам. Эч нерсе жөндөөнүн кереги жок.",
     title: "⚠️ <b>Этият болгула, алдамчыларга окшойт</b>",
     footer: "Шилтемеге өтпөгүлө, маалымат киргизбегиле жана акча которбогула.",
     more: "Кененирээк",
   },
   en: {
     intro:
-      "🛡 <b>Kalkan is guarding this chat.</b>\n\nI quietly check links and suspicious messages and write only if I find a danger. Nothing to set up.",
+      "🛡 <b>KalkanCheck is guarding this chat.</b>\n\nI quietly check links and suspicious messages and write only if I find a danger. Nothing to set up.",
     title: "⚠️ <b>Careful, this looks like a scam</b>",
     footer: "Don’t open the link, don’t enter any data and don’t send money.",
     more: "More",
@@ -51,7 +51,7 @@ function warning(r: CheckResult, lang: Lang): string {
   const reasons = r.signals.filter((s) => s.level === "bad" || s.level === "warn").slice(0, 3);
   const lines = [t.title, `<b>${esc(r.subject)}</b> — ${esc(r.title)}`];
   if (reasons.length) lines.push("", ...reasons.map((s) => `• ${esc(s.text)}`));
-  lines.push("", t.footer, "— 🛡 Калкан");
+  lines.push("", t.footer, "— 🛡 KalkanCheck");
   return lines.join("\n");
 }
 

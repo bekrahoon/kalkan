@@ -370,7 +370,7 @@ function EvidenceReport({ result, input, checkedAt }: { result: CheckResult; inp
     <div id="kalkan-report" lang={result.lang}>
       <header className="kr-head">
         <div>
-          <p className="kr-brand">{lang === "en" ? "Kalkan" : "Калкан"} · {site.replace(/^https?:\/\//, "")}</p>
+          <p className="kr-brand">KalkanCheck · {site.replace(/^https?:\/\//, "")}</p>
           <h1>{tr.title}</h1>
         </div>
         <p className={`kr-verdict kr-${result.verdict}`}>

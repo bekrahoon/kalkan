@@ -139,7 +139,7 @@ export function Checker() {
     [lang],
   );
 
-  // Opened via "Share → Kalkan" (/share redirects here with ?check=<link> or ?text=<message>).
+  // Opened via "Share → KalkanCheck" (/share redirects here with ?check=<link> or ?text=<message>).
   const sharedHandled = useRef(false);
   useEffect(() => {
     if (sharedHandled.current) return;

@@ -17,7 +17,7 @@ export function AboutContent() {
   return (
     <div className="mx-auto max-w-3xl px-4 pt-10 sm:pt-14">
       <header className="flex flex-col gap-5 sm:flex-row sm:items-center">
-        <ShieldLogo size={64} title="Калкан" className="shrink-0" />
+        <ShieldLogo size={64} title="KalkanCheck" className="shrink-0" />
         <div>
           <p className="eyebrow">{c.kicker}</p>
           <h1 className="mt-1 text-[clamp(2rem,7vw,2.75rem)] font-bold leading-tight">{c.title}</h1>

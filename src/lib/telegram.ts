@@ -34,7 +34,7 @@ export async function tg<T = unknown>(method: string, payload: Record<string, un
 const T = {
   ru: {
     start:
-      "🛡 <b>Калкан</b> — проверь, прежде чем нажать.\n\nПерешли мне подозрительное сообщение или пришли:\n• ссылку\n• скриншот переписки или сайта\n• фото или PDF документа (повестка, штраф, договор, чек)\n• ссылку на приложение из Google Play\n\nЯ скажу, похоже ли это на мошенников, и что делать.\n\n👨‍👩‍👧 <b>Охрана чата:</b> добавь меня в семейную или домовую группу — я буду молча проверять ссылки и предупреждать об опасных: t.me/kalkan_kgs_bot?startgroup=true\n\nПользуясь ботом, ты принимаешь <a href=\"https://kalkan-sigma.vercel.app/terms\">условия</a> и <a href=\"https://kalkan-sigma.vercel.app/privacy\">политику конфиденциальности</a>.\n\nЯзык: /lang",
+      "🛡 <b>KalkanCheck</b> — проверь, прежде чем нажать.\n\nПерешли мне подозрительное сообщение или пришли:\n• ссылку\n• скриншот переписки или сайта\n• фото или PDF документа (повестка, штраф, договор, чек)\n• ссылку на приложение из Google Play\n\nЯ скажу, похоже ли это на мошенников, и что делать.\n\n👨‍👩‍👧 <b>Охрана чата:</b> добавь меня в семейную или домовую группу — я буду молча проверять ссылки и предупреждать об опасных: t.me/kalkan_kgs_bot?startgroup=true\n\nПользуясь ботом, ты принимаешь <a href=\"https://kalkan-sigma.vercel.app/terms\">условия</a> и <a href=\"https://kalkan-sigma.vercel.app/privacy\">политику конфиденциальности</a>.\n\nЯзык: /lang",
     working: "⏳ Проверяю…",
     label: { danger: "🔴 ОПАСНО", suspicious: "🟡 ПОДОЗРИТЕЛЬНО", safe: "🟢 Признаков обмана нет", unknown: "⚪ Недостаточно данных" } as Record<Verdict, string>,
     why: "Почему",
@@ -54,7 +54,7 @@ const T = {
       "🔴 <b>ОПАСНО: не устанавливай этот файл</b>\n\nПриложения (.apk) из чатов — главный способ заразить телефон вирусом, который читает SMS и крадёт деньги из банковских приложений.\n\n1. Удали файл и не открывай его.\n2. Если уже установил — сразу позвони в банк и заблокируй карту, затем удали приложение.\n3. Предупреди того, кто прислал: его аккаунт могли взломать.",
     unsupported: "Пришли текст, ссылку, скриншот или документ.",
     more: "Подробнее на сайте",
-    disclaimer: "Калкан проверяет по признакам и может ошибаться. Банки и милиция никогда не просят коды из SMS.",
+    disclaimer: "KalkanCheck проверяет по признакам и может ошибаться. Банки и милиция никогда не просят коды из SMS.",
     errors: {
       invalid_url: "Это не похоже на ссылку.",
       empty: "Пришли текст, ссылку или скриншот.",
@@ -67,7 +67,7 @@ const T = {
   },
   ky: {
     start:
-      "🛡 <b>Калкан</b> — баспай туруп текшер.\n\nМага шектүү билдирүүнү жөнөт же жибер:\n• шилтеме\n• кат алышуунун же сайттын скриншоту\n• документтин сүрөтү же PDFи (чакыруу кагазы, айып, келишим, чек)\n• Google Playдеги тиркеменин шилтемеси\n\nБул алдамчыларга окшошпу жана эмне кылуу керек экенин айтам.\n\n👨‍👩‍👧 <b>Чатты коргоо:</b> мени үй-бүлө же үй тобуна кош — шилтемелерди унчукпай текшерип, коркунучтуулары тууралуу эскертем: t.me/kalkan_kgs_bot?startgroup=true\n\nБотту колдонуу менен <a href=\"https://kalkan-sigma.vercel.app/terms\">шарттарды</a> жана <a href=\"https://kalkan-sigma.vercel.app/privacy\">купуялык саясатын</a> кабыл аласың.\n\nТил: /lang",
+      "🛡 <b>KalkanCheck</b> — баспай туруп текшер.\n\nМага шектүү билдирүүнү жөнөт же жибер:\n• шилтеме\n• кат алышуунун же сайттын скриншоту\n• документтин сүрөтү же PDFи (чакыруу кагазы, айып, келишим, чек)\n• Google Playдеги тиркеменин шилтемеси\n\nБул алдамчыларга окшошпу жана эмне кылуу керек экенин айтам.\n\n👨‍👩‍👧 <b>Чатты коргоо:</b> мени үй-бүлө же үй тобуна кош — шилтемелерди унчукпай текшерип, коркунучтуулары тууралуу эскертем: t.me/kalkan_kgs_bot?startgroup=true\n\nБотту колдонуу менен <a href=\"https://kalkan-sigma.vercel.app/terms\">шарттарды</a> жана <a href=\"https://kalkan-sigma.vercel.app/privacy\">купуялык саясатын</a> кабыл аласың.\n\nТил: /lang",
     working: "⏳ Текшерип жатам…",
     label: { danger: "🔴 КОРКУНУЧТУУ", suspicious: "🟡 ШЕКТҮҮ", safe: "🟢 Алдоонун белгилери жок", unknown: "⚪ Маалымат жетишсиз" },
     why: "Эмне үчүн",
@@ -87,7 +87,7 @@ const T = {
       "🔴 <b>КОРКУНУЧТУУ: бул файлды орнотпо</b>\n\nЧаттардагы тиркемелер (.apk) — телефонго SMS окуп, банк тиркемелеринен акча уурдаган вирусту жуктуруунун негизги жолу.\n\n1. Файлды өчүр жана ачпа.\n2. Эгер орнотуп койсоң — дароо банкка чалып, картаны бөгөттө, андан кийин тиркемени өчүр.\n3. Жөнөткөн адамды эскерт: анын аккаунтун бузушкан болушу мүмкүн.",
     unsupported: "Текст, шилтеме, скриншот же документ жибер.",
     more: "Сайтта кененирээк",
-    disclaimer: "Калкан белгилер боюнча текшерет жана жаңылышы мүмкүн. Банктар жана милиция SMS коддорун эч качан сурабайт.",
+    disclaimer: "KalkanCheck белгилер боюнча текшерет жана жаңылышы мүмкүн. Банктар жана милиция SMS коддорун эч качан сурабайт.",
     errors: {
       invalid_url: "Бул шилтемеге окшобойт.",
       empty: "Текст, шилтеме же скриншот жибер.",
@@ -100,7 +100,7 @@ const T = {
   },
   en: {
     start:
-      "🛡 <b>Kalkan</b> — check before you tap.\n\nForward me a suspicious message or send:\n• a link\n• a screenshot of a chat or website\n• a photo or PDF of a document (summons, fine, contract, receipt)\n• a Google Play app link\n\nI’ll tell you whether it looks like a scam and what to do.\n\n👨‍👩‍👧 <b>Chat guard:</b> add me to your family or building group — I’ll quietly check links and warn about dangerous ones: t.me/kalkan_kgs_bot?startgroup=true\n\nBy using the bot you accept the <a href=\"https://kalkan-sigma.vercel.app/terms\">terms</a> and the <a href=\"https://kalkan-sigma.vercel.app/privacy\">privacy policy</a>.\n\nLanguage: /lang",
+      "🛡 <b>KalkanCheck</b> — check before you tap.\n\nForward me a suspicious message or send:\n• a link\n• a screenshot of a chat or website\n• a photo or PDF of a document (summons, fine, contract, receipt)\n• a Google Play app link\n\nI’ll tell you whether it looks like a scam and what to do.\n\n👨‍👩‍👧 <b>Chat guard:</b> add me to your family or building group — I’ll quietly check links and warn about dangerous ones: t.me/kalkan_kgs_bot?startgroup=true\n\nBy using the bot you accept the <a href=\"https://kalkan-sigma.vercel.app/terms\">terms</a> and the <a href=\"https://kalkan-sigma.vercel.app/privacy\">privacy policy</a>.\n\nLanguage: /lang",
     working: "⏳ Checking…",
     label: { danger: "🔴 DANGEROUS", suspicious: "🟡 SUSPICIOUS", safe: "🟢 No signs of a scam", unknown: "⚪ Not enough data" },
     why: "Why",
@@ -120,7 +120,7 @@ const T = {
       "🔴 <b>DANGEROUS: don’t install this file</b>\n\nApps (.apk) sent in chats are the main way to infect a phone with a virus that reads SMS and steals money from banking apps.\n\n1. Delete the file and don’t open it.\n2. If you already installed it — call your bank right away and block the card, then delete the app.\n3. Warn the person who sent it: their account may have been hacked.",
     unsupported: "Send a text, link, screenshot or document.",
     more: "More on the website",
-    disclaimer: "Kalkan checks for warning signs and can be wrong. Banks and the police never ask for SMS codes.",
+    disclaimer: "KalkanCheck checks for warning signs and can be wrong. Banks and the police never ask for SMS codes.",
     errors: {
       invalid_url: "This doesn’t look like a link.",
       empty: "Send a text, link or screenshot.",

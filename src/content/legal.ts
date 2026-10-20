@@ -21,7 +21,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
   ru: {
     title: "Политика конфиденциальности",
     intro:
-      "Калкан — некоммерческий проект, который помогает проверить ссылки, сообщения, документы и приложения на признаки мошенничества. Здесь написано, какие данные мы получаем, зачем и кому они передаются.",
+      "KalkanCheck — некоммерческий проект, который помогает проверить ссылки, сообщения, документы и приложения на признаки мошенничества. Здесь написано, какие данные мы получаем, зачем и кому они передаются.",
     sections: [
       {
         h: "1. Что мы получаем",
@@ -62,19 +62,19 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
       {
         h: "5. Будь осторожен с личными данными",
         p: [
-          "Перед загрузкой документа закрой номера паспорта, ИНН, банковских карт и другие данные, которые не нужны для проверки. Калкану они не нужны, чтобы найти признаки обмана.",
+          "Перед загрузкой документа закрой номера паспорта, ИНН, банковских карт и другие данные, которые не нужны для проверки. KalkanCheck они не нужны, чтобы найти признаки обмана.",
         ],
       },
       {
         h: "6. Твои права",
         p: [
-          "Ты можешь не пользоваться Калканом, удалить историю в браузере и попросить удалить жалобу, если считаешь её ошибочной. Обработка данных ведётся с учётом Закона Кыргызской Республики «Об информации персонального характера».",
+          "Ты можешь не пользоваться KalkanCheck, удалить историю в браузере и попросить удалить жалобу, если считаешь её ошибочной. Обработка данных ведётся с учётом Закона Кыргызской Республики «Об информации персонального характера».",
           `Связаться с командой: ${CONTACT_LABEL}.`,
         ],
       },
       {
         h: "7. Дети",
-        p: ["Если тебе меньше 16 лет, пользуйся Калканом вместе с родителями."],
+        p: ["Если тебе меньше 16 лет, пользуйся KalkanCheck вместе с родителями."],
       },
       {
         h: "8. Изменения",
@@ -85,7 +85,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
   ky: {
     title: "Купуялык саясаты",
     intro:
-      "Калкан — шилтемелерди, билдирүүлөрдү, документтерди жана тиркемелерди алдамчылыктын белгилерине текшерүүгө жардам берген коммерциялык эмес долбоор. Бул жерде кандай маалымат алабыз, эмне үчүн жана кимге берилет — жазылган.",
+      "KalkanCheck — шилтемелерди, билдирүүлөрдү, документтерди жана тиркемелерди алдамчылыктын белгилерине текшерүүгө жардам берген коммерциялык эмес долбоор. Бул жерде кандай маалымат алабыз, эмне үчүн жана кимге берилет — жазылган.",
     sections: [
       {
         h: "1. Эмнени алабыз",
@@ -126,19 +126,19 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
       {
         h: "5. Жеке маалымат менен этият бол",
         p: [
-          "Документти жүктөөдөн мурун паспорттун, ИННдин, банк карталарынын номерлерин жана текшерүүгө керек эмес башка маалыматтарды жап. Алдоонун белгилерин табуу үчүн Калканга алар керек эмес.",
+          "Документти жүктөөдөн мурун паспорттун, ИННдин, банк карталарынын номерлерин жана текшерүүгө керек эмес башка маалыматтарды жап. Алдоонун белгилерин табуу үчүн KalkanCheckке алар керек эмес.",
         ],
       },
       {
         h: "6. Сенин укуктарың",
         p: [
-          "Калканды колдонбой коюуга, браузердеги тарыхты өчүрүүгө жана ката деп эсептеген даттанууну өчүрүүнү суранууга укуктуусуң. Маалымат Кыргыз Республикасынын «Жеке мүнөздөгү маалымат жөнүндө» Мыйзамын эске алуу менен иштетилет.",
+          "KalkanCheckти колдонбой коюуга, браузердеги тарыхты өчүрүүгө жана ката деп эсептеген даттанууну өчүрүүнү суранууга укуктуусуң. Маалымат Кыргыз Республикасынын «Жеке мүнөздөгү маалымат жөнүндө» Мыйзамын эске алуу менен иштетилет.",
           `Команда менен байланыш: ${CONTACT_LABEL}.`,
         ],
       },
       {
         h: "7. Балдар",
-        p: ["Эгер 16 жашка чыга элек болсоң, Калканды ата-энең менен бирге колдон."],
+        p: ["Эгер 16 жашка чыга элек болсоң, KalkanCheckти ата-энең менен бирге колдон."],
       },
       {
         h: "8. Өзгөртүүлөр",
@@ -149,7 +149,7 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
   en: {
     title: "Privacy policy",
     intro:
-      "Kalkan is a non-commercial project that helps check links, messages, documents and apps for signs of fraud. This page explains what data we receive, why, and who it is shared with.",
+      "KalkanCheck is a non-commercial project that helps check links, messages, documents and apps for signs of fraud. This page explains what data we receive, why, and who it is shared with.",
     sections: [
       {
         h: "1. What we receive",
@@ -190,19 +190,19 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
       {
         h: "5. Be careful with personal data",
         p: [
-          "Before uploading a document, cover passport, tax ID, bank card numbers and other data not needed for the check. Kalkan doesn’t need them to find signs of fraud.",
+          "Before uploading a document, cover passport, tax ID, bank card numbers and other data not needed for the check. KalkanCheck doesn’t need them to find signs of fraud.",
         ],
       },
       {
         h: "6. Your rights",
         p: [
-          "You may stop using Kalkan, delete the history in your browser and ask us to delete a report you think is wrong. Data is processed in line with the Law of the Kyrgyz Republic “On Personal Information”.",
+          "You may stop using KalkanCheck, delete the history in your browser and ask us to delete a report you think is wrong. Data is processed in line with the Law of the Kyrgyz Republic “On Personal Information”.",
           `Contact the team: ${CONTACT_LABEL}.`,
         ],
       },
       {
         h: "7. Children",
-        p: ["If you are under 16, use Kalkan together with your parents."],
+        p: ["If you are under 16, use KalkanCheck together with your parents."],
       },
       {
         h: "8. Changes",
@@ -215,21 +215,21 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
 export const TERMS: Record<Lang, LegalDoc> = {
   ru: {
     title: "Пользовательское соглашение",
-    intro: "Пользуясь Калканом на сайте или в Telegram-боте, ты соглашаешься с этими условиями.",
+    intro: "Пользуясь KalkanCheck на сайте или в Telegram-боте, ты соглашаешься с этими условиями.",
     sections: [
       {
-        h: "1. Что делает Калкан",
+        h: "1. Что делает KalkanCheck",
         p: [
-          "Калкан ищет признаки мошенничества по техническим проверкам, базам фишинга, жалобам пользователей и с помощью ИИ, и объясняет результат простыми словами.",
-          "Калкан бесплатный и предоставляется «как есть».",
+          "KalkanCheck ищет признаки мошенничества по техническим проверкам, базам фишинга, жалобам пользователей и с помощью ИИ, и объясняет результат простыми словами.",
+          "KalkanCheck бесплатный и предоставляется «как есть».",
         ],
       },
       {
         h: "2. Это подсказка, а не гарантия",
         p: [
           "Проверка может ошибаться в обе стороны: пропустить мошенников или ошибочно предупредить о честном сайте. «Признаков обмана нет» не означает, что всё безопасно.",
-          "Калкан не подтверждает подлинность документов — это может сделать только организация, которая их выдала.",
-          "Калкан — не юридическая, финансовая или правоохранительная консультация. Важные решения принимай сам и проверяй информацию официально.",
+          "KalkanCheck не подтверждает подлинность документов — это может сделать только организация, которая их выдала.",
+          "KalkanCheck — не юридическая, финансовая или правоохранительная консультация. Важные решения принимай сам и проверяй информацию официально.",
           "Команда проекта не отвечает за убытки, связанные с использованием или неиспользованием результатов проверки.",
         ],
       },
@@ -244,7 +244,7 @@ export const TERMS: Record<Lang, LegalDoc> = {
       {
         h: "4. Независимость",
         p: [
-          "Калкан не связан с банками, операторами связи и госорганами, которые упоминаются в результатах. Их названия используются только чтобы сравнивать адреса с настоящими.",
+          "KalkanCheck не связан с банками, операторами связи и госорганами, которые упоминаются в результатах. Их названия используются только чтобы сравнивать адреса с настоящими.",
         ],
       },
       {
@@ -255,21 +255,21 @@ export const TERMS: Record<Lang, LegalDoc> = {
   },
   ky: {
     title: "Колдонуучу келишими",
-    intro: "Калканды сайтта же Telegram-ботто колдонуу менен сен ушул шарттарга макул болосуң.",
+    intro: "KalkanCheckти сайтта же Telegram-ботто колдонуу менен сен ушул шарттарга макул болосуң.",
     sections: [
       {
-        h: "1. Калкан эмне кылат",
+        h: "1. KalkanCheck эмне кылат",
         p: [
-          "Калкан техникалык текшерүүлөр, фишинг базалары, колдонуучулардын даттануулары жана ЖИнин жардамы менен алдамчылыктын белгилерин издейт жана жыйынтыкты жөнөкөй сөз менен түшүндүрөт.",
-          "Калкан акысыз жана «кандай болсо ошондой» берилет.",
+          "KalkanCheck техникалык текшерүүлөр, фишинг базалары, колдонуучулардын даттануулары жана ЖИнин жардамы менен алдамчылыктын белгилерин издейт жана жыйынтыкты жөнөкөй сөз менен түшүндүрөт.",
+          "KalkanCheck акысыз жана «кандай болсо ошондой» берилет.",
         ],
       },
       {
         h: "2. Бул кеңеш, кепилдик эмес",
         p: [
           "Текшерүү эки жакка тең жаңылышы мүмкүн: алдамчыларды өткөрүп жибериши же чынчыл сайт тууралуу жаңылыш эскертиши мүмкүн. «Алдоонун белгилери жок» баары коопсуз дегенди билдирбейт.",
-          "Калкан документтердин чыныгы экенин тастыктабайт — муну аларды берген уюм гана кыла алат.",
-          "Калкан — юридикалык, каржылык же укук коргоо консультациясы эмес. Маанилүү чечимдерди өзүң кабыл ал жана маалыматты расмий түрдө текшер.",
+          "KalkanCheck документтердин чыныгы экенин тастыктабайт — муну аларды берген уюм гана кыла алат.",
+          "KalkanCheck — юридикалык, каржылык же укук коргоо консультациясы эмес. Маанилүү чечимдерди өзүң кабыл ал жана маалыматты расмий түрдө текшер.",
           "Долбоордун командасы текшерүүнүн жыйынтыктарын колдонуу же колдонбоо менен байланышкан зыяндар үчүн жооп бербейт.",
         ],
       },
@@ -284,7 +284,7 @@ export const TERMS: Record<Lang, LegalDoc> = {
       {
         h: "4. Көз карандысыздык",
         p: [
-          "Калкан жыйынтыктарда аталган банктар, байланыш операторлору жана мамлекеттик органдар менен байланышпайт. Алардын аттары даректерди чыныгылары менен салыштыруу үчүн гана колдонулат.",
+          "KalkanCheck жыйынтыктарда аталган банктар, байланыш операторлору жана мамлекеттик органдар менен байланышпайт. Алардын аттары даректерди чыныгылары менен салыштыруу үчүн гана колдонулат.",
         ],
       },
       {
@@ -295,21 +295,21 @@ export const TERMS: Record<Lang, LegalDoc> = {
   },
   en: {
     title: "Terms of use",
-    intro: "By using Kalkan on the website or in the Telegram bot, you agree to these terms.",
+    intro: "By using KalkanCheck on the website or in the Telegram bot, you agree to these terms.",
     sections: [
       {
-        h: "1. What Kalkan does",
+        h: "1. What KalkanCheck does",
         p: [
-          "Kalkan looks for signs of fraud using technical checks, phishing databases, user reports and AI, and explains the result in plain words.",
-          "Kalkan is free and provided “as is”.",
+          "KalkanCheck looks for signs of fraud using technical checks, phishing databases, user reports and AI, and explains the result in plain words.",
+          "KalkanCheck is free and provided “as is”.",
         ],
       },
       {
         h: "2. It’s a hint, not a guarantee",
         p: [
           "A check can be wrong either way: miss scammers or wrongly warn about an honest site. “No signs of a scam” does not mean everything is safe.",
-          "Kalkan does not confirm that documents are genuine — only the organisation that issued them can do that.",
-          "Kalkan is not legal, financial or law-enforcement advice. Make important decisions yourself and verify information officially.",
+          "KalkanCheck does not confirm that documents are genuine — only the organisation that issued them can do that.",
+          "KalkanCheck is not legal, financial or law-enforcement advice. Make important decisions yourself and verify information officially.",
           "The project team is not liable for losses related to using or not using the check results.",
         ],
       },
@@ -324,7 +324,7 @@ export const TERMS: Record<Lang, LegalDoc> = {
       {
         h: "4. Independence",
         p: [
-          "Kalkan is not affiliated with the banks, mobile operators and government bodies mentioned in the results. Their names are used only to compare addresses with the real ones.",
+          "KalkanCheck is not affiliated with the banks, mobile operators and government bodies mentioned in the results. Their names are used only to compare addresses with the real ones.",
         ],
       },
       {
@@ -341,7 +341,7 @@ export const CONSENT: Record<
 > = {
   ru: {
     title: "Прежде чем начать",
-    lead: "Коротко о том, как работает Калкан:",
+    lead: "Коротко о том, как работает KalkanCheck:",
     points: [
       "То, что ты отправляешь на проверку, анализирует ИИ Google Gemini. Мы это не сохраняем.",
       "Сохраняются только жалобы на мошенников — без данных о тебе.",
@@ -354,14 +354,14 @@ export const CONSENT: Record<
     accept: "Принимаю",
     cancel: "Отмена",
     declinedTitle: "Ты не принял условия",
-    declinedText: "Без согласия с условиями пользоваться Калканом нельзя. Можешь закрыть страницу или вернуться и прочитать условия ещё раз.",
+    declinedText: "Без согласия с условиями пользоваться KalkanCheck нельзя. Можешь закрыть страницу или вернуться и прочитать условия ещё раз.",
     again: "Вернуться к условиям",
     leave: "Выйти",
     updated: "Обновлено",
   },
   ky: {
     title: "Баштоодон мурун",
-    lead: "Калкан кантип иштээри тууралуу кыскача:",
+    lead: "KalkanCheck кантип иштээри тууралуу кыскача:",
     points: [
       "Текшерүүгө жөнөткөн нерсеңди Google Gemini ЖИ талдайт. Биз аны сактабайбыз.",
       "Алдамчыларга даттануулар гана сакталат — сен тууралуу маалыматсыз.",
@@ -374,14 +374,14 @@ export const CONSENT: Record<
     accept: "Кабыл алам",
     cancel: "Жокко чыгаруу",
     declinedTitle: "Сен шарттарды кабыл алган жоксуң",
-    declinedText: "Шарттарга макул болбостон Калканды колдонууга болбойт. Баракты жаап же кайтып келип, шарттарды кайра окусаң болот.",
+    declinedText: "Шарттарга макул болбостон KalkanCheckти колдонууга болбойт. Баракты жаап же кайтып келип, шарттарды кайра окусаң болот.",
     again: "Шарттарга кайтуу",
     leave: "Чыгуу",
     updated: "Жаңыртылды",
   },
   en: {
     title: "Before you start",
-    lead: "In short, how Kalkan works:",
+    lead: "In short, how KalkanCheck works:",
     points: [
       "What you submit is analysed by Google Gemini AI. We don’t save it.",
       "Only reports about scammers are stored — without data about you.",
@@ -394,7 +394,7 @@ export const CONSENT: Record<
     accept: "I accept",
     cancel: "Cancel",
     declinedTitle: "You didn’t accept the terms",
-    declinedText: "Kalkan can’t be used without accepting the terms. You can close the page or go back and read the terms again.",
+    declinedText: "KalkanCheck can’t be used without accepting the terms. You can close the page or go back and read the terms again.",
     again: "Back to the terms",
     leave: "Leave",
     updated: "Updated",

@@ -21,7 +21,7 @@ export async function GET(req: Request) {
   await tg("setMyCommands", { commands: [{ command: "start", description: "Как пользоваться" }, { command: "lang", description: "Язык / Тил" }] });
   await tg("setMyDescription", {
     description:
-      "Калкан проверяет ссылки, сообщения, номера и скриншоты на мошенничество. Перешли подозрительное сообщение — отвечу за пару секунд.\n\nКалкан шилтемелерди, билдирүүлөрдү, номерлерди жана скриншотторду алдамчылыкка текшерет.",
+      "KalkanCheck проверяет ссылки, сообщения, номера и скриншоты на мошенничество. Перешли подозрительное сообщение — отвечу за пару секунд.\n\nKalkanCheck шилтемелерди, билдирүүлөрдү, номерлерди жана скриншотторду алдамчылыкка текшерет.",
   });
   await tg("setMyShortDescription", { short_description: "Проверь, прежде чем нажать: ссылки, сообщения и номера на мошенничество. RU / KG." });
   const info = await tg("getWebhookInfo", {});

@@ -23,15 +23,15 @@ export const ABOUT_PAGE = {
   ru: {
     kicker: "Кто мы",
     title: "О проекте",
-    lead: "Калкан (с кыргызского — «щит») проверяет ссылки, сообщения, документы и приложения и за несколько секунд говорит, похоже ли это на мошенников. На русском, кыргызском и английском.",
+    lead: "KalkanCheck («калкан» по-кыргызски — «щит») проверяет ссылки, сообщения, документы и приложения и за несколько секунд говорит, похоже ли это на мошенников. На русском, кыргызском и английском.",
     missionTitle: "Зачем",
     mission:
-      "По данным Генпрокуратуры, за январь–апрель 2026 года мошенничество в Кыргызстане выросло почти в 1,8 раза — до 5 267 случаев. Обманывают через поддельные сайты банков, «голосования» и сообщения от имени родственников. Человеку некогда разбираться: решение принимается за секунду. Калкан даёт ответ в эту секунду.",
+      "По данным Генпрокуратуры, за январь–апрель 2026 года мошенничество в Кыргызстане выросло почти в 1,8 раза — до 5 267 случаев. Обманывают через поддельные сайты банков, «голосования» и сообщения от имени родственников. Человеку некогда разбираться: решение принимается за секунду. KalkanCheck даёт ответ в эту секунду.",
     whyTitle: "Связь с правами человека",
     why: [
-      ["Защита собственности", "Мошенники забирают сбережения людей. Калкан помогает остановиться до того, как деньги ушли."],
+      ["Защита собственности", "Мошенники забирают сбережения людей. KalkanCheck помогает остановиться до того, как деньги ушли."],
       ["Защита личных данных", "Украденный аккаунт — это переписка, фото и доверие близких. Мы предупреждаем о кражах аккаунтов."],
-      ["ИИ на стороне человека", "Мошенники уже используют ИИ: идеальные тексты, поддельные голоса. Калкан использует ИИ, чтобы защищать."],
+      ["ИИ на стороне человека", "Мошенники уже используют ИИ: идеальные тексты, поддельные голоса. KalkanCheck использует ИИ, чтобы защищать."],
     ] as [string, string][],
     howTitle: "Как это работает",
     how: [
@@ -42,7 +42,7 @@ export const ABOUT_PAGE = {
     ],
     limitsTitle: "Честно об ограничениях",
     limits: [
-      "Калкан проверяет по признакам и может ошибаться. «Признаков обмана нет» — не гарантия.",
+      "KalkanCheck проверяет по признакам и может ошибаться. «Признаков обмана нет» — не гарантия.",
       "Подлинность документа по фото мы не определяем: это невозможно сделать надёжно.",
       "Мы храним только жалобы на сайты и приложения — без данных о том, кто пожаловался. Жалобы на номера телефонов не принимаем: ложная метка могла бы навредить честному человеку.",
     ],
@@ -52,15 +52,15 @@ export const ABOUT_PAGE = {
   ky: {
     kicker: "Биз кимбиз",
     title: "Долбоор жөнүндө",
-    lead: "Калкан шилтемелерди, билдирүүлөрдү, документтерди жана тиркемелерди текшерип, бир нече секундда алдамчыларга окшошпу же жокпу айтат. Орусча, кыргызча жана англисче.",
+    lead: "KalkanCheck шилтемелерди, билдирүүлөрдү, документтерди жана тиркемелерди текшерип, бир нече секундда алдамчыларга окшошпу же жокпу айтат. Орусча, кыргызча жана англисче.",
     missionTitle: "Эмне үчүн",
     mission:
-      "Башкы прокуратуранын маалыматы боюнча, 2026-жылдын январь–апрель айларында Кыргызстанда алдамчылык дээрлик 1,8 эсе өсүп, 5 267 учурга жетти. Банктардын жасалма сайттары, «добуш берүү» жана туугандардын атынан билдирүүлөр аркылуу алдашат. Адамдын түшүнүүгө убактысы жок: чечим бир секундда кабыл алынат. Калкан ошол секундда жооп берет.",
+      "Башкы прокуратуранын маалыматы боюнча, 2026-жылдын январь–апрель айларында Кыргызстанда алдамчылык дээрлик 1,8 эсе өсүп, 5 267 учурга жетти. Банктардын жасалма сайттары, «добуш берүү» жана туугандардын атынан билдирүүлөр аркылуу алдашат. Адамдын түшүнүүгө убактысы жок: чечим бир секундда кабыл алынат. KalkanCheck ошол секундда жооп берет.",
     whyTitle: "Адам укуктары менен байланышы",
     why: [
-      ["Менчикти коргоо", "Алдамчылар адамдардын жыйнагын алышат. Калкан акча кете электе токтоого жардам берет."],
+      ["Менчикти коргоо", "Алдамчылар адамдардын жыйнагын алышат. KalkanCheck акча кете электе токтоого жардам берет."],
       ["Жеке маалыматты коргоо", "Уурдалган аккаунт — бул кат алышуу, сүрөттөр жана жакындардын ишеними. Биз аккаунт уурдоо тууралуу эскертебиз."],
-      ["ЖИ адамдын тарабында", "Алдамчылар ЖИни колдонуп жатышат: мыкты тексттер, жасалма үндөр. Калкан ЖИни коргоо үчүн колдонот."],
+      ["ЖИ адамдын тарабында", "Алдамчылар ЖИни колдонуп жатышат: мыкты тексттер, жасалма үндөр. KalkanCheck ЖИни коргоо үчүн колдонот."],
     ],
     howTitle: "Бул кантип иштейт",
     how: [
@@ -71,7 +71,7 @@ export const ABOUT_PAGE = {
     ],
     limitsTitle: "Чектөөлөр тууралуу ачык айтабыз",
     limits: [
-      "Калкан белгилер боюнча текшерет жана жаңылышы мүмкүн. «Алдоонун белгилери жок» — кепилдик эмес.",
+      "KalkanCheck белгилер боюнча текшерет жана жаңылышы мүмкүн. «Алдоонун белгилери жок» — кепилдик эмес.",
       "Документтин чыныгы экенин сүрөт боюнча аныктабайбыз: муну ишенимдүү жасоо мүмкүн эмес.",
       "Сайттарга жана тиркемелерге даттанууларды гана сактайбыз — ким даттанганы тууралуу маалыматсыз. Телефон номерлерине даттанууларды кабыл албайбыз: жалган белги чынчыл адамга зыян келтириши мүмкүн.",
     ],
@@ -81,15 +81,15 @@ export const ABOUT_PAGE = {
   en: {
     kicker: "Who we are",
     title: "About the project",
-    lead: "Kalkan (Kyrgyz for “shield”) checks links, messages, documents and apps and in a few seconds tells you whether it looks like a scam. In Russian, Kyrgyz and English.",
+    lead: "KalkanCheck (“kalkan” is Kyrgyz for “shield”) checks links, messages, documents and apps and in a few seconds tells you whether it looks like a scam. In Russian, Kyrgyz and English.",
     missionTitle: "Why",
     mission:
-      "According to the Prosecutor General’s Office, in January–April 2026 fraud in Kyrgyzstan grew almost 1.8 times — to 5,267 cases. People are tricked with fake bank websites, “votes” and messages in the name of relatives. Nobody has time to investigate: the decision is made in a second. Kalkan gives an answer in that second.",
+      "According to the Prosecutor General’s Office, in January–April 2026 fraud in Kyrgyzstan grew almost 1.8 times — to 5,267 cases. People are tricked with fake bank websites, “votes” and messages in the name of relatives. Nobody has time to investigate: the decision is made in a second. KalkanCheck gives an answer in that second.",
     whyTitle: "Link to human rights",
     why: [
-      ["Protecting property", "Scammers take people’s savings. Kalkan helps you stop before the money is gone."],
+      ["Protecting property", "Scammers take people’s savings. KalkanCheck helps you stop before the money is gone."],
       ["Protecting personal data", "A stolen account means chats, photos and the trust of loved ones. We warn about account theft."],
-      ["AI on people’s side", "Scammers already use AI: perfect texts, fake voices. Kalkan uses AI to protect."],
+      ["AI on people’s side", "Scammers already use AI: perfect texts, fake voices. KalkanCheck uses AI to protect."],
     ],
     howTitle: "How it works",
     how: [
@@ -100,7 +100,7 @@ export const ABOUT_PAGE = {
     ],
     limitsTitle: "Honest about the limits",
     limits: [
-      "Kalkan checks for warning signs and can be wrong. “No signs of a scam” is not a guarantee.",
+      "KalkanCheck checks for warning signs and can be wrong. “No signs of a scam” is not a guarantee.",
       "We don’t judge whether a document is genuine from a photo: it can’t be done reliably.",
       "We store only reports about sites and apps — with no data about who reported. We don’t accept reports on phone numbers: a false label could harm an honest person.",
     ],

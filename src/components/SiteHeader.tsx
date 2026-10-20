@@ -24,9 +24,9 @@ export function SiteHeader() {
   return (
     <header className="sticky top-[env(safe-area-inset-top,0px)] z-40 border-b border-line bg-surface/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-1 px-4 py-2.5">
-        <Link href="/" className="flex items-center gap-2" aria-label="Калкан">
+        <Link href="/" className="flex items-center gap-2" aria-label="KalkanCheck">
           <ShieldLogo size={26} />
-          <span className="text-lg font-bold tracking-tight">{lang === "en" ? "Kalkan" : "Калкан"}</span>
+          <span className="text-lg font-bold tracking-tight">KalkanCheck</span>
         </Link>
 
         <nav aria-label={t.nav.menu} className="order-3 -mx-1 flex w-full gap-1 overflow-x-auto sm:order-none sm:mx-0 sm:w-auto">

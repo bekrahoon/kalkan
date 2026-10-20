@@ -9,7 +9,7 @@ import { BRANDS, brandMentioned, deobfuscate, type Brand } from "./official";
 import { TX } from "./texts";
 
 /*
- * "Can I trust this company?" Kalkan cannot query government registries, so it never says a company is
+ * "Can I trust this company?" KalkanCheck cannot query government registries, so it never says a company is
  * registered or licensed. It looks for the red flags of pyramids and fake companies in what the user wrote,
  * checks any website they pasted, and always explains where to verify officially.
  */

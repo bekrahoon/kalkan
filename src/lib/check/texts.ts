@@ -37,7 +37,7 @@ const ru = {
   apk: "Ссылка скачивает приложение (.apk) в обход Google Play. Так распространяют вирусы, которые крадут деньги из банковских приложений.",
   download: "Ссылка скачивает файл, а не открывает страницу.",
   telegram: (name: string) => `Ссылка ведёт в Telegram: ${name}.`,
-  reportsMany: (n: number) => `Пользователи Калкана пожаловались на это ${n} раз(а).`,
+  reportsMany: (n: number) => `Пользователи KalkanCheck пожаловались на это ${n} раз(а).`,
   reportsFew: (n: number) => `На это уже жаловались: ${n} раз(а).`,
   // apps
   appRemoved: "Приложения нет в Google Play — возможно, его удалили за нарушения.",
@@ -60,7 +60,7 @@ const ru = {
     "Не переводи деньги по просьбе по телефону, даже если голос похож на знакомый.",
   ],
   phoneSummaryNone:
-    "Калкан не ведёт базу номеров: ложная жалоба могла бы навредить честному человеку. Но правило простое — если звонят «из банка», «милиции» или «Түндүка» и просят код или перевод, это мошенники, кто бы ни звонил.",
+    "KalkanCheck не ведёт базу номеров: ложная жалоба могла бы навредить честному человеку. Но правило простое — если звонят «из банка», «милиции» или «Түндүка» и просят код или перевод, это мошенники, кто бы ни звонил.",
   linkInMessage: (host: string, v: Verdict) =>
     `Ссылка ${host}: ${{ danger: "опасная", suspicious: "подозрительная", safe: "явных признаков обмана нет", unknown: "проверить не удалось" }[v]}.`,
   company: {
@@ -90,7 +90,7 @@ const ru = {
       danger: "В описании есть явные признаки пирамиды или мошенников. Не переводи деньги и не приводи туда знакомых.",
       suspicious: "Есть признаки, которые часто бывают у пирамид и фальшивых компаний. Не плати, пока не проверишь компанию официально.",
       safe: "Явных признаков обмана в описании нет. Это не гарантия: перед оплатой всё равно проверь компанию в реестре.",
-      unknown: "Калкан не видит реестров и лицензий, поэтому по одному названию судить не может. Напиши, что компания обещает или просит, — или проверь её официально.",
+      unknown: "KalkanCheck не видит реестров и лицензий, поэтому по одному названию судить не может. Напиши, что компания обещает или просит, — или проверь её официально.",
     } as Record<Verdict, string>,
     advice: {
       danger: [
@@ -105,7 +105,7 @@ const ru = {
       ],
       safe: ["Перед оплатой проверь компанию в реестре Минюста и заключи договор."],
       unknown: [
-        "Опиши, что компания обещает и куда просит перевести деньги, — Калкан проверит описание.",
+        "Опиши, что компания обещает и куда просит перевести деньги, — KalkanCheck проверит описание.",
         "Найди компанию в реестре юрлиц Минюста по названию или ИНН.",
         "Если она работает с деньгами — проверь лицензию Нацбанка или Госфиннадзора.",
       ],
@@ -198,7 +198,7 @@ const ky: CheckTexts = {
   apk: "Шилтеме тиркемени (.apk) Google Playди айланып өтүп жүктөйт. Банк тиркемелеринен акча уурдаган вирустар ушундай таралат.",
   download: "Шилтеме баракты ачпайт, файл жүктөйт.",
   telegram: (name) => `Шилтеме Telegramга алып барат: ${name}.`,
-  reportsMany: (n) => `Калкандын колдонуучулары буга ${n} жолу даттанышкан.`,
+  reportsMany: (n) => `KalkanCheckтин колдонуучулары буга ${n} жолу даттанышкан.`,
   reportsFew: (n) => `Буга буга чейин даттанышкан: ${n} жолу.`,
   appRemoved: "Тиркеме Google Playде жок — балким, аны эрежелерди бузгандыгы үчүн өчүрүшкөн.",
   fewInstalls: (s) => `Орнотуулар аз: ${s}.`,
@@ -219,7 +219,7 @@ const ky: CheckTexts = {
     "Телефон аркылуу суранышса, үнү тааныштыкына окшош болсо да, акча которбо.",
   ],
   phoneSummaryNone:
-    "Калкан номерлердин базасын жүргүзбөйт: жалган даттануу чынчыл адамга зыян келтириши мүмкүн. Бирок эреже жөнөкөй — «банктан», «милициядан» же «Түндүктөн» чалып, код же акча которууну сурашса, бул алдамчылар, ким чалбасын.",
+    "KalkanCheck номерлердин базасын жүргүзбөйт: жалган даттануу чынчыл адамга зыян келтириши мүмкүн. Бирок эреже жөнөкөй — «банктан», «милициядан» же «Түндүктөн» чалып, код же акча которууну сурашса, бул алдамчылар, ким чалбасын.",
   linkInMessage: (host, v) =>
     `${host} шилтемеси: ${{ danger: "коркунучтуу", suspicious: "шектүү", safe: "алдоонун ачык белгилери жок", unknown: "текшерүү болбой калды" }[v]}.`,
   company: {
@@ -249,7 +249,7 @@ const ky: CheckTexts = {
       danger: "Сыпаттамада пирамиданын же алдамчылардын ачык белгилери бар. Акча которбо жана тааныштарыңды чакырба.",
       suspicious: "Пирамидаларда жана жасалма компанияларда көп кездешкен белгилер бар. Компанияны расмий текшермейинче төлөбө.",
       safe: "Сыпаттамада алдоонун ачык белгилери жок. Бул кепилдик эмес: төлөөдөн мурун баары бир компанияны реестрден текшер.",
-      unknown: "Калкан реестрлерди жана лицензияларды көрбөйт, ошондуктан бир аты менен баа бере албайт. Компания эмне убада кылып, эмне сураарын жаз — же аны расмий текшер.",
+      unknown: "KalkanCheck реестрлерди жана лицензияларды көрбөйт, ошондуктан бир аты менен баа бере албайт. Компания эмне убада кылып, эмне сураарын жаз — же аны расмий текшер.",
     },
     advice: {
       danger: [
@@ -264,7 +264,7 @@ const ky: CheckTexts = {
       ],
       safe: ["Төлөөдөн мурун компанияны Юстиция министрлигинин реестринен текшер жана келишим түз."],
       unknown: [
-        "Компания эмне убада кылып, акчаны кайда которууну сураарын жаз — Калкан сыпаттаманы текшерет.",
+        "Компания эмне убада кылып, акчаны кайда которууну сураарын жаз — KalkanCheck сыпаттаманы текшерет.",
         "Компанияны аты же ИСН боюнча Юстиция министрлигинин реестринен тап.",
         "Эгер ал акча менен иштесе — Улуттук банктын же Мамфинкөзөмөлдүн лицензиясын текшер.",
       ],
@@ -354,7 +354,7 @@ const en: CheckTexts = {
   apk: "The link downloads an app (.apk) bypassing Google Play. This is how viruses that steal money from banking apps spread.",
   download: "The link downloads a file instead of opening a page.",
   telegram: (name) => `The link leads to Telegram: ${name}.`,
-  reportsMany: (n) => `Kalkan users have reported this ${n} time(s).`,
+  reportsMany: (n) => `KalkanCheck users have reported this ${n} time(s).`,
   reportsFew: (n) => `This has already been reported ${n} time(s).`,
   appRemoved: "The app is not on Google Play — it may have been removed for violations.",
   fewInstalls: (s) => `Few installs: ${s}.`,
@@ -375,7 +375,7 @@ const en: CheckTexts = {
     "Don’t send money because of a phone request, even if the voice sounds familiar.",
   ],
   phoneSummaryNone:
-    "Kalkan doesn’t keep a database of numbers: a false report could harm an honest person. But the rule is simple — if someone calls “from the bank”, “the police” or “the mobile operator” and asks for a code or a transfer, it’s a scam, whoever is calling.",
+    "KalkanCheck doesn’t keep a database of numbers: a false report could harm an honest person. But the rule is simple — if someone calls “from the bank”, “the police” or “the mobile operator” and asks for a code or a transfer, it’s a scam, whoever is calling.",
   linkInMessage: (host, v) =>
     `Link ${host}: ${{ danger: "dangerous", suspicious: "suspicious", safe: "no clear signs of a scam", unknown: "couldn’t be checked" }[v]}.`,
   company: {
@@ -405,7 +405,7 @@ const en: CheckTexts = {
       danger: "The description has clear signs of a pyramid or scammers. Don’t send money and don’t bring friends in.",
       suspicious: "There are signs often seen in pyramids and fake companies. Don’t pay until you check the company officially.",
       safe: "No clear signs of a scam in the description. This is not a guarantee: check the company in the register before paying.",
-      unknown: "Kalkan can’t see registers or licences, so it can’t judge by the name alone. Describe what the company promises or asks for — or check it officially.",
+      unknown: "KalkanCheck can’t see registers or licences, so it can’t judge by the name alone. Describe what the company promises or asks for — or check it officially.",
     },
     advice: {
       danger: [
@@ -420,7 +420,7 @@ const en: CheckTexts = {
       ],
       safe: ["Before paying, check the company in the Ministry of Justice register and sign a contract."],
       unknown: [
-        "Describe what the company promises and where it asks you to send money — Kalkan will check the description.",
+        "Describe what the company promises and where it asks you to send money — KalkanCheck will check the description.",
         "Find the company in the Ministry of Justice register by name or INN.",
         "If it handles money, check its National Bank or financial-regulator licence.",
       ],

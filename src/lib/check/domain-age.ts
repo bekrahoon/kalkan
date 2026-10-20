@@ -47,7 +47,7 @@ async function viaRdap(domain: string, budgetMs: number): Promise<DomainAge | nu
   const base = await rdapBase(domain.split(".").pop() ?? "");
   if (!base) return null;
   const r = await fetch(`${base}domain/${encodeURIComponent(domain)}`, {
-    headers: { Accept: "application/rdap+json, application/json", "User-Agent": "Kalkan/1.0 (+https://kalkan-sigma.vercel.app)" },
+    headers: { Accept: "application/rdap+json, application/json", "User-Agent": "KalkanCheck/1.0 (+https://kalkan-sigma.vercel.app)" },
     signal: AbortSignal.timeout(Math.min(budgetMs, 4_000)),
   });
   if (!r.ok) return null;

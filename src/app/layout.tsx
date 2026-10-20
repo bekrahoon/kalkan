@@ -7,11 +7,11 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { ConsentModal } from "@/components/Consent";
 
 export const metadata: Metadata = {
-  title: "Калкан — проверь, прежде чем нажать",
+  title: "KalkanCheck — проверь, прежде чем нажать",
   description:
     "Проверка ссылок, сообщений, номеров и приложений на мошенничество за несколько секунд. Русский, кыргызский и английский.",
   icons: { icon: "/icon.svg", apple: "/apple-touch-icon.png" },
-  appleWebApp: { capable: true, title: "Калкан", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "KalkanCheck", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {

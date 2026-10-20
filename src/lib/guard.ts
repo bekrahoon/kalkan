@@ -2,7 +2,7 @@ import "server-only";
 
 /*
  * Abuse protection for the shared free Gemini key (per server instance):
- * only requests from the Kalkan page itself, and per-IP limits.
+ * only requests from the KalkanCheck page itself, and per-IP limits.
  */
 const hits = new Map<string, number[]>();
 

@@ -3,8 +3,8 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "Калкан — проверь, прежде чем нажать",
-    short_name: "Калкан",
+    name: "KalkanCheck — проверь, прежде чем нажать",
+    short_name: "KalkanCheck",
     description: "Проверка ссылок, сообщений, номеров и приложений на мошенничество.",
     lang: "ru",
     start_url: "/",
@@ -17,7 +17,7 @@ export default function manifest(): MetadataRoute.Manifest {
       { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
       { src: "/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
-    // "Share → Kalkan" from any app on Android: the shared link/text lands on /share.
+    // "Share → KalkanCheck" from any app on Android: the shared link/text lands on /share.
     share_target: {
       action: "/share",
       method: "GET",

@@ -28,7 +28,7 @@ export function findPhones(text: string): string[] {
 }
 
 /**
- * Kalkan deliberately keeps no database of phone numbers: a false report would brand an honest person
+ * KalkanCheck deliberately keeps no database of phone numbers: a false report would brand an honest person
  * as a scammer. A bare number gets the rules that protect from phone fraud instead.
  */
 export function checkPhone(raw: string, lang: Lang): CheckResult {
