@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -8,6 +9,7 @@ import {
   BadgeCheck,
   CheckCircle2,
   ChevronDown,
+  FileDown,
   Flag,
   Info,
   RefreshCw,
@@ -38,12 +40,22 @@ const SIGNAL_ICON: Record<SignalLevel, { Icon: typeof Info; cls: string }> = {
   info: { Icon: Info, cls: "text-muted" },
 };
 
+/** What the user sent: goes into the evidence report as is (it is their own data, kept on their device). */
+export interface CheckInputInfo {
+  text?: string;
+  file?: boolean;
+}
+
 export function VerdictView({
   result,
+  input,
+  checkedAt,
   onReset,
   onRerun,
 }: {
   result: CheckResult;
+  input?: CheckInputInfo;
+  checkedAt?: number;
   onReset: () => void;
   onRerun?: () => void;
 }) {
@@ -157,14 +169,14 @@ export function VerdictView({
             </ol>
           </section>
 
-          {result.kind === "document" && (
+          {(result.kind === "document" || result.kind === "company") && (
             <section aria-labelledby="verify" className="rounded-2xl bg-primary-soft p-4">
               <h2 id="verify" className="flex items-center gap-2 font-bold">
                 <BadgeCheck className="h-5 w-5 text-primary" aria-hidden />
                 {tv.verify}
               </h2>
               {result.verify && <p className="mt-1.5 leading-snug">{result.verify}</p>}
-              <p className="mt-2 text-sm leading-snug text-muted">{tv.docNote}</p>
+              <p className="mt-2 text-sm leading-snug text-muted">{result.kind === "company" ? tv.companyNote : tv.docNote}</p>
             </section>
           )}
 
@@ -173,6 +185,8 @@ export function VerdictView({
       </article>
 
       <Actions result={result} />
+
+      {result.verdict !== "safe" && <EvidenceButton result={result} input={input} checkedAt={checkedAt} />}
 
       <p className="mt-6 text-center text-xs leading-relaxed text-muted">{tv.disclaimer}</p>
     </section>
@@ -289,6 +303,168 @@ function Actions({ result }: { result: CheckResult }) {
       <button type="button" onClick={doShare} className="btn btn-secondary w-full">
         <Share2 className="h-4 w-4" aria-hidden /> {shared ? tv.shared : tv.share}
       </button>
+    </div>
+  );
+}
+
+/**
+ * "Save a report for the police": a print-only page with what was checked, when, and why it looks like fraud.
+ * The browser's print dialog saves it as PDF. Nothing is sent anywhere: the report stays on the device.
+ */
+function EvidenceButton({ result, input, checkedAt }: { result: CheckResult; input?: CheckInputInfo; checkedAt?: number }) {
+  const { t } = useLang();
+  /** When the print was asked for; null while the report is not on the page. */
+  const [printedAt, setPrintedAt] = useState<number | null>(null);
+
+  const print = () => {
+    setPrintedAt(Date.now());
+    const done = () => {
+      setPrintedAt(null);
+      window.removeEventListener("afterprint", done);
+    };
+    window.addEventListener("afterprint", done);
+    // Let React put the report into the page before the print dialog takes its snapshot.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        try {
+          window.print();
+        } catch {
+          done();
+        }
+      }),
+    );
+  };
+
+  return (
+    <div className="mt-3">
+      <button type="button" onClick={print} className="btn btn-secondary w-full">
+        <FileDown className="h-4 w-4" aria-hidden /> {t.verdict.saveReport}
+      </button>
+      <p className="mt-1.5 text-center text-xs text-muted">{t.verdict.saveReportNote}</p>
+      {printedAt !== null &&
+        typeof document !== "undefined" &&
+        createPortal(<EvidenceReport result={result} input={input} checkedAt={checkedAt ?? printedAt} />, document.body)}
+    </div>
+  );
+}
+
+const MARK: Record<SignalLevel, string> = { bad: "✖", warn: "⚠", good: "✔", info: "•" };
+
+function EvidenceReport({ result, input, checkedAt }: { result: CheckResult; input?: CheckInputInfo; checkedAt: number }) {
+  const { t, lang } = useLang();
+  const tr = t.report;
+  const scheme = result.scheme ? SCHEMES[result.lang][result.scheme] : null;
+  const when = new Date(checkedAt);
+  const whenText = when.toLocaleString(lang === "ky" ? "ky-KG" : "ru-RU", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+  const text = input?.text?.trim();
+  const site = typeof window !== "undefined" && !STATIC_DEMO ? window.location.origin : SITE;
+
+  return (
+    <div id="kalkan-report" lang={result.lang}>
+      <header className="kr-head">
+        <div>
+          <p className="kr-brand">Калкан · {site.replace(/^https?:\/\//, "")}</p>
+          <h1>{tr.title}</h1>
+        </div>
+        <p className={`kr-verdict kr-${result.verdict}`}>
+          {result.kind === "document" && result.verdict === "safe" ? t.verdict.docSafe : t.verdict.label[result.verdict]}
+        </p>
+      </header>
+
+      <table className="kr-meta">
+        <tbody>
+          <tr>
+            <th>{tr.checkedAt}</th>
+            <td>{whenText}</td>
+          </tr>
+          <tr>
+            <th>{tr.input}</th>
+            <td>
+              <p className="kr-subject">{result.subject}</p>
+              {text && text !== result.subject && <pre className="kr-input">{text.slice(0, 3000)}</pre>}
+              {input?.file && <p className="kr-muted">{tr.file}</p>}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <section>
+        <h2>{tr.result}</h2>
+        <p className="kr-title">{result.title}</p>
+        <p>{result.summary}</p>
+        {scheme && (
+          <p className="kr-muted">
+            {tr.scheme}: {scheme.name}
+          </p>
+        )}
+      </section>
+
+      {result.signals.length > 0 && (
+        <section>
+          <h2>{tr.reasons}</h2>
+          <ul className="kr-list">
+            {result.signals.map((s, i) => (
+              <li key={i} className={`kr-${s.level}`}>
+                <span aria-hidden>{MARK[s.level]}</span> {s.text}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {result.links.length > 0 && (
+        <section>
+          <h2>{tr.links}</h2>
+          <ul className="kr-list">
+            {result.links.map((l, i) => (
+              <li key={i}>
+                <strong>{l.subject}</strong> — {t.verdict.label[l.verdict]}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {result.facts.length > 0 && (
+        <section>
+          <h2>{tr.details}</h2>
+          <table className="kr-facts">
+            <tbody>
+              {result.facts.map((f, i) => (
+                <tr key={i}>
+                  <th>{f.label}</th>
+                  <td>{f.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+
+      {result.verify && (
+        <section>
+          <h2>{tr.verify}</h2>
+          <p>{result.verify}</p>
+        </section>
+      )}
+
+      <section>
+        <h2>{tr.next}</h2>
+        <ol className="kr-steps">
+          {tr.nextSteps.map((s) => (
+            <li key={s}>{s}</li>
+          ))}
+        </ol>
+      </section>
+
+      <p className="kr-foot">{tr.disclaimer}</p>
     </div>
   );
 }

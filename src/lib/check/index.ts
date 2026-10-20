@@ -1,6 +1,6 @@
 import "server-only";
 import { CheckError } from "../ai";
-import { VERDICT_RANK, type CheckResult, type Indicator, type Lang, type Signal, type Verdict } from "../types";
+import { VERDICT_RANK, type CheckMode, type CheckResult, type Indicator, type Lang, type Signal, type Verdict } from "../types";
 import { aiForMessage } from "./ai-verdict";
 import { checkApp, parsePlayUrl } from "./app";
 import { checkLink, isRestated, mergeVerdicts, sortSignals } from "./link";
@@ -9,23 +9,16 @@ import { getDomain } from "tldts";
 import { brandForDomain } from "./official";
 import { readQr } from "./qr";
 import { TX } from "./texts";
+import { findUrls } from "./urls";
+import { checkCompany } from "./company";
+
+export { findUrls };
 
 export interface CheckInput {
   text?: string;
   image?: { mime: string; data: string } | null;
-}
-
-const URL_RE =
-  /\bhttps?:\/\/[^\s<>"'«»]+|\bwww\.[^\s<>"'«»]+|\b[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)*\.(?:kg|kz|ru|uz|com|net|org|top|xyz|online|site|info|me|app|io|store|shop|live|click|link|pro|biz|cc|ws|icu|vip|club|world|space|fun|website|ly|su|gd|gl|co)\b(?:\/[^\s<>"'«»]*)?/gi;
-
-export function findUrls(text: string): string[] {
-  const found = (text.match(URL_RE) ?? []).map((u) => u.replace(/[).,;:!?»"']+$/, ""));
-  // Drop e-mail domains ("ivan@mail.ru" → "mail.ru").
-  const filtered = found.filter((u) => {
-    const i = text.indexOf(u);
-    return i <= 0 || text[i - 1] !== "@";
-  });
-  return [...new Set(filtered)].slice(0, 5);
+  /** "company": the user asked whether a company or project can be trusted. */
+  mode?: CheckMode;
 }
 
 /** A single bare link, possibly without https:// ("mbank-bonus.top/login"). */
@@ -39,6 +32,7 @@ function singleUrl(text: string): string | null {
 /** Routes whatever the user pasted to the right check. */
 export async function runCheck(input: CheckInput, lang: Lang): Promise<CheckResult> {
   const text = (input.text ?? "").trim();
+  if (input.mode === "company" && !input.image) return checkCompany(text, lang);
   if (!input.image) {
     if (!text) throw new CheckError("empty", 400);
     if (looksLikePhone(text)) return checkPhone(text, lang);

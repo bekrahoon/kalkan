@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import type { CheckResult, DemoId, Lang } from "./types";
+import type { CheckMode, CheckResult, DemoId, Lang } from "./types";
 
 /** Recent checks, kept only in this browser (localStorage). Nothing is sent anywhere. */
 export interface HistoryItem {
@@ -12,7 +12,7 @@ export interface HistoryItem {
   result: CheckResult;
   example: boolean;
   /** Text input (not screenshots), so the check can be re-run. */
-  request?: { text?: string; demoId?: DemoId };
+  request?: { text?: string; demoId?: DemoId; mode?: CheckMode };
 }
 
 const KEY = "kalkan-history-v2";

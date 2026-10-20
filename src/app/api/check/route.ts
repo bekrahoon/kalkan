@@ -42,7 +42,8 @@ export async function POST(req: Request) {
   if (tooMany(clientIp(req), PER_MINUTE, PER_DAY, "check")) return fail("too_many_requests", 429);
 
   try {
-    const result = await runCheck({ text, image }, lang);
+    const mode = body.mode === "company" ? "company" : "auto";
+    const result = await runCheck({ text, image, mode }, lang);
     return Response.json({ ok: true, result } satisfies CheckResponse);
   } catch (e) {
     if (e instanceof CheckError) return fail(e.code, e.status);

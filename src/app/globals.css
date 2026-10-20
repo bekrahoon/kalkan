@@ -282,3 +282,168 @@ h3 {
     transform: none;
   }
 }
+
+/*
+ * Evidence report for the police (VerdictView → EvidenceReport).
+ * Hidden on screen; when printing, it is the only thing on the page, always black on white.
+ */
+#kalkan-report {
+  display: none;
+}
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm 14mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  body > :not(#kalkan-report) {
+    display: none !important;
+  }
+  #kalkan-report {
+    display: block;
+    font: 11pt/1.45 "Inter Variable", system-ui, sans-serif;
+    color: #111;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  #kalkan-report h1 {
+    margin: 2pt 0 0;
+    font-size: 20pt;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  #kalkan-report h2 {
+    margin: 0 0 4pt;
+    font-size: 12pt;
+    font-weight: 700;
+    break-after: avoid;
+  }
+  #kalkan-report section {
+    margin-top: 12pt;
+    break-inside: avoid;
+  }
+  #kalkan-report p {
+    margin: 0 0 4pt;
+  }
+  #kalkan-report .kr-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12pt;
+    padding-bottom: 8pt;
+    border-bottom: 2pt solid #111;
+  }
+  #kalkan-report .kr-brand {
+    margin: 0;
+    font-size: 9pt;
+    letter-spacing: 0.04em;
+    color: #555;
+  }
+  #kalkan-report .kr-verdict {
+    margin: 0;
+    padding: 4pt 10pt;
+    border: 1.5pt solid currentColor;
+    border-radius: 6pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  #kalkan-report .kr-danger {
+    color: #b42318;
+  }
+  #kalkan-report .kr-suspicious,
+  #kalkan-report .kr-warn {
+    color: #8a5a00;
+  }
+  #kalkan-report .kr-safe,
+  #kalkan-report .kr-good {
+    color: #1d6b3a;
+  }
+  #kalkan-report .kr-unknown,
+  #kalkan-report .kr-info {
+    color: #444;
+  }
+  #kalkan-report table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  #kalkan-report th,
+  #kalkan-report td {
+    padding: 5pt 6pt;
+    border: 0.75pt solid #bbb;
+    text-align: left;
+    vertical-align: top;
+  }
+  #kalkan-report th {
+    width: 32%;
+    font-weight: 600;
+    background: #f2f2f2;
+  }
+  #kalkan-report .kr-meta {
+    margin-top: 12pt;
+  }
+  #kalkan-report .kr-subject {
+    font-weight: 600;
+    word-break: break-word;
+  }
+  #kalkan-report .kr-input {
+    margin: 4pt 0 0;
+    padding: 6pt;
+    border-left: 2pt solid #999;
+    background: #f7f7f7;
+    font: 10pt/1.4 ui-monospace, "SFMono-Regular", Menlo, monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  #kalkan-report .kr-title {
+    font-size: 13pt;
+    font-weight: 700;
+  }
+  #kalkan-report .kr-muted {
+    color: #555;
+  }
+  #kalkan-report .kr-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #kalkan-report .kr-list li {
+    margin-bottom: 3pt;
+    padding-left: 14pt;
+    text-indent: -14pt;
+    color: #111;
+  }
+  #kalkan-report .kr-list li > span {
+    display: inline-block;
+    width: 14pt;
+    text-indent: 0;
+  }
+  #kalkan-report .kr-list li.kr-bad > span {
+    color: #b42318;
+  }
+  #kalkan-report .kr-list li.kr-warn > span {
+    color: #8a5a00;
+  }
+  #kalkan-report .kr-list li.kr-good > span {
+    color: #1d6b3a;
+  }
+  #kalkan-report .kr-steps {
+    margin: 0;
+    padding-left: 16pt;
+    list-style: decimal;
+  }
+  #kalkan-report .kr-steps li {
+    margin-bottom: 3pt;
+  }
+  #kalkan-report .kr-foot {
+    margin-top: 16pt;
+    padding-top: 6pt;
+    border-top: 0.75pt solid #bbb;
+    font-size: 8.5pt;
+    color: #555;
+  }
+}

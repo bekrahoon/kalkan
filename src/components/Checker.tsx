@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AlertCircle, ClipboardPaste, FileText, Link2, MessageSquareText, Paperclip, Send, Smartphone, Users, X } from "lucide-react";
+import { AlertCircle, Building2, ClipboardPaste, FileText, Link2, MessageSquareText, Paperclip, Send, Smartphone, Users, X } from "lucide-react";
 import { InstallCard } from "./PwaSetup";
 import { readConsentNow, setConsent } from "./Consent";
 import { useLang } from "./LangProvider";
@@ -12,14 +12,15 @@ import { HistoryPanel } from "./HistoryPanel";
 import { addToHistory, type HistoryItem } from "@/lib/history";
 import { DEMO_IDS, DEMO_INPUTS, getDemoResult } from "@/lib/demo";
 import { BOT_URL, GROUP_URL } from "@/lib/i18n";
-import { MAX_FILE_BYTES, type CheckResponse, type CheckResult, type DemoId, type ErrorCode, type Lang, type UploadedImage } from "@/lib/types";
+import { MAX_FILE_BYTES, type CheckMode, type CheckResponse, type CheckResult, type DemoId, type ErrorCode, type Lang, type UploadedImage } from "@/lib/types";
 
 type Phase = "idle" | "loading" | "result";
-type Req = { text?: string; image?: UploadedImage; demoId?: DemoId };
+type Req = { text?: string; image?: UploadedImage; demoId?: DemoId; mode?: CheckMode };
 
 const MIN_LOADING_MS = 1400;
 const STATIC_DEMO = process.env.NEXT_PUBLIC_KALKAN_STATIC === "1";
-const WHAT_ICONS = [Link2, MessageSquareText, FileText, Smartphone];
+const WHAT_ICONS = [Link2, MessageSquareText, FileText, Smartphone, Building2];
+const MODES: CheckMode[] = ["auto", "company"];
 
 function readAsDataUrl(f: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -65,7 +66,8 @@ export function Checker() {
   const [text, setText] = useState("");
   const [image, setImage] = useState<UploadedImage | null>(null);
   const [error, setError] = useState<ErrorCode | null>(null);
-  const [result, setResult] = useState<{ result: CheckResult; req: Req } | null>(null);
+  const [result, setResult] = useState<{ result: CheckResult; req: Req; at: number } | null>(null);
+  const [mode, setMode] = useState<CheckMode>("auto");
   const [canPaste, setCanPaste] = useState(false);
   const abort = useRef<AbortController | null>(null);
   const errorRef = useRef<HTMLDivElement>(null);
@@ -103,7 +105,7 @@ export function Checker() {
           const res = await fetch("/api/check", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: req.text, image: req.image, lang: reqLang }),
+            body: JSON.stringify({ text: req.text, image: req.image, lang: reqLang, mode: req.mode ?? "auto" }),
             signal: ctrl.signal,
           });
           data = (await res.json()) as CheckResponse;
@@ -116,7 +118,8 @@ export function Checker() {
       if (ctrl.signal.aborted) return;
 
       if (data.ok) {
-        setResult({ result: data.result, req });
+        const at = Date.now();
+        setResult({ result: data.result, req, at });
         const r = data.result;
         const label = r.kind === "message" && req.text ? `${req.text.slice(0, 48)}${req.text.length > 48 ? "…" : ""}` : r.subject;
         addToHistory({
@@ -124,7 +127,7 @@ export function Checker() {
           label,
           result: r,
           example: Boolean(req.demoId),
-          request: req.image ? undefined : { text: req.text, demoId: req.demoId },
+          request: req.image ? undefined : { text: req.text, demoId: req.demoId, mode: req.mode },
         });
         setPhase("result");
       } else {
@@ -157,7 +160,9 @@ export function Checker() {
     const v = text.trim();
     if (!v && !image) return setError("empty");
     const demoId = !image ? DEMO_IDS.find((id) => DEMO_INPUTS[id] === v) : undefined;
-    run(demoId ? { demoId, text: v } : { text: v || undefined, image: image ?? undefined });
+    if (demoId) return run({ demoId, text: v, mode: demoId === "company" ? "company" : "auto" });
+    if (mode === "company") return run({ text: v || undefined, mode });
+    run({ text: v || undefined, image: image ?? undefined });
   };
 
   const attach = async (f: File | undefined | null) => {
@@ -184,7 +189,7 @@ export function Checker() {
   };
 
   const openHistory = (h: HistoryItem) => {
-    setResult({ result: h.result, req: h.request ?? {} });
+    setResult({ result: h.result, req: h.request ?? {}, at: h.at });
     setPhase("result");
     requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
@@ -203,6 +208,8 @@ export function Checker() {
       {phase === "result" && result && (
         <VerdictView
           result={result.result}
+          input={{ text: result.req.text, file: Boolean(result.req.image) || (!result.req.text && result.result.kind === "document") }}
+          checkedAt={result.at}
           onReset={reset}
           onRerun={result.req.text || result.req.demoId ? () => run(result.req, lang) : undefined}
         />
@@ -218,8 +225,32 @@ export function Checker() {
           </div>
 
           <form onSubmit={onSubmit} className="card mt-7 p-4 sm:p-5" noValidate>
+            <div role="radiogroup" aria-label={t.hero.modesLabel} className="mb-3 grid grid-cols-2 gap-1 rounded-xl bg-subtle p-1">
+              {MODES.map((m) => {
+                const Icon = m === "company" ? Building2 : MessageSquareText;
+                const on = mode === m;
+                return (
+                  <button
+                    key={m}
+                    type="button"
+                    role="radio"
+                    aria-checked={on}
+                    onClick={() => {
+                      setMode(m);
+                      setError(null);
+                    }}
+                    className={`flex min-h-[40px] items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-semibold transition-colors ${
+                      on ? "bg-surface text-fg shadow-sm" : "text-muted hover:text-fg"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" aria-hidden />
+                    <span className="truncate">{t.hero.modes[m]}</span>
+                  </button>
+                );
+              })}
+            </div>
             <label htmlFor="check-input" className="sr-only">
-              {t.hero.label}
+              {mode === "company" ? t.hero.modes.company : t.hero.label}
             </label>
             <textarea
               id="check-input"
@@ -235,14 +266,16 @@ export function Checker() {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) onSubmit(e);
               }}
-              placeholder={t.hero.placeholder}
+              placeholder={mode === "company" ? t.hero.companyPlaceholder : t.hero.placeholder}
               rows={4}
               spellCheck={false}
               className="field resize-y text-base leading-relaxed"
               aria-describedby={error ? "form-error" : undefined}
             />
 
-            {image && (
+            {mode === "company" && <p className="mt-2 text-sm leading-snug text-muted">{t.hero.companyHint}</p>}
+
+            {image && mode === "auto" && (
               <div className="mt-3 flex items-center gap-3 rounded-xl bg-subtle p-2">
                 {image.mime === "image/jpeg" || image.mime === "image/png" || image.mime === "image/webp" ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -268,6 +301,7 @@ export function Checker() {
                   <ClipboardPaste className="h-4 w-4" aria-hidden /> {t.hero.paste}
                 </button>
               )}
+              {mode === "auto" && (
               <label className="btn btn-secondary min-h-[44px] flex-1 cursor-pointer whitespace-nowrap px-3 text-sm focus-within:border-primary sm:flex-none">
                 <Paperclip className="h-4 w-4" aria-hidden /> {t.hero.screenshot}
                 <input
@@ -280,7 +314,12 @@ export function Checker() {
                   }}
                 />
               </label>
-              <button type="submit" className="btn btn-primary min-h-[44px] w-full sm:ml-auto sm:w-auto" disabled={!text.trim() && !image}>
+              )}
+              <button
+                type="submit"
+                className="btn btn-primary min-h-[44px] w-full sm:ml-auto sm:w-auto"
+                disabled={!text.trim() && !(image && mode === "auto")}
+              >
                 {t.hero.check}
               </button>
             </div>
@@ -313,9 +352,11 @@ export function Checker() {
                   key={id}
                   type="button"
                   onClick={() => {
+                    const m: CheckMode = id === "company" ? "company" : "auto";
+                    setMode(m);
                     setText(DEMO_INPUTS[id]);
                     setImage(null);
-                    run({ demoId: id, text: DEMO_INPUTS[id] });
+                    run({ demoId: id, text: DEMO_INPUTS[id], mode: m });
                   }}
                   className="rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium hover:border-primary"
                 >

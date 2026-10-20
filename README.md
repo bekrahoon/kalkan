@@ -23,6 +23,7 @@ second.
 | **QR code** | Decoded from the photo, then checked as a link. |
 | **Document photo or PDF** | Summons, fines, contracts, receipts: Kalkan explains what to verify. It does not claim to prove a document is genuine. |
 | **Google Play app** | Developer, install count, rating, release date, permissions and user reports. |
+| **Company or project** | Switch to "Компания" and paste a name, an INN or what they promise. Kalkan finds the red flags of pyramids and fake companies (guaranteed or very high returns, pay for referrals, deposits to a personal card, upfront fees), checks any website given, and explains how to verify in the official registries (Ministry of Justice, National Bank, financial market regulator). It never claims a company is registered: it has no registry access. |
 | **Phone number** | Recognises the number, flags foreign country codes and explains what to do. Kalkan deliberately keeps no reports on numbers: a false label could hurt an honest person. |
 
 If the AI is unavailable, links still get a verdict from the technical checks
@@ -48,6 +49,7 @@ yet on any blocklist.
 - Android share sheet: send a link from any app straight to Kalkan
 - Telegram bot, including a "chat guard" mode that quietly checks links in family or neighbourhood groups and warns about dangerous ones
 - Library of common scam schemes in Kyrgyzstan
+- "Save a report for the police": a one-page PDF (via the print dialog) with what was checked, when, the verdict and the reasons; generated on the device, nothing is sent
 - History of checks kept on the device only
 - User reports on sites and apps, stored without any data about who reported
 - Abuse protection for the shared AI key: same-origin requests only, per-IP limits per minute and per day
@@ -67,6 +69,7 @@ deployed on Vercel.
 | Domain age (RDAP / WHOIS) | `src/lib/check/domain-age.ts` |
 | Phishing feeds | `src/lib/check/feeds.ts` |
 | Apps, phone numbers, QR codes | `src/lib/check/app.ts`, `phone.ts`, `qr.ts` |
+| Company / pyramid check | `src/lib/check/company.ts` |
 | AI verdict and prompts | `src/lib/check/ai-verdict.ts`, `src/lib/ai.ts` |
 | API routes | `src/app/api/check`, `src/app/api/report`, `src/app/api/telegram` |
 | Rate limits and origin checks | `src/lib/guard.ts` |

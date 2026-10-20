@@ -13,6 +13,8 @@ export interface AiVerdict {
   urls: string[];
   phones: string[];
   doc: { isDocument: boolean; type: string; issuer: string; verifyHow: string };
+  /** Company checks only: the name the user wrote. */
+  name: string;
 }
 
 const SCHEMA = {
@@ -79,16 +81,16 @@ function latinShare(v: AiVerdict): number {
 }
 
 /** Runs the call; if the answer came back in Latin transliteration, asks once more. */
-async function ask(system: string, parts: GeminiPart[], lang: Lang, budgetMs: number): Promise<AiVerdict> {
+async function ask(system: string, parts: GeminiPart[], lang: Lang, budgetMs: number, schema: object = SCHEMA): Promise<AiVerdict> {
   const started = Date.now();
-  const { json } = await generateJson<Record<string, unknown>>(system, parts, SCHEMA, budgetMs);
+  const { json } = await generateJson<Record<string, unknown>>(system, parts, schema, budgetMs);
   const first = clean(json);
   if (latinShare(first) < 0.5 || budgetMs - (Date.now() - started) < 6_000) return first;
   try {
     const { json: again } = await generateJson<Record<string, unknown>>(
       `${system}\nIMPORTANT: your previous answer used Latin letters. Answer again using Cyrillic letters only.`,
       parts,
-      SCHEMA,
+      schema,
       budgetMs - (Date.now() - started),
     );
     const second = clean(again);
@@ -151,6 +153,32 @@ Write all human-readable fields in ${langName(lang)}. Leave urls and phones empt
   return ask(system, [{ text: JSON.stringify(facts) }], lang, budgetMs);
 }
 
+const COMPANY_SCHEMA = {
+  ...SCHEMA,
+  properties: {
+    ...SCHEMA.properties,
+    company_name: { type: "STRING", description: "The company or project name as the user wrote it (max 60 characters), or empty." },
+  },
+  required: [...SCHEMA.required, "company_name"],
+};
+
+const COMPANY_RULES = `Task: the user asks whether a company, organisation or project can be trusted: an investment project, a "fund", a lender or microcredit company, an employer, an online shop, a crypto exchange, a charity. The input may be only a name or a tax number (INN), or a description of what they offer.
+You can NOT check government registries or licences: never say that a company is registered, licensed, official or reliable. Do not rely on your memory about specific small companies; judge what the user wrote. You may mention a well-known public fact only if you are certain (for example a widely reported financial pyramid).
+Red flags: guaranteed or very high income (several % per week or month), payouts for inviting friends, crypto, trading bots or "arbitrage", deposits to a personal card or an e-wallet, an upfront fee for a job, a loan or a prize, pressure and urgency, contacts only in Telegram, WhatsApp or Instagram, no address, a name that imitates a bank or a government body.
+Verdicts: danger = clear signs of a pyramid or fraud; suspicious = worrying signs; safe = only if the description is clearly an ordinary legitimate service with nothing worrying (and still advise checking the registry); unknown = only a name or too little to judge. For a bare name or INN answer unknown and explain in advice how to check it.
+The facts object contains what our server found (red flags in the text, a known brand, links). Do not repeat them in signals.
+Leave urls, phones and document empty / false.`;
+
+export async function aiForCompany(text: string, facts: Record<string, unknown>, lang: Lang, budgetMs: number): Promise<AiVerdict> {
+  const system = `${RULES_BASE}
+Today is ${today()}: do not call recent dates "future" dates.
+${COMPANY_RULES}
+${SCHEME_GUIDE}
+Write all human-readable fields in ${langName(lang)}.`;
+  const parts: GeminiPart[] = [{ text: `<<<COMPANY\n${text.slice(0, 3000)}\nCOMPANY>>>` }, { text: `Server facts: ${JSON.stringify(facts)}` }];
+  return ask(system, parts, lang, budgetMs, COMPANY_SCHEMA);
+}
+
 const LAT2CYR: Record<string, string> = {
   a: "а", b: "б", c: "с", d: "д", e: "е", f: "ф", g: "г", h: "х", i: "и", j: "ж", k: "к", l: "л", m: "м",
   n: "н", o: "о", p: "р", r: "р", s: "с", t: "т", u: "у", v: "в", w: "в", x: "х", y: "у", z: "з",
@@ -182,6 +210,7 @@ function clean(j: Record<string, unknown>): AiVerdict {
     Array.isArray(v) ? v.map((x) => (typeof x === "string" ? x.trim().slice(0, max) : "")).filter(Boolean).slice(0, n) : [];
   const list = (v: unknown, n: number, max: number) => (Array.isArray(v) ? v.map((x) => s(x, max)).filter(Boolean).slice(0, n) : []);
   return {
+    name: s(j.company_name, 60),
     verdict,
     title: s(j.title, 90),
     summary: s(j.summary, 500),
