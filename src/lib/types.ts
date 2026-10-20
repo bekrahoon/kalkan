@@ -1,4 +1,8 @@
-export type Lang = "ru" | "ky";
+export type Lang = "ru" | "ky" | "en";
+export const LANGS = ["ru", "ky", "en"] as const;
+export function toLang(v: unknown): Lang {
+  return v === "ky" || v === "en" ? v : "ru";
+}
 
 /** Final answer for the user. "unknown" = not enough facts to say anything either way. */
 export type Verdict = "danger" | "suspicious" | "safe" | "unknown";

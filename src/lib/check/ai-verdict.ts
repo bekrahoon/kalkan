@@ -67,6 +67,7 @@ phishing – fake website/login of a bank, mail, social network asking for crede
 deepfake – AI-faked voice or video of a known person or celebrity asking for money or promoting investments.`;
 
 function langName(lang: Lang) {
+  if (lang === "en") return "English (plain, simple everyday language), even if the input is in Russian or Kyrgyz";
   return lang === "ky"
     ? "Kyrgyz written ONLY in Cyrillic script (кыргыз тили: ө, ү, ң), simple everyday language. Never use Latin transliteration, even if the input is in Russian"
     : "Russian (simple everyday language)";
@@ -85,7 +86,7 @@ async function ask(system: string, parts: GeminiPart[], lang: Lang, budgetMs: nu
   const started = Date.now();
   const { json } = await generateJson<Record<string, unknown>>(system, parts, schema, budgetMs);
   const first = clean(json);
-  if (latinShare(first) < 0.5 || budgetMs - (Date.now() - started) < 6_000) return first;
+  if (lang === "en" || latinShare(first) < 0.5 || budgetMs - (Date.now() - started) < 6_000) return first;
   try {
     const { json: again } = await generateJson<Record<string, unknown>>(
       `${system}\nIMPORTANT: your previous answer used Latin letters. Answer again using Cyrillic letters only.`,

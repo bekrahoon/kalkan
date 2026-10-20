@@ -4,7 +4,7 @@
 
 Kalkan ("shield" in Kyrgyz) tells people in a few seconds whether a link, a
 message, a screenshot, a document or an app looks like a scam, and what to do
-about it. It answers in Russian and Kyrgyz.
+about it. It answers in Russian, Kyrgyz and English.
 
 Online fraud in Kyrgyzstan almost doubled in early 2026: fake bank pages, fake
 "vote for my niece" polls, messages from "relatives" asking for money. People
@@ -12,7 +12,7 @@ decide in a second whether to tap a link. Kalkan is built to answer in that
 second.
 
 > Калкан проверяет ссылки, сообщения, скриншоты, документы и приложения и за
-> несколько секунд говорит, похоже ли это на мошенников. На русском и кыргызском.
+> несколько секунд говорит, похоже ли это на мошенников. На русском, кыргызском и английском.
 
 ## What it checks
 
@@ -45,7 +45,7 @@ yet on any blocklist.
 
 ## Features
 
-- Web app in Russian and Kyrgyz, light and dark theme, installable as a PWA
+- Web app in Russian, Kyrgyz and English, light and dark theme, installable as a PWA
 - Android share sheet: send a link from any app straight to Kalkan
 - Telegram bot, including a "chat guard" mode that quietly checks links in family or neighbourhood groups and warns about dangerous ones
 - Library of common scam schemes in Kyrgyzstan
@@ -73,7 +73,7 @@ deployed on Vercel.
 | AI verdict and prompts | `src/lib/check/ai-verdict.ts`, `src/lib/ai.ts` |
 | API routes | `src/app/api/check`, `src/app/api/report`, `src/app/api/telegram` |
 | Rate limits and origin checks | `src/lib/guard.ts` |
-| UI strings (RU/KG) | `src/lib/i18n.ts` |
+| UI strings (RU/KG/EN) | `src/lib/i18n.ts` |
 
 ## Run locally
 

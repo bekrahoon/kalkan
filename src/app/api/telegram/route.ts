@@ -13,7 +13,7 @@ import {
   tg,
   webhookSecret,
 } from "@/lib/telegram";
-import { MAX_FILE_BYTES } from "@/lib/types";
+import { MAX_FILE_BYTES, toLang } from "@/lib/types";
 import { botId, guardGroupMessage, sendGroupIntro } from "@/lib/telegram-group";
 
 /** The check runs after we answer Telegram (it waits only a few seconds for webhooks). */
@@ -66,8 +66,8 @@ export async function POST(req: Request) {
   if (cb?.message) {
     const chatId = cb.message.chat.id;
     // Language buttons
-    if (cb.data === "lang:ru" || cb.data === "lang:ky") {
-      const lang = cb.data === "lang:ky" ? "ky" : "ru";
+    if (cb.data === "lang:ru" || cb.data === "lang:ky" || cb.data === "lang:en") {
+      const lang = toLang(cb.data.slice(5));
       setLang(chatId, lang);
       after(async () => {
         await tg("answerCallbackQuery", { callback_query_id: cb.id });
@@ -109,7 +109,7 @@ export async function POST(req: Request) {
     if (raw.startsWith("/lang")) {
       after(() =>
         send(t.chooseLang, {
-          reply_markup: { inline_keyboard: [[{ text: "Русский", callback_data: "lang:ru" }, { text: "Кыргызча", callback_data: "lang:ky" }]] },
+          reply_markup: { inline_keyboard: [[{ text: "Русский", callback_data: "lang:ru" }, { text: "Кыргызча", callback_data: "lang:ky" }, { text: "English", callback_data: "lang:en" }]] },
         }),
       );
       return new Response("ok");
@@ -131,7 +131,7 @@ export async function POST(req: Request) {
   if (raw.startsWith("/lang")) {
     after(() =>
       send(t.chooseLang, {
-        reply_markup: { inline_keyboard: [[{ text: "Русский", callback_data: "lang:ru" }, { text: "Кыргызча", callback_data: "lang:ky" }]] },
+        reply_markup: { inline_keyboard: [[{ text: "Русский", callback_data: "lang:ru" }, { text: "Кыргызча", callback_data: "lang:ky" }, { text: "English", callback_data: "lang:en" }]] },
       }),
     );
     return new Response("ok");

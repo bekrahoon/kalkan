@@ -259,9 +259,117 @@ const KY_COMPANY: CheckResult = {
     "Компанияны Юстиция министрлигинин юридикалык жактар реестринен тап (record.minjust.gov.kg). Эгер ал салым кабыл алса, насыя берсе же валюта алмаштырса — Улуттук банктын лицензиясы болушу керек (nbkr.kg). Инвестициялар, баалуу кагаздар жана криптовалюта — Мамфинкөзөмөлдүн көзөмөлүндө (fsa.gov.kg). Реестрде жок же лицензиясы жок болсо — акча бербе.",
 };
 
+const EN = {
+  bank: {
+    ...RU.bank,
+    lang: "en",
+    title: "Fake MBANK website",
+    summary: "The site pretends to be MBANK to get your card details and SMS code. With them, scammers will take your money.",
+    signals: [
+      { level: "bad", text: "The address imitates MBANK, but this is not the official site. The real address is mbank.kg." },
+      { level: "bad", text: "The site was created only 3 days ago. Scam sites are almost always new." },
+      { level: "bad", text: "The page pretends to be MBANK and asks for the card number, expiry date and SMS code." },
+      { level: "warn", text: "The .top domain zone is cheap and often used for phishing." },
+    ],
+    advice: [
+      "Don’t enter any data on this site.",
+      "Use MBANK only through the official app.",
+      "If you already entered your card details — call the bank right away and block the card.",
+    ],
+    facts: [
+      { label: "Address", value: "mbank-bonus.top/login" },
+      { label: "Domain registered", value: "11.10.2026" },
+      { label: "Page title", value: "MBANK — получите бонус 5000 сом" },
+    ],
+  },
+  voting: {
+    ...RU.voting,
+    lang: "en",
+    title: "Account theft via a “vote”",
+    summary: "This is a known scheme: the link leads to a fake Telegram login. If you enter your number and code, they take the account and start messaging your friends.",
+    subject: "Message",
+    signals: [
+      { level: "bad", text: "They ask you to vote via a link — this is how the account-theft scheme starts." },
+      { level: "bad", text: "Link golos-konkurs.online: dangerous." },
+      { level: "warn", text: "Pressure through pity and urgency (“I really need it”)." },
+    ],
+    advice: [
+      "Don’t open the link and don’t enter your phone number or code.",
+      "Warn your friend: their account seems to be hacked already.",
+      "Turn on a cloud password in Telegram: Settings → Privacy → Cloud password.",
+    ],
+    links: [
+      {
+        ...RU.voting.links[0],
+        lang: "en",
+        title: "Looks like a scam",
+        summary: "A “voting” page asks for a phone number and a Telegram code.",
+        signals: [
+          { level: "bad", text: "The page asks for a phone number and a code — this is how Telegram and WhatsApp accounts are stolen." },
+          { level: "bad", text: "The site was created only 5 days ago. Scam sites are almost always new." },
+          { level: "warn", text: "The .online domain zone is cheap and often used for phishing." },
+        ],
+        facts: [{ label: "Address", value: "golos-konkurs.online/vote" }],
+      },
+    ],
+  },
+  real: {
+    ...RU.real,
+    lang: "en",
+    title: "Official Optima Bank website",
+    summary: "This is the bank’s real website. Still, never share SMS codes — the bank never asks for them.",
+    signals: [{ level: "good", text: "This is the official website of Optima Bank." }],
+    advice: ["Still never share SMS codes — banks and support never ask for them."],
+    facts: [{ label: "Address", value: "optimabank.kg" }],
+  },
+};
+
+const EN_FINE: CheckResult = {
+  ...RU_FINE,
+  lang: "en",
+  title: "Fake fine notice",
+  summary: "Real fines are not paid by transfer to an inspector’s card and are not settled via WhatsApp. This is a scheme in the name of the authorities.",
+  subject: "Fine notice",
+  signals: [
+    { level: "bad", text: "Payment is requested to the “inspector’s” personal card." },
+    { level: "bad", text: "They threaten a criminal case and a triple fine if you don’t pay within 24 hours." },
+    { level: "warn", text: "Contact only via WhatsApp from a mobile number, not an official phone." },
+    { level: "warn", text: "The QR code leads not to an official government site but to shtraf-mvd-kg.online." },
+  ],
+  advice: ["Don’t pay anything based on this document.", "Don’t call or message the number in the document.", "Warn your family: such “fines” are sent to many people."],
+  facts: [
+    { label: "Document type", value: "Fine notice" },
+    { label: "From", value: "“Ministry of Internal Affairs”" },
+    { label: "QR code", value: "https://shtraf-mvd-kg.online/check?id=4471" },
+  ],
+  verify: "Check your fines on the official public-services portal or call the police on the number from the official Ministry of Internal Affairs website. A real fine is paid through a bank or terminal using the government body’s details.",
+};
+
+const EN_COMPANY: CheckResult = {
+  ...RU_COMPANY,
+  lang: "en",
+  title: "Signs of a pyramid scheme",
+  summary: "The company promises huge guaranteed income and pays for bringing in people. That is how pyramids work: early members are paid with new members’ money, then everything disappears.",
+  signals: [
+    { level: "bad", text: "They promise guaranteed income. Real investments and deposits never guarantee profit above the bank rate." },
+    { level: "bad", text: "They promise a very high return per day, week or month. Only pyramid schemes pay like that — with new members’ money." },
+    { level: "bad", text: "They pay for bringing in people. This is the main sign of a pyramid scheme." },
+    { level: "bad", text: "They ask you to send money to a personal card or wallet, not to a company account." },
+    { level: "warn", text: "30% a month is more than 350% a year. No bank or legal company promises that much." },
+  ],
+  advice: [
+    "Don’t send money or make a “first deposit”.",
+    "Don’t invite friends and family — their money will disappear along with yours.",
+    "If you already paid — keep receipts and chats and file a police report (102).",
+  ],
+  verify:
+    "Find the company in the Ministry of Justice register of legal entities (record.minjust.gov.kg). If it takes deposits, gives loans or exchanges currency, it must have a National Bank licence (nbkr.kg). Investments, securities and crypto are supervised by the State Financial Supervision Service (fsa.gov.kg). Not in the register or no licence — don’t give them money.",
+};
+
 const ALL: Record<Lang, Record<DemoId, CheckResult>> = {
   ru: { ...(RU as Record<Exclude<DemoId, "fine" | "company">, CheckResult>), fine: RU_FINE, company: RU_COMPANY },
   ky: { ...(KY as Record<Exclude<DemoId, "fine" | "company">, CheckResult>), fine: KY_FINE, company: KY_COMPANY },
+  en: { ...(EN as Record<Exclude<DemoId, "fine" | "company">, CheckResult>), fine: EN_FINE, company: EN_COMPANY },
 };
 
 export function getDemoResult(id: DemoId, lang: Lang): CheckResult {

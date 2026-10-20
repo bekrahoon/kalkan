@@ -39,7 +39,7 @@ export function HistoryPanel({ onOpen }: { onOpen: (item: HistoryItem) => void }
                   <span className="block text-xs text-muted">
                     <span className={`font-semibold ${style.text}`}>{t.verdict.label[h.result.verdict]}</span>
                     {" · "}
-                    {new Date(h.at).toLocaleDateString("ru-RU", lang === "ky" ? { day: "2-digit", month: "2-digit" } : { day: "numeric", month: "short" })}
+                    {new Date(h.at).toLocaleDateString(lang === "en" ? "en-GB" : "ru-RU", lang === "ky" ? { day: "2-digit", month: "2-digit" } : { day: "numeric", month: "short" })}
                     {h.example && ` · ${t.history.example}`}
                   </span>
                 </span>

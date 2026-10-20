@@ -52,4 +52,21 @@ export const ACCURACY_TEXT: Record<Lang, { title: string; lead: string; tiles: [
       "Бул текшерүүгө ЖИ катышкан жок. Сайтта ал баракты жана билдирүүлөрдү кошумча окуйт, бирок жаңылышы да мүмкүн.",
     ],
   },
+  en: {
+    title: "How accurate Kalkan is",
+    lead: `Test of ${ACCURACY.date}: real phishing links and real websites of Kyrgyzstan. Only the technical checks were counted, without the AI.`,
+    tiles: [
+      [pct(ACCURACY.warnedWithLists, ACCURACY.phishing), `of phishing links got a warning (${ACCURACY.warnedWithLists} of ${ACCURACY.phishing})`],
+      [pct(ACCURACY.warnedOwnOnly, ACCURACY.phishing), `caught by Kalkan’s own checks, without ready-made phishing lists (${ACCURACY.warnedOwnOnly} of ${ACCURACY.phishing})`],
+      [`${ACCURACY.legitFalseAlarms} of ${ACCURACY.legit}`, "false alarms on real websites of Kyrgyz banks, government bodies, media and shops"],
+    ],
+    methodTitle: "How we measured and what to know",
+    method: [
+      "Phishing: 100 fresh links from the OpenPhish database and 100 from Phishing Army, picked at random. Real sites: 100 websites people use in Kyrgyzstan.",
+      "Kalkan itself uses the OpenPhish database, so we also counted how many were caught without it — only by the address, site age, hosting and what the page asks for.",
+      `${ACCURACY.legitSafe} real sites got “No signs of a scam”, ${ACCURACY.legitUnknown} got “Not enough data”: they didn’t open from our server or they are platforms like YouTube. “Not enough data” is not an alarm.`,
+      "After the first run we fixed two bugs that caused false alarms and re-tested on a new phishing sample. The list of real sites stayed the same, so the result on it is optimistic.",
+      "The AI did not take part in this test. On the website it also reads the page and messages, but it can make mistakes too.",
+    ],
+  },
 };

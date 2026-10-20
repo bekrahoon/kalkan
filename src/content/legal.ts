@@ -146,6 +146,70 @@ export const PRIVACY: Record<Lang, LegalDoc> = {
       },
     ],
   },
+  en: {
+    title: "Privacy policy",
+    intro:
+      "Kalkan is a non-commercial project that helps check links, messages, documents and apps for signs of fraud. This page explains what data we receive, why, and who it is shared with.",
+    sections: [
+      {
+        h: "1. What we receive",
+        p: [
+          "What you submit for a check yourself: text, a link, an image or a PDF file.",
+          "Technical request data: IP address and time. We need them to limit the number of checks and protect the service from abuse.",
+          "If you tap “Report” — the address of the site or the ID of the app you report. We do not accept or store reports on phone numbers: a false report could harm an honest person.",
+          "In the Telegram bot — the chat ID and language, to reply to you and limit the number of checks.",
+          "We don’t ask for your name, e-mail or password and don’t create accounts.",
+        ],
+      },
+      {
+        h: "2. Why",
+        p: [
+          "Only to check what you sent, show the result and warn other people about scammers through reports.",
+          "We don’t use your data for advertising and don’t sell it.",
+        ],
+      },
+      {
+        h: "3. Who the data is shared with",
+        p: [
+          "Google (Gemini API) — the text, image or file is sent to the AI model for analysis. Google processes it under its Gemini API terms of use.",
+          "Vercel — website hosting and report storage.",
+          "The site you check — our server opens the link like a normal browser. The site sees a request from our server, not your IP address.",
+          "Domain registries (RDAP/WHOIS), phishing databases and Google Play — they receive only the site address or app ID.",
+          "Telegram — if you use the bot.",
+        ],
+      },
+      {
+        h: "4. What we store and for how long",
+        p: [
+          "We don’t save the texts, images and files you check: they are deleted after the answer. A link check result may be kept in server memory for up to 30 minutes to answer repeat checks faster.",
+          "Reports are stored permanently: the site address or app ID, the number of reports and dates. We don’t store who reported.",
+          "Your check history on the website is stored only in your browser. You can delete it with the “Clear” button.",
+          "Technical server logs are kept by the host for a limited time.",
+        ],
+      },
+      {
+        h: "5. Be careful with personal data",
+        p: [
+          "Before uploading a document, cover passport, tax ID, bank card numbers and other data not needed for the check. Kalkan doesn’t need them to find signs of fraud.",
+        ],
+      },
+      {
+        h: "6. Your rights",
+        p: [
+          "You may stop using Kalkan, delete the history in your browser and ask us to delete a report you think is wrong. Data is processed in line with the Law of the Kyrgyz Republic “On Personal Information”.",
+          `Contact the team: ${CONTACT_LABEL}.`,
+        ],
+      },
+      {
+        h: "7. Children",
+        p: ["If you are under 16, use Kalkan together with your parents."],
+      },
+      {
+        h: "8. Changes",
+        p: ["If the policy changes, we will show the consent window again. The date of the last change is shown at the top of the page."],
+      },
+    ],
+  },
 };
 
 export const TERMS: Record<Lang, LegalDoc> = {
@@ -229,6 +293,46 @@ export const TERMS: Record<Lang, LegalDoc> = {
       },
     ],
   },
+  en: {
+    title: "Terms of use",
+    intro: "By using Kalkan on the website or in the Telegram bot, you agree to these terms.",
+    sections: [
+      {
+        h: "1. What Kalkan does",
+        p: [
+          "Kalkan looks for signs of fraud using technical checks, phishing databases, user reports and AI, and explains the result in plain words.",
+          "Kalkan is free and provided “as is”.",
+        ],
+      },
+      {
+        h: "2. It’s a hint, not a guarantee",
+        p: [
+          "A check can be wrong either way: miss scammers or wrongly warn about an honest site. “No signs of a scam” does not mean everything is safe.",
+          "Kalkan does not confirm that documents are genuine — only the organisation that issued them can do that.",
+          "Kalkan is not legal, financial or law-enforcement advice. Make important decisions yourself and verify information officially.",
+          "The project team is not liable for losses related to using or not using the check results.",
+        ],
+      },
+      {
+        h: "3. Rules of use",
+        p: [
+          "Don’t send other people’s personal data unless necessary, and cover document and card numbers.",
+          "Don’t report sites and apps without a reason. Reports are reviewed, false ones are deleted.",
+          "Don’t try to overload the service, bypass limits or use it to attack other sites.",
+        ],
+      },
+      {
+        h: "4. Independence",
+        p: [
+          "Kalkan is not affiliated with the banks, mobile operators and government bodies mentioned in the results. Their names are used only to compare addresses with the real ones.",
+        ],
+      },
+      {
+        h: "5. Changes",
+        p: [`The terms may change — we will show the consent window again. Questions: ${CONTACT_LABEL}.`],
+      },
+    ],
+  },
 };
 
 export const CONSENT: Record<
@@ -274,5 +378,25 @@ export const CONSENT: Record<
     again: "Шарттарга кайтуу",
     leave: "Чыгуу",
     updated: "Жаңыртылды",
+  },
+  en: {
+    title: "Before you start",
+    lead: "In short, how Kalkan works:",
+    points: [
+      "What you submit is analysed by Google Gemini AI. We don’t save it.",
+      "Only reports about scammers are stored — without data about you.",
+      "A check is a hint, not a guarantee. We don’t confirm that documents are genuine.",
+      "Cover passport and card numbers on document photos.",
+    ],
+    read: "Read more:",
+    privacy: "Privacy policy",
+    terms: "Terms of use",
+    accept: "I accept",
+    cancel: "Cancel",
+    declinedTitle: "You didn’t accept the terms",
+    declinedText: "Kalkan can’t be used without accepting the terms. You can close the page or go back and read the terms again.",
+    again: "Back to the terms",
+    leave: "Leave",
+    updated: "Updated",
   },
 };

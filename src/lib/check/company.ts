@@ -16,20 +16,20 @@ import { TX } from "./texts";
 
 type FlagId = keyof (typeof TX)["ru"]["company"]["flags"];
 
-/** Red flags that do not need the AI (Russian and Kyrgyz wording). Each one is a fact found in the text. */
+/** Red flags that do not need the AI (Russian, Kyrgyz and English wording). Each one is a fact found in the text. */
 const FLAGS: { id: FlagId; level: "bad" | "warn"; re: RegExp }[] = [
-  { id: "guaranteed", level: "bad", re: /гарантир\p{L}*\s+(?:\p{L}+\s+){0,2}(?:доход|прибыл|выплат|процент)|без\s+риска|кепилденген/iu },
+  { id: "guaranteed", level: "bad", re: /гарантир\p{L}*\s+(?:\p{L}+\s+){0,2}(?:доход|прибыл|выплат|процент)|без\s+риска|кепилденген|guarantee\p{L}*\s+(?:\p{L}+\s+){0,2}(?:income|profit|return|payout)|risk[-\s]?free|no\s+risk/iu },
   {
     id: "highReturn",
     level: "bad",
-    re: /\d+(?:[.,]\d+)?\s*%\s*(?:в|за|каждый|в\s+каждый)?\s*(?:день|сутки|недел|месяц|ежеднев|еженедел|ежемесяч|күнүнө|жумасына|айына)|(?:ежеднев\p{L}*|еженедел\p{L}*|ежемесяч\p{L}*|в\s+(?:день|неделю|месяц)|күнүнө|жумасына|айына)\s+(?:до\s+|по\s+)?\d+(?:[.,]\d+)?\s*%|(?:удво|утро)\p{L}*\s+(?:вклад|деньг|сумм)/iu,
+    re: /\d+(?:[.,]\d+)?\s*%\s*(?:в|за|каждый|в\s+каждый)?\s*(?:день|сутки|недел|месяц|ежеднев|еженедел|ежемесяч|күнүнө|жумасына|айына)|(?:ежеднев\p{L}*|еженедел\p{L}*|ежемесяч\p{L}*|в\s+(?:день|неделю|месяц)|күнүнө|жумасына|айына)\s+(?:до\s+|по\s+)?\d+(?:[.,]\d+)?\s*%|(?:удво|утро)\p{L}*\s+(?:вклад|деньг|сумм)|\d+(?:[.,]\d+)?\s*%\s*(?:a|per|every|each)\s+(?:day|week|month)|\d+(?:[.,]\d+)?\s*%\s*(?:daily|weekly|monthly)|(?:daily|weekly|monthly)\s+(?:\p{L}+\s+){0,2}\d+(?:[.,]\d+)?\s*%|(?:double|triple)\s+your\s+(?:money|deposit|investment)/iu,
   },
-  { id: "referral", level: "bad", re: /приглас\p{L}*\s+(?:друз|знаком|люд)|за\s+каждого\s+(?:приглаш|приведен|нового)|приведи\s+друга|рефера|бонус\s+за\s+друз|досторду\s+чакыр/iu },
-  { id: "card", level: "bad", re: /(?:на|перев\p{L}*\s+на)\s+(?:личн\p{L}*\s+)?карт\p{L}*|на\s+(?:номер\s+)?(?:элсом|о!?\s*деньги|mbank|мбанк)|картага\s+которуу/iu },
-  { id: "prepay", level: "bad", re: /(?:оплат\p{L}*|внес\p{L}*|взнос)\s+(?:за\s+)?(?:обучени|регистраци|оформлени|страховк|комисси)|вступительн\p{L}*\s+взнос|предоплат/iu },
-  { id: "crypto", level: "warn", re: /крипт|usdt|биткоин|bitcoin|\bbtc\b|трейдинг|торгов\p{L}*\s+бот|арбитраж|бинанс|binance/iu },
-  { id: "passive", level: "warn", re: /пассивн\p{L}*\s+доход|доход\s+без\s+(?:работ|усили|вложени)|легк\p{L}*\s+деньг|быстр\p{L}*\s+(?:заработ|деньг)/iu },
-  { id: "messengerOnly", level: "warn", re: /только\s+(?:в|через)\s+(?:telegram|телеграм|whatsapp|ватсап|instagram|инстаграм)|пиши\s+в\s+(?:лс|директ|личку)/iu },
+  { id: "referral", level: "bad", re: /приглас\p{L}*\s+(?:друз|знаком|люд)|за\s+каждого\s+(?:приглаш|приведен|нового)|приведи\s+друга|рефера|бонус\s+за\s+друз|досторду\s+чакыр|invit\p{L}*\s+(?:your\s+)?(?:friends|people|others)|referral|bonus\s+for\s+(?:each\s+|every\s+)?(?:friend|invit|referr)|bring\s+a\s+friend/iu },
+  { id: "card", level: "bad", re: /(?:на|перев\p{L}*\s+на)\s+(?:личн\p{L}*\s+)?карт\p{L}*|на\s+(?:номер\s+)?(?:элсом|о!?\s*деньги|mbank|мбанк)|картага\s+которуу|(?:to|onto)\s+(?:my|a|his|her|our)\s+(?:personal\s+)?card/iu },
+  { id: "prepay", level: "bad", re: /(?:оплат\p{L}*|внес\p{L}*|взнос)\s+(?:за\s+)?(?:обучени|регистраци|оформлени|страховк|комисси)|вступительн\p{L}*\s+взнос|предоплат|(?:pay|fee)\p{L}*\s+(?:for\s+)?(?:the\s+)?(?:training|registration|insurance|commission)|upfront\s+(?:fee|payment)|(?:registration|entry|joining)\s+fee/iu },
+  { id: "crypto", level: "warn", re: /крипт|usdt|биткоин|bitcoin|\bbtc\b|трейдинг|торгов\p{L}*\s+бот|арбитраж|бинанс|binance|crypto|trading\s+bot|\btrading\b/iu },
+  { id: "passive", level: "warn", re: /пассивн\p{L}*\s+доход|доход\s+без\s+(?:работ|усили|вложени)|легк\p{L}*\s+деньг|быстр\p{L}*\s+(?:заработ|деньг)|passive\s+income|easy\s+money|fast\s+money|income\s+without\s+(?:work|effort)/iu },
+  { id: "messengerOnly", level: "warn", re: /только\s+(?:в|через)\s+(?:telegram|телеграм|whatsapp|ватсап|instagram|инстаграм)|пиши\s+в\s+(?:лс|директ|личку)|only\s+(?:via|in|on|through)\s+(?:telegram|whatsapp|instagram)|\bdm\s+(?:me|us)\b/iu },
 ];
 
 /** A Kyrgyz INN has 14 digits. */

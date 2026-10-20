@@ -18,7 +18,7 @@ let memoryLang: Lang | null = null;
 function readLang(): Lang {
   try {
     const saved = localStorage.getItem(KEY);
-    if (saved === "ky" || saved === "ru") return saved;
+    if (saved === "ky" || saved === "ru" || saved === "en") return saved;
   } catch {
     /* storage blocked */
   }

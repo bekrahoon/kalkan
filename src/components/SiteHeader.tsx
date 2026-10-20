@@ -9,6 +9,7 @@ import type { Lang } from "@/lib/types";
 const LANGS: { id: Lang; label: string; full: string }[] = [
   { id: "ru", label: "RU", full: "Русский" },
   { id: "ky", label: "KG", full: "Кыргызча" },
+  { id: "en", label: "EN", full: "English" },
 ];
 
 export function SiteHeader() {
@@ -25,7 +26,7 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-1 px-4 py-2.5">
         <Link href="/" className="flex items-center gap-2" aria-label="Калкан">
           <ShieldLogo size={26} />
-          <span className="text-lg font-bold tracking-tight">Калкан</span>
+          <span className="text-lg font-bold tracking-tight">{lang === "en" ? "Kalkan" : "Калкан"}</span>
         </Link>
 
         <nav aria-label={t.nav.menu} className="order-3 -mx-1 flex w-full gap-1 overflow-x-auto sm:order-none sm:mx-0 sm:w-auto">

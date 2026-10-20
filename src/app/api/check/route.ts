@@ -2,7 +2,7 @@ import { CheckError } from "@/lib/ai";
 import { runCheck } from "@/lib/check";
 import { getDemoResult, isDemoId } from "@/lib/demo";
 import { clientIp, sameOrigin, tooMany } from "@/lib/guard";
-import { IMAGE_MIMES, MAX_FILE_BYTES, MAX_TEXT_CHARS, type CheckResponse, type ErrorCode, type Lang } from "@/lib/types";
+import { IMAGE_MIMES, MAX_FILE_BYTES, MAX_TEXT_CHARS, type CheckResponse, type ErrorCode, type Lang, toLang } from "@/lib/types";
 
 /** A check takes a few seconds; the ceiling is for slow sites and a busy AI. */
 export const maxDuration = 60;
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   } catch {
     return fail("bad_request", 400);
   }
-  const lang: Lang = body.lang === "ky" ? "ky" : "ru";
+  const lang: Lang = toLang(body.lang);
   if (isDemoId(body.demoId)) return Response.json({ ok: true, result: getDemoResult(body.demoId, lang) } satisfies CheckResponse);
 
   const text = typeof body.text === "string" ? body.text.trim().slice(0, MAX_TEXT_CHARS) : "";

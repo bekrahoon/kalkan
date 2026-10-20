@@ -14,7 +14,7 @@ export const botId = () => Number(botToken().split(":")[0]) || 0;
 
 /** Cheap pre-filter so the AI only reads messages that look like a known scheme. */
 const SCAM_WORDS =
-  /(код из (смс|sms)|продиктуй|назови код|проголосуй|голосован|добуш бер|служба безопасности|безопасный сч[её]т|перевед[иь]|перевод на карту|выиграл|ваш приз|компенсац|cvv|cvc|предоплат|заработ\S* в день|инвестиц|sms код|акча котор|утуп алдыңыз)/i;
+  /(код из (смс|sms)|продиктуй|назови код|проголосуй|голосован|добуш бер|служба безопасности|безопасный сч[её]т|перевед[иь]|перевод на карту|выиграл|ваш приз|компенсац|cvv|cvc|предоплат|заработ\S* в день|инвестиц|sms код|акча котор|утуп алдыңыз|verification code|security service|you (?:have )?won|vote for)/i;
 
 const T = {
   ru: {
@@ -30,6 +30,13 @@ const T = {
     title: "⚠️ <b>Этият болгула, алдамчыларга окшойт</b>",
     footer: "Шилтемеге өтпөгүлө, маалымат киргизбегиле жана акча которбогула.",
     more: "Кененирээк",
+  },
+  en: {
+    intro:
+      "🛡 <b>Kalkan is guarding this chat.</b>\n\nI quietly check links and suspicious messages and write only if I find a danger. Nothing to set up.",
+    title: "⚠️ <b>Careful, this looks like a scam</b>",
+    footer: "Don’t open the link, don’t enter any data and don’t send money.",
+    more: "More",
   },
 };
 

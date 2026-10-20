@@ -98,6 +98,39 @@ const T = {
       default: "Текшерүү болбой калды. Бир аздан кийин кайра аракет кыл.",
     } as Partial<Record<ErrorCode, string>> & { default: string },
   },
+  en: {
+    start:
+      "🛡 <b>Kalkan</b> — check before you tap.\n\nForward me a suspicious message or send:\n• a link\n• a screenshot of a chat or website\n• a photo or PDF of a document (summons, fine, contract, receipt)\n• a Google Play app link\n\nI’ll tell you whether it looks like a scam and what to do.\n\n👨‍👩‍👧 <b>Chat guard:</b> add me to your family or building group — I’ll quietly check links and warn about dangerous ones: t.me/kalkan_kgs_bot?startgroup=true\n\nBy using the bot you accept the <a href=\"https://kalkan-sigma.vercel.app/terms\">terms</a> and the <a href=\"https://kalkan-sigma.vercel.app/privacy\">privacy policy</a>.\n\nLanguage: /lang",
+    working: "⏳ Checking…",
+    label: { danger: "🔴 DANGEROUS", suspicious: "🟡 SUSPICIOUS", safe: "🟢 No signs of a scam", unknown: "⚪ Not enough data" },
+    why: "Why",
+    todo: "What to do",
+    scheme: "Scam",
+    links: "Links in the message",
+    reports: (n: number) => `🚩 User reports: ${n}`,
+    report: "🚩 Report: this is a scam",
+    reported: "Thank you! Your report is counted.",
+    reportFail: "Couldn’t save the report.",
+    langChosen: "Done, I’ll answer in English now.",
+    chooseLang: "Choose the reply language:",
+    limit: "Too many checks in a row. Try again in a few minutes.",
+    tooBig: "The file is too big. Send a photo or PDF up to 3 MB.",
+    verify: "How to check officially",
+    apk:
+      "🔴 <b>DANGEROUS: don’t install this file</b>\n\nApps (.apk) sent in chats are the main way to infect a phone with a virus that reads SMS and steals money from banking apps.\n\n1. Delete the file and don’t open it.\n2. If you already installed it — call your bank right away and block the card, then delete the app.\n3. Warn the person who sent it: their account may have been hacked.",
+    unsupported: "Send a text, link, screenshot or document.",
+    more: "More on the website",
+    disclaimer: "Kalkan checks for warning signs and can be wrong. Banks and the police never ask for SMS codes.",
+    errors: {
+      invalid_url: "This doesn’t look like a link.",
+      empty: "Send a text, link or screenshot.",
+      rate_limit: "The AI is overloaded right now. Try again in a minute.",
+      ai_busy: "The AI is overloaded right now. Try again in a minute.",
+      file_type: "An image or screenshot is needed.",
+      file_too_big: "The image is too big. Up to 3 MB is needed.",
+      default: "Couldn’t check it. Try again a bit later.",
+    } as Partial<Record<ErrorCode, string>> & { default: string },
+  },
 };
 export const botText = (lang: Lang) => T[lang];
 

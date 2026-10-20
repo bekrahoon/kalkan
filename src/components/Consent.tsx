@@ -92,8 +92,8 @@ export function ConsentModal() {
           <h2 id="consent-title" className="flex-1 text-xl font-bold">
             {c.title}
           </h2>
-          <div role="group" aria-label="Язык / Тил" className="flex shrink-0 rounded-lg bg-subtle p-1">
-            {(["ru", "ky"] as const).map((l) => (
+          <div role="group" aria-label="Язык / Тил / Language" className="flex shrink-0 rounded-lg bg-subtle p-1">
+            {(["ru", "ky", "en"] as const).map((l) => (
               <button
                 key={l}
                 type="button"
@@ -101,7 +101,7 @@ export function ConsentModal() {
                 aria-pressed={lang === l}
                 className={`min-h-[32px] min-w-[38px] rounded-md px-2 text-xs font-semibold ${lang === l ? "bg-surface text-fg shadow-sm" : "text-muted"}`}
               >
-                {l === "ru" ? "RU" : "KG"}
+                {l === "ru" ? "RU" : l === "ky" ? "KG" : "EN"}
               </button>
             ))}
           </div>

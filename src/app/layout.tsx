@@ -9,7 +9,7 @@ import { ConsentModal } from "@/components/Consent";
 export const metadata: Metadata = {
   title: "Калкан — проверь, прежде чем нажать",
   description:
-    "Проверка ссылок, сообщений, номеров и приложений на мошенничество за несколько секунд. Русский и кыргызский.",
+    "Проверка ссылок, сообщений, номеров и приложений на мошенничество за несколько секунд. Русский, кыргызский и английский.",
   icons: { icon: "/icon.svg", apple: "/apple-touch-icon.png" },
   appleWebApp: { capable: true, title: "Калкан", statusBarStyle: "default" },
 };
