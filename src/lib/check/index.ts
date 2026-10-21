@@ -29,8 +29,24 @@ function singleUrl(text: string): string | null {
   return urls.length === 1 && urls[0].length >= s.length - 2 ? urls[0] : null;
 }
 
+/** Hard limit so the user always gets an answer before the 60 s function timeout (e.g. when the AI is overloaded). */
+const DEADLINE_MS = 50_000;
+
 /** Routes whatever the user pasted to the right check. */
 export async function runCheck(input: CheckInput, lang: Lang): Promise<CheckResult> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const late = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new CheckError("ai_busy", 503)), DEADLINE_MS);
+  });
+  try {
+    return await Promise.race([routeCheck(input, lang), late]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function routeCheck(input: CheckInput, lang: Lang): Promise<CheckResult> {
+  const begun = Date.now();
   const text = (input.text ?? "").trim();
   if (input.mode === "company" && !input.image) return checkCompany(text, lang);
   if (!input.image) {
@@ -40,11 +56,11 @@ export async function runCheck(input: CheckInput, lang: Lang): Promise<CheckResu
     if (url) {
       const appId = parsePlayUrl(url);
       if (appId) return checkApp(appId, lang);
-      const r = await checkLink(url, lang);
+      const r = await checkLink(url, lang, { budgetMs: 30_000 });
       // Invite/download links of shops and services often bounce to Google Play: judge the app itself.
       const landedApp = r.finalUrl && r.verdict !== "danger" ? parsePlayUrl(r.finalUrl) : null;
       if (landedApp) {
-        const app = await checkApp(landedApp, lang, 25_000).catch(() => null);
+        const app = await checkApp(landedApp, lang, Math.max(8_000, 45_000 - (Date.now() - begun))).catch(() => null);
         if (app) {
           const t = TX[lang];
           return {
