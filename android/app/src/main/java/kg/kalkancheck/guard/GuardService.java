@@ -113,12 +113,11 @@ public class GuardService extends NotificationListenerService {
 
         Parcelable[] msgs = e.getParcelableArray(Notification.EXTRA_MESSAGES);
         if (msgs != null && msgs.length > 0) {
-            int from = Math.max(0, msgs.length - 3);
-            for (int i = from; i < msgs.length; i++) {
-                if (msgs[i] instanceof Bundle) {
-                    CharSequence m = ((Bundle) msgs[i]).getCharSequence("text");
-                    if (m != null) sb.append(m).append("\n");
-                }
+            // only the newest message: older ones were already checked when they arrived
+            Parcelable last = msgs[msgs.length - 1];
+            if (last instanceof Bundle) {
+                CharSequence m = ((Bundle) last).getCharSequence("text");
+                if (m != null) sb.append(m);
             }
         } else if (big != null && big.length() > 0) {
             sb.append(big);
