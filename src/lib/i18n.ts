@@ -607,5 +607,5 @@ const en: Dict = {
 export const DICTS: Record<Lang, Dict> = { ru, ky, en };
 export const BOT_URL = "https://t.me/kalkan_kgs_bot";
 export const GROUP_URL = "https://t.me/kalkan_kgs_bot?startgroup=true";
-export const GUARD_APK_URL = "https://github.com/bekrahoon/kalkan/releases/download/android-latest/KalkanCheck-Guard.apk";
+export const GUARD_APK_URL = "/KalkanCheck-Guard.apk";
 export const FAMILY_URL = "https://t.me/kalkan_kgs_bot?start=family";
