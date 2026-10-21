@@ -107,7 +107,10 @@ public final class Warning {
         }
 
         Button ok = button(c, "Понятно, не буду ничего делать", Color.WHITE, Color.parseColor("#B71C1C"));
-        ok.setOnClickListener(v -> onClose.run());
+        ok.setOnClickListener(v -> {
+            android.util.Log.i("KalkanGuard", "ok clicked");
+            onClose.run();
+        });
         footer.addView(ok, fullWidth(c, 0));
 
         final Button sos = button(c, "🆘 Я уже перевёл(а) деньги или назвал(а) код", Color.parseColor("#0F1B36"), Color.WHITE);

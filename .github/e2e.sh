@@ -50,10 +50,14 @@ done
 shot 03_warning
 echo "overlay_found=$found" | tee e2e/result.txt
 adb shell dumpsys notification --noredact | grep -A3 "pkg=$P" | head -40 > e2e/our_notifications.txt
-adb shell cmd statusbar expand-notifications; sleep 2; shot 03b_shade; adb shell cmd statusbar collapse
 if [ $found = 1 ]; then
-  tap e2e/warn.xml "Понятно"; sleep 2; shot 04_after_ok
+  sleep 6   # let the heads-up notification go away
+  ui warn2
+  tap e2e/warn2.xml "Понятно"; sleep 3; shot 04_after_ok; ui after_ok
+  adb shell dumpsys window windows | grep -iE "kalkan|Window #" | head -30 > e2e/windows_after_ok.txt
+  grep -q "ОСТОРОЖНО" e2e/after_ok.xml && echo "dismiss_ok=0" >> e2e/result.txt || echo "dismiss_ok=1" >> e2e/result.txt
 fi
+adb shell cmd statusbar expand-notifications; sleep 2; shot 03b_shade; adb shell cmd statusbar collapse; sleep 2
 
 # a normal message must stay silent
 adb shell "cmd notification post -S bigtext -t 'Мама' normal1 'Привет, ты когда придёшь домой? Купи хлеба по дороге'"
@@ -67,7 +71,7 @@ sleep 1; ui demo
 tap e2e/demo.xml "Показать, как"; sleep 3; shot 06_demo
 
 adb logcat -d > e2e/logcat_full.txt
-grep -E "AndroidRuntime|FATAL|kalkancheck|GuardService|NotificationListener" e2e/logcat_full.txt | tail -200 > e2e/logcat.txt
+grep -E "FATAL|KalkanGuard|kalkancheck.guard.*(Exception|Error)|InputDispatcher" e2e/logcat_full.txt | tail -200 > e2e/logcat.txt
 grep -q "FATAL EXCEPTION" e2e/logcat_full.txt && echo "crash=1" >> e2e/result.txt || echo "crash=0" >> e2e/result.txt
 rm -f e2e/logcat_full.txt
 cat e2e/result.txt

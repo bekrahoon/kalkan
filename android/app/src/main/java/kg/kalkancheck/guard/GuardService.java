@@ -171,6 +171,7 @@ public class GuardService extends NotificationListenerService {
         try {
             wm.addView(v, lp);
             overlay = v;
+            android.util.Log.i("KalkanGuard", "overlay shown");
         } catch (Exception e) {
             Intent i = WarningActivity.intent(this, r, app);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -182,10 +183,12 @@ public class GuardService extends NotificationListenerService {
     }
 
     private void hideOverlay() {
+        android.util.Log.i("KalkanGuard", "hideOverlay " + (overlay != null));
         if (overlay == null) return;
         try {
             ((WindowManager) getSystemService(WINDOW_SERVICE)).removeView(overlay);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            android.util.Log.w("KalkanGuard", "removeView", e);
         }
         overlay = null;
     }
