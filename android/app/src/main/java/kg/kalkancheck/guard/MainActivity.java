@@ -299,9 +299,9 @@ public class MainActivity extends Activity {
         LinearLayout status = new LinearLayout(this);
         status.setOrientation(LinearLayout.VERTICAL);
         status.setGravity(Gravity.CENTER_HORIZONTAL);
-        status.setPadding(dp(20), dp(24), dp(20), dp(24));
+        status.setPadding(dp(18), dp(18), dp(18), dp(20));
         status.setBackground(round(on ? OK_SOFT : BAD_SOFT, 24));
-        TextView icon = t(on ? "🛡️" : "⏸️", 64, false, INK);
+        TextView icon = t(on ? "🛡️" : "⏸️", 52, false, INK);
         icon.setGravity(Gravity.CENTER);
         status.addView(icon);
         TextView head = t(on ? "Вы под защитой" : "Проверка на паузе", 28, true, on ? OK : BAD);
@@ -338,10 +338,11 @@ public class MainActivity extends Activity {
         loadStatus();
 
         // SOS always at the bottom, always visible
-        Button sos = Warning.button(this, "🆘 Меня обманули — SOS", BAD, Color.WHITE);
+        Button sos = Warning.button(this, "🆘 Меня обманули", BAD, Color.WHITE);
         sos.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+        sos.setMinHeight(dp(64));
         sos.setOnClickListener(v -> confirmSos());
-        bottom.addView(sos, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(68)));
+        bottom.addView(sos, lp(0));
         TextView sosHint = t("Нажмите, если уже перевели деньги или назвали код", 15, false, MUTED);
         sosHint.setGravity(Gravity.CENTER);
         bottom.addView(sosHint, lp(6));
