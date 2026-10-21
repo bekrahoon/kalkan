@@ -74,6 +74,8 @@ export interface CheckResult {
   demo?: boolean;
   /** The AI part failed, the verdict is based on technical checks only. */
   aiSkipped?: boolean;
+  /** Where a link finally led after redirects (only when it moved to another site). */
+  finalUrl?: string;
   /** Documents and companies: how to verify officially (we never confirm authenticity ourselves). */
   verify?: string;
 }

@@ -39,7 +39,22 @@ export async function runCheck(input: CheckInput, lang: Lang): Promise<CheckResu
     const url = singleUrl(text);
     if (url) {
       const appId = parsePlayUrl(url);
-      return appId ? checkApp(appId, lang) : checkLink(url, lang);
+      if (appId) return checkApp(appId, lang);
+      const r = await checkLink(url, lang);
+      // Invite/download links of shops and services often bounce to Google Play: judge the app itself.
+      const landedApp = r.finalUrl && r.verdict !== "danger" ? parsePlayUrl(r.finalUrl) : null;
+      if (landedApp) {
+        const app = await checkApp(landedApp, lang, 25_000).catch(() => null);
+        if (app) {
+          const t = TX[lang];
+          return {
+            ...app,
+            signals: [{ level: "info", text: t.toPlay(r.subject) }, ...app.signals],
+            facts: [{ label: t.f.address, value: r.facts[0]?.value ?? r.subject }, ...app.facts],
+          };
+        }
+      }
+      return r;
     }
   }
   return checkMessage(text, input.image ?? null, lang);

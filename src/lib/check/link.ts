@@ -153,7 +153,12 @@ export async function checkLink(
   };
 
   if (feed) add("bad", t.feed(feed.source === "google" ? "Google Safe Browsing" : "OpenPhish"));
-  if (moved) add(start.shortener ? "info" : "warn", start.shortener ? t.shortener(final.unicode) : t.redirect(final.unicode));
+  // A redirect is only a warning when it lands somewhere we can't vouch for (e.g. a shop's invite link → Google Play is normal).
+  if (moved) {
+    if (start.shortener) add("info", t.shortener(final.unicode));
+    else if (trusted(final) || (final.known && !final.ugc)) add("info", t.redirectTrusted(final.unicode));
+    else add("warn", t.redirect(final.unicode));
+  }
 
   const scan = page.html ? scanPage(page.html) : null;
   const sensitiveForm = Boolean(scan && (scan.card || scan.password || scan.code));
@@ -295,6 +300,7 @@ export async function checkLink(
     links: [],
     lang,
     aiSkipped,
+    finalUrl: moved ? page.finalUrl.href : undefined,
   };
   cache.set(key, { at: Date.now(), r: result });
   if (cache.size > 2_000) cache.delete(cache.keys().next().value!);
