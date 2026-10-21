@@ -1,0 +1,5 @@
+10-21 11:19:24.426   480   685 D InputDispatcher: Touch mode switch rejected, caller (pid=0, uid=10174) doesn't own the focused window nor none of the previously interacted window
+10-21 11:19:56.042  2712  2712 I KalkanGuard: hideOverlay false
+10-21 11:19:56.056  2712  2712 I KalkanGuard: overlay shown
+10-21 11:20:11.035  2712  2712 I KalkanGuard: ok clicked
+10-21 11:20:11.037  2712  2712 I KalkanGuard: hideOverlay true

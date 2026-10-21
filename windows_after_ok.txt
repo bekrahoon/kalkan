@@ -1,0 +1,16 @@
+  Window #0 Window{ca08329 u0 ScreenDecorOverlayBottom}:
+  Window #1 Window{face6f1 u0 ScreenDecorOverlay}:
+  Window #2 Window{3ee49cb u0 NotificationShade}:
+  Window #3 Window{a5c2743 u0 StatusBar}:
+  Window #4 Window{9c9a491 u0 ShellDropTarget}:
+  Window #5 Window{3b6e96a u0 com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity}:
+  Window #6 Window{41b92c6 u0 InputMethod}:
+  Window #7 Window{bd8aa74 u0 com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity}:
+  Window #8 Window{6f08ec2 u0 kg.kalkancheck.guard/kg.kalkancheck.guard.MainActivity}:
+    mOwnerUid=10174 showForAllUsers=false package=kg.kalkancheck.guard appop=NONE
+    mBaseLayer=21000 mSubLayer=0    mToken=ActivityRecord{2b72971 u0 kg.kalkancheck.guard/.MainActivity} t9}
+    mActivityRecord=ActivityRecord{2b72971 u0 kg.kalkancheck.guard/.MainActivity} t9}
+    WindowStateAnimator{c505a96 kg.kalkancheck.guard/kg.kalkancheck.guard.MainActivity}:
+  Window #9 Window{f6ad538 u0 com.android.systemui.wallpapers.ImageWallpaper}:
+      topApp=ActivityRecord{2b72971 u0 kg.kalkancheck.guard/.MainActivity} t9}
+      snapshot=TaskSnapshot{ mId=1792581589506 mTopActivityComponent=kg.kalkancheck.guard/.MainActivity mSnapshot=android.hardware.HardwareBuffer@9985bed (256x512) mColorSpace=sRGB IEC61966-2.1 (id=0, model=RGB) mOrientation=1 mRotation=0 mTaskSize=Point(320, 640) mContentInsets=[0,24][0,0] mLetterboxInsets=[0,0][0,0] mIsLowResolution=false mIsRealSnapshot=true mWindowingMode=1 mAppearance=0 mIsTranslucent=false mHasImeSurface=false
