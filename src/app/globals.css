@@ -254,6 +254,19 @@ h3 {
   to { opacity: 1; transform: none; }
 }
 
+.menu-backdrop {
+  animation: backdrop 0.2s ease both;
+}
+.menu-panel {
+  animation: slide-in 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes backdrop {
+  from { opacity: 0; }
+}
+@keyframes slide-in {
+  from { transform: translateX(100%); }
+}
+
 .spin {
   animation: spin 1s linear infinite;
 }

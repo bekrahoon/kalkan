@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AlertCircle, Building2, ClipboardPaste, FileText, Link2, MessageSquareText, Paperclip, Send, Smartphone, Users, X, HeartHandshake, Download, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { AlertCircle, Building2, ChevronDown, ChevronRight, ClipboardPaste, FileText, HeartHandshake, Link2, MessageSquareText, Paperclip, Smartphone, X } from "lucide-react";
 import { InstallCard } from "./PwaSetup";
 import { readConsentNow, setConsent } from "./Consent";
 import { useLang } from "./LangProvider";
@@ -11,7 +12,6 @@ import { VerdictView } from "./VerdictView";
 import { HistoryPanel } from "./HistoryPanel";
 import { addToHistory, type HistoryItem } from "@/lib/history";
 import { DEMO_IDS, DEMO_INPUTS, getDemoResult } from "@/lib/demo";
-import { BOT_URL, FAMILY_URL, GROUP_URL, GUARD_APK_URL } from "@/lib/i18n";
 import { MAX_FILE_BYTES, type CheckMode, type CheckResponse, type CheckResult, type DemoId, type ErrorCode, type Lang, type UploadedImage } from "@/lib/types";
 
 type Phase = "idle" | "loading" | "result";
@@ -216,10 +216,10 @@ export function Checker() {
       )}
 
       {phase === "idle" && (
-        <section className="mx-auto max-w-2xl px-4 pb-6 pt-8 sm:pt-14">
+        <section className="mx-auto max-w-2xl px-4 pb-6 pt-6 sm:pt-14">
           <div className="text-center">
-            <ShieldLogo size={52} className="mx-auto" />
-            <p className="eyebrow mt-4">{t.hero.kicker}</p>
+            <ShieldLogo size={52} className="mx-auto hidden sm:block" />
+            <p className="eyebrow sm:mt-4">{t.hero.kicker}</p>
             <h1 className="mt-2 text-[clamp(2rem,7.5vw,3rem)] font-bold leading-tight">{t.hero.title}</h1>
             <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-muted sm:text-lg">{t.hero.subtitle}</p>
           </div>
@@ -346,7 +346,7 @@ export function Checker() {
 
           <div className="mt-6">
             <p className="text-center text-sm text-muted">{t.hero.demosTitle}</p>
-            <div className="mt-3 flex flex-wrap justify-center gap-2">
+            <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0">
               {DEMO_IDS.map((id) => (
                 <button
                   key={id}
@@ -358,7 +358,7 @@ export function Checker() {
                     setImage(null);
                     run({ demoId: id, text: DEMO_INPUTS[id], mode: m });
                   }}
-                  className="rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium hover:border-primary"
+                  className="shrink-0 rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium hover:border-primary"
                 >
                   {t.hero.demos[id]}
                 </button>
@@ -366,67 +366,34 @@ export function Checker() {
             </div>
           </div>
 
-          <section className="mt-6 rounded-2xl bg-primary-soft p-5">
-            <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" aria-hidden />
-              <h2 className="font-bold">{t.group.title}</h2>
-              <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-on-primary">{t.group.badge}</span>
-            </div>
-            <p className="mt-2 text-sm leading-relaxed">{t.group.text}</p>
-            <a href={GROUP_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary mt-4 w-full sm:w-auto">
-              <Send className="h-4 w-4" aria-hidden /> {t.group.button}
-            </a>
-          </section>
+          <HistoryPanel onOpen={openHistory} />
 
-          <section className="mt-3 rounded-2xl bg-primary-soft p-5">
-            <div className="flex items-center gap-2">
-              <HeartHandshake className="h-5 w-5 text-primary" aria-hidden />
-              <h2 className="font-bold">{t.family.title}</h2>
-              <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-on-primary">{t.family.badge}</span>
-            </div>
-            <p className="mt-2 text-sm leading-relaxed">{t.family.text}</p>
-            <a href={FAMILY_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary mt-4 w-full sm:w-auto">
-              <Send className="h-4 w-4" aria-hidden /> {t.family.button}
-            </a>
-          </section>
-
-          <section className="mt-3 rounded-2xl bg-primary-soft p-5">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-primary" aria-hidden />
-              <h2 className="font-bold">{t.guard.title}</h2>
-              <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-on-primary">{t.guard.badge}</span>
-            </div>
-            <p className="mt-2 text-sm leading-relaxed">{t.guard.text}</p>
-            <a href={GUARD_APK_URL} className="btn btn-primary mt-4 w-full sm:w-auto" download>
-              <Download className="h-4 w-4" aria-hidden /> {t.guard.button}
-            </a>
-            <p className="mt-2 text-xs text-muted">{t.guard.note}</p>
-          </section>
-
-          <a href={BOT_URL} target="_blank" rel="noopener noreferrer" className="card mt-3 flex items-center gap-3 p-4 hover:border-primary">
-            <span className="icon-badge bg-primary-soft text-primary">
-              <Send className="h-5 w-5" aria-hidden />
+          <Link href="/protect" className="mt-6 flex items-center gap-3 rounded-2xl bg-primary-soft p-4 transition-colors hover:bg-primary-soft/70">
+            <span className="icon-badge shrink-0 bg-primary text-on-primary">
+              <HeartHandshake className="h-5 w-5" aria-hidden />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block font-semibold">{t.bot.title}</span>
-              <span className="block text-sm text-muted">{t.bot.text}</span>
+              <span className="block font-bold">{t.protect.homeTitle}</span>
+              <span className="mt-0.5 block text-sm leading-snug">{t.protect.homeText}</span>
             </span>
-            <span className="hidden shrink-0 text-sm font-semibold text-primary sm:inline">{t.bot.button}</span>
-          </a>
+            <span className="flex shrink-0 items-center gap-1 text-sm font-semibold text-primary">
+              <span className="hidden sm:inline">{t.protect.homeButton}</span>
+              <ChevronRight className="h-5 w-5" aria-hidden />
+            </span>
+          </Link>
 
           <InstallCard />
 
-          <HistoryPanel onOpen={openHistory} />
-
-          <section className="mt-10" aria-labelledby="what">
-            <h2 id="what" className="text-lg font-bold">
-              {t.hero.whatTitle}
-            </h2>
-            <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+          <details className="group mt-6 rounded-2xl bg-subtle">
+            <summary className="flex min-h-[52px] cursor-pointer list-none items-center gap-2 px-4 font-semibold [&::-webkit-details-marker]:hidden">
+              <span className="flex-1">{t.more.title}</span>
+              <ChevronDown className="h-5 w-5 text-muted transition-transform group-open:rotate-180" aria-hidden />
+            </summary>
+            <ul className="grid gap-2 px-4 pb-4 sm:grid-cols-2">
               {t.hero.what.map(([title, desc], i) => {
                 const Icon = WHAT_ICONS[i];
                 return (
-                  <li key={title} className="flex gap-3 rounded-2xl bg-subtle p-4">
+                  <li key={title} className="flex gap-3 rounded-xl bg-surface p-3">
                     <Icon className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
                     <span>
                       <span className="block font-semibold">{title}</span>
@@ -436,7 +403,7 @@ export function Checker() {
                 );
               })}
             </ul>
-          </section>
+          </details>
 
           <p className="mt-6 text-center text-xs text-muted">{t.hero.privacyNote}</p>
         </section>
