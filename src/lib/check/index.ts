@@ -11,6 +11,7 @@ import { readQr } from "./qr";
 import { TX } from "./texts";
 import { findUrls } from "./urls";
 import { checkCompany } from "./company";
+import { scamHeuristics } from "./heuristics";
 
 export { findUrls };
 
@@ -109,7 +110,9 @@ async function checkMessage(text: string, image: { mime: string; data: string } 
   });
   const links = (await Promise.all(linkChecks.values())).filter((r): r is CheckResult => Boolean(r));
 
-  if (!ai && !links.length) throw aiError instanceof CheckError ? aiError : new CheckError("ai_failed", 502);
+  // Plain rules as a safety net when the AI is down or unsure.
+  const heur = !ai || ai.verdict === "unknown" ? scamHeuristics(text, lang) : null;
+  if (!ai && !links.length && heur?.verdict === "unknown") throw aiError instanceof CheckError ? aiError : new CheckError("ai_failed", 502);
 
 
 
@@ -133,9 +136,10 @@ async function checkMessage(text: string, image: { mime: string; data: string } 
     if (l.verdict !== "safe") signals.push({ level: l.verdict === "danger" ? "bad" : l.verdict === "suspicious" ? "warn" : "info", text: t.linkInMessage(l.subject, l.verdict) });
   }
   for (const s of ai?.signals ?? []) if (!isRestated(s.text, signals)) signals.push(s);
+  for (const s of heur?.signals ?? []) if (!isRestated(s.text, signals)) signals.push(s);
 
   const risky: Verdict[] = links.map((l) => l.verdict).filter((v) => v === "danger" || v === "suspicious");
-  const base: Verdict = ai?.verdict ?? "unknown";
+  const base: Verdict = ai && ai.verdict !== "unknown" ? ai.verdict : (heur?.verdict ?? "unknown");
   const verdict = mergeVerdicts([base, ...risky]);
   const aiMatches = ai && ai.verdict === verdict;
 

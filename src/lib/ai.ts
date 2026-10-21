@@ -66,7 +66,8 @@ export async function generateJson<T = unknown>(
             body: JSON.stringify(
               withThinkingConfig ? body : { ...body, generationConfig: { ...body.generationConfig, thinkingConfig: undefined } },
             ),
-            signal: AbortSignal.timeout(Math.min(left, 30_000)),
+            // The first models must not eat the whole budget: a slow model would leave no time for the fallbacks.
+            signal: AbortSignal.timeout(m === models[models.length - 1] ? Math.min(left, 30_000) : Math.max(8_000, Math.min(left - 8_000, budgetMs * 0.5, 30_000))),
           },
         );
         if (r.ok) {
