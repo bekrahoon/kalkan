@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     drop_pending_updates: true,
   });
   const me = await tg<{ username: string }>("getMe", {});
-  await tg("setMyCommands", { commands: [{ command: "start", description: "Как пользоваться" }, { command: "lang", description: "Язык / Тил / Language" }] });
+  await tg("setMyCommands", { commands: [{ command: "start", description: "Как пользоваться" }, { command: "family", description: "Доверенное лицо / Ишенимдүү адам" }, { command: "lang", description: "Язык / Тил / Language" }] });
   await tg("setMyDescription", {
     description:
       "KalkanCheck проверяет ссылки, сообщения, номера и скриншоты на мошенничество. Перешли подозрительное сообщение — отвечу за пару секунд.\n\nKalkanCheck шилтемелерди, билдирүүлөрдү, номерлерди жана скриншотторду алдамчылыкка текшерет.\n\nKalkanCheck checks links, messages and screenshots for scams in a couple of seconds.",

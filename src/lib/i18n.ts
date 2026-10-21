@@ -40,6 +40,12 @@ const ru = {
     text: "Добавь KalkanCheck в группу семьи, класса или дома. Он молча проверяет каждую ссылку и сразу предупреждает, если она опасная — даже если никто не догадался проверить.",
     button: "Добавить в группу",
   },
+  family: {
+    badge: "Новое",
+    title: "Доверенное лицо для родителей",
+    text: "Подключи к боту маму, папу или бабушку и стань их доверенным лицом. Если им придёт опасное сообщение или они напишут, что уже перевели деньги, KalkanCheck сразу напишет тебе — и ты успеешь позвонить.",
+    button: "Настроить в Telegram",
+  },
   bot: {
     title: "Удобнее в Telegram",
     text: "Перешли подозрительное сообщение боту — ответит через пару секунд.",
@@ -199,6 +205,12 @@ const ky: Dict = {
     text: "KalkanCheckти үй-бүлө, класс же үй тобуна кош. Ал ар бир шилтемени унчукпай текшерип, коркунучтуу болсо дароо эскертет — эч ким текшерүүнү ойлобосо да.",
     button: "Топко кошуу",
   },
+  family: {
+    badge: "Жаңы",
+    title: "Ата-эне үчүн ишенимдүү адам",
+    text: "Апаңды, атаңды же чоң энеңди ботко туташтырып, алардын ишенимдүү адамы бол. Аларга коркунучтуу билдирүү келсе же акча которуп койгонун жазса, KalkanCheck сага дароо жазат — сен чалып үлгүрөсүң.",
+    button: "Telegramда жөндөө",
+  },
   bot: {
     title: "Telegramда ыңгайлуураак",
     text: "Шектүү билдирүүнү ботко жөнөт — бир-эки секундда жооп берет.",
@@ -356,6 +368,12 @@ const en: Dict = {
     text: "Add KalkanCheck to your family, class or building group. It quietly checks every link and warns right away if one is dangerous — even when nobody thought to check.",
     button: "Add to a group",
   },
+  family: {
+    badge: "New",
+    title: "Trusted person for your parents",
+    text: "Connect your mum, dad or grandparent to the bot and become their trusted person. If they get a dangerous message or write that they already sent money, KalkanCheck messages you right away — so you can call in time.",
+    button: "Set up in Telegram",
+  },
   bot: {
     title: "Easier in Telegram",
     text: "Forward a suspicious message to the bot — it answers in a couple of seconds.",
@@ -481,3 +499,4 @@ const en: Dict = {
 export const DICTS: Record<Lang, Dict> = { ru, ky, en };
 export const BOT_URL = "https://t.me/kalkan_kgs_bot";
 export const GROUP_URL = "https://t.me/kalkan_kgs_bot?startgroup=true";
+export const FAMILY_URL = "https://t.me/kalkan_kgs_bot?start=family";

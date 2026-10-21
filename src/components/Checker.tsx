@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AlertCircle, Building2, ClipboardPaste, FileText, Link2, MessageSquareText, Paperclip, Send, Smartphone, Users, X } from "lucide-react";
+import { AlertCircle, Building2, ClipboardPaste, FileText, Link2, MessageSquareText, Paperclip, Send, Smartphone, Users, X, HeartHandshake } from "lucide-react";
 import { InstallCard } from "./PwaSetup";
 import { readConsentNow, setConsent } from "./Consent";
 import { useLang } from "./LangProvider";
@@ -11,7 +11,7 @@ import { VerdictView } from "./VerdictView";
 import { HistoryPanel } from "./HistoryPanel";
 import { addToHistory, type HistoryItem } from "@/lib/history";
 import { DEMO_IDS, DEMO_INPUTS, getDemoResult } from "@/lib/demo";
-import { BOT_URL, GROUP_URL } from "@/lib/i18n";
+import { BOT_URL, FAMILY_URL, GROUP_URL } from "@/lib/i18n";
 import { MAX_FILE_BYTES, type CheckMode, type CheckResponse, type CheckResult, type DemoId, type ErrorCode, type Lang, type UploadedImage } from "@/lib/types";
 
 type Phase = "idle" | "loading" | "result";
@@ -375,6 +375,18 @@ export function Checker() {
             <p className="mt-2 text-sm leading-relaxed">{t.group.text}</p>
             <a href={GROUP_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary mt-4 w-full sm:w-auto">
               <Send className="h-4 w-4" aria-hidden /> {t.group.button}
+            </a>
+          </section>
+
+          <section className="mt-3 rounded-2xl bg-primary-soft p-5">
+            <div className="flex items-center gap-2">
+              <HeartHandshake className="h-5 w-5 text-primary" aria-hidden />
+              <h2 className="font-bold">{t.family.title}</h2>
+              <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-on-primary">{t.family.badge}</span>
+            </div>
+            <p className="mt-2 text-sm leading-relaxed">{t.family.text}</p>
+            <a href={FAMILY_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary mt-4 w-full sm:w-auto">
+              <Send className="h-4 w-4" aria-hidden /> {t.family.button}
             </a>
           </section>
 

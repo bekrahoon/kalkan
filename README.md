@@ -48,6 +48,7 @@ yet on any blocklist.
 - Web app in Russian, Kyrgyz and English, light and dark theme, installable as a PWA
 - Android share sheet: send a link from any app straight to KalkanCheck
 - Telegram bot, including a "chat guard" mode that quietly checks links in family or neighbourhood groups and warns about dangerous ones
+- **Trusted person** (Telegram, /family): an elderly user links a relative once. A dangerous check, or a message like "I already sent the money", instantly alerts the relative, so help arrives while the money can still be stopped
 - Library of common scam schemes in Kyrgyzstan
 - "Save a report for the police": a one-page PDF (via the print dialog) with what was checked, when, the verdict and the reasons; generated on the device, nothing is sent
 - History of checks kept on the device only

@@ -2,10 +2,11 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { CheckError } from "./ai";
 import { runCheck, type CheckInput } from "./check";
+import { alertGuardians, familyText } from "./family";
 import { SCHEMES } from "@/content/schemes";
 import type { CheckResult, ErrorCode, Indicator, Lang, Verdict } from "./types";
 
-const API = "https://api.telegram.org";
+const API = (process.env.TELEGRAM_API_BASE || "https://api.telegram.org").replace(/\/$/, "");
 export const botToken = () => process.env.TELEGRAM_BOT_TOKEN?.trim() || "";
 /** Secret Telegram sends back in every webhook call, so nobody else can post updates to us. */
 export const webhookSecret = () => createHash("sha256").update(`kalkan:${botToken()}`).digest("hex").slice(0, 48);
@@ -34,7 +35,7 @@ export async function tg<T = unknown>(method: string, payload: Record<string, un
 const T = {
   ru: {
     start:
-      "🛡 <b>KalkanCheck</b> — проверь, прежде чем нажать.\n\nПерешли мне подозрительное сообщение или пришли:\n• ссылку\n• скриншот переписки или сайта\n• фото или PDF документа (повестка, штраф, договор, чек)\n• ссылку на приложение из Google Play\n\nЯ скажу, похоже ли это на мошенников, и что делать.\n\n👨‍👩‍👧 <b>Охрана чата:</b> добавь меня в семейную или домовую группу — я буду молча проверять ссылки и предупреждать об опасных: t.me/kalkan_kgs_bot?startgroup=true\n\nПользуясь ботом, ты принимаешь <a href=\"https://kalkan-sigma.vercel.app/terms\">условия</a> и <a href=\"https://kalkan-sigma.vercel.app/privacy\">политику конфиденциальности</a>.\n\nЯзык: /lang",
+      "🛡 <b>KalkanCheck</b> — проверь, прежде чем нажать.\n\nПерешли мне подозрительное сообщение или пришли:\n• ссылку\n• скриншот переписки или сайта\n• фото или PDF документа (повестка, штраф, договор, чек)\n• ссылку на приложение из Google Play\n\nЯ скажу, похоже ли это на мошенников, и что делать.\n\n👨‍👩‍👧 <b>Охрана чата:</b> добавь меня в семейную или домовую группу — я буду молча проверять ссылки и предупреждать об опасных: t.me/kalkan_kgs_bot?startgroup=true\n\n👵 <b>Доверенное лицо:</b> /family — если тебе придёт опасное сообщение или ты напишешь «перевёл деньги», я сразу предупрежу близкого человека.\n\nПользуясь ботом, ты принимаешь <a href=\"https://kalkan-sigma.vercel.app/terms\">условия</a> и <a href=\"https://kalkan-sigma.vercel.app/privacy\">политику конфиденциальности</a>.\n\nЯзык: /lang",
     working: "⏳ Проверяю…",
     label: { danger: "🔴 ОПАСНО", suspicious: "🟡 ПОДОЗРИТЕЛЬНО", safe: "🟢 Признаков обмана нет", unknown: "⚪ Недостаточно данных" } as Record<Verdict, string>,
     why: "Почему",
@@ -67,7 +68,7 @@ const T = {
   },
   ky: {
     start:
-      "🛡 <b>KalkanCheck</b> — баспай туруп текшер.\n\nМага шектүү билдирүүнү жөнөт же жибер:\n• шилтеме\n• кат алышуунун же сайттын скриншоту\n• документтин сүрөтү же PDFи (чакыруу кагазы, айып, келишим, чек)\n• Google Playдеги тиркеменин шилтемеси\n\nБул алдамчыларга окшошпу жана эмне кылуу керек экенин айтам.\n\n👨‍👩‍👧 <b>Чатты коргоо:</b> мени үй-бүлө же үй тобуна кош — шилтемелерди унчукпай текшерип, коркунучтуулары тууралуу эскертем: t.me/kalkan_kgs_bot?startgroup=true\n\nБотту колдонуу менен <a href=\"https://kalkan-sigma.vercel.app/terms\">шарттарды</a> жана <a href=\"https://kalkan-sigma.vercel.app/privacy\">купуялык саясатын</a> кабыл аласың.\n\nТил: /lang",
+      "🛡 <b>KalkanCheck</b> — баспай туруп текшер.\n\nМага шектүү билдирүүнү жөнөт же жибер:\n• шилтеме\n• кат алышуунун же сайттын скриншоту\n• документтин сүрөтү же PDFи (чакыруу кагазы, айып, келишим, чек)\n• Google Playдеги тиркеменин шилтемеси\n\nБул алдамчыларга окшошпу жана эмне кылуу керек экенин айтам.\n\n👨‍👩‍👧 <b>Чатты коргоо:</b> мени үй-бүлө же үй тобуна кош — шилтемелерди унчукпай текшерип, коркунучтуулары тууралуу эскертем: t.me/kalkan_kgs_bot?startgroup=true\n\n👵 <b>Ишенимдүү адам:</b> /family — сага коркунучтуу билдирүү келсе же «акча которуп койдум» деп жазсаң, жакын адамыңды дароо эскертем.\n\nБотту колдонуу менен <a href=\"https://kalkan-sigma.vercel.app/terms\">шарттарды</a> жана <a href=\"https://kalkan-sigma.vercel.app/privacy\">купуялык саясатын</a> кабыл аласың.\n\nТил: /lang",
     working: "⏳ Текшерип жатам…",
     label: { danger: "🔴 КОРКУНУЧТУУ", suspicious: "🟡 ШЕКТҮҮ", safe: "🟢 Алдоонун белгилери жок", unknown: "⚪ Маалымат жетишсиз" },
     why: "Эмне үчүн",
@@ -100,7 +101,7 @@ const T = {
   },
   en: {
     start:
-      "🛡 <b>KalkanCheck</b> — check before you tap.\n\nForward me a suspicious message or send:\n• a link\n• a screenshot of a chat or website\n• a photo or PDF of a document (summons, fine, contract, receipt)\n• a Google Play app link\n\nI’ll tell you whether it looks like a scam and what to do.\n\n👨‍👩‍👧 <b>Chat guard:</b> add me to your family or building group — I’ll quietly check links and warn about dangerous ones: t.me/kalkan_kgs_bot?startgroup=true\n\nBy using the bot you accept the <a href=\"https://kalkan-sigma.vercel.app/terms\">terms</a> and the <a href=\"https://kalkan-sigma.vercel.app/privacy\">privacy policy</a>.\n\nLanguage: /lang",
+      "🛡 <b>KalkanCheck</b> — check before you tap.\n\nForward me a suspicious message or send:\n• a link\n• a screenshot of a chat or website\n• a photo or PDF of a document (summons, fine, contract, receipt)\n• a Google Play app link\n\nI’ll tell you whether it looks like a scam and what to do.\n\n👨‍👩‍👧 <b>Chat guard:</b> add me to your family or building group — I’ll quietly check links and warn about dangerous ones: t.me/kalkan_kgs_bot?startgroup=true\n\n👵 <b>Trusted person:</b> /family — if you get a dangerous message or write “I sent the money”, I'll warn someone close to you right away.\n\nBy using the bot you accept the <a href=\"https://kalkan-sigma.vercel.app/terms\">terms</a> and the <a href=\"https://kalkan-sigma.vercel.app/privacy\">privacy policy</a>.\n\nLanguage: /lang",
     working: "⏳ Checking…",
     label: { danger: "🔴 DANGEROUS", suspicious: "🟡 SUSPICIOUS", safe: "🟢 No signs of a scam", unknown: "⚪ Not enough data" },
     why: "Why",
@@ -216,14 +217,28 @@ export async function downloadTelegramFile(fileId: string): Promise<Buffer | nul
 }
 
 /** Runs the check and replaces the "checking…" message with the verdict. */
-export async function checkForChat(chatId: number, messageId: number | null, input: CheckInput, lang: Lang, site: string) {
+export async function checkForChat(
+  chatId: number,
+  messageId: number | null,
+  input: CheckInput,
+  lang: Lang,
+  site: string,
+  owner?: { name: string },
+) {
   const t = T[lang];
   let text: string;
-  let markup: unknown;
+  let markup: { inline_keyboard: { text: string; callback_data: string }[][] } | undefined;
   try {
     const result = await runCheck(input, lang);
     text = formatResult(result, lang, site);
     markup = reportButton(result, lang);
+    // Private chat + dangerous: warn the user's trusted people and offer the "I already paid" help.
+    if (owner && result.verdict === "danger") {
+      const f = familyText(lang);
+      const warned = await alertGuardians(chatId, owner.name, { danger: result }).catch(() => []);
+      text += `\n\n${warned.length ? f.told(warned.join(", ")) : f.suggest}`;
+      markup = { inline_keyboard: [...(markup?.inline_keyboard ?? []), [{ text: f.sosBtn, callback_data: "fam:sos" }]] };
+    }
   } catch (e) {
     const code = e instanceof CheckError ? e.code : "ai_failed";
     if (!(e instanceof CheckError)) console.error("[tg check]", e);
