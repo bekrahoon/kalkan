@@ -20,6 +20,11 @@ export interface Guardian {
   lang: Lang;
   since: string;
 }
+/** A Telegram chat id, or "d_<id>" for a phone running the Android guard app. */
+export type Owner = number | string;
+export const parseOwner = (v: string): Owner => (/^-?\d+$/.test(v) ? Number(v) : v);
+export const isDeviceOwner = (o: Owner) => typeof o === "string";
+
 interface Family {
   name: string;
   guardians: Guardian[];
@@ -27,7 +32,7 @@ interface Family {
 /** "owner" invite: the protected person invites a relative. "ward" invite: a relative invites the person they look after. */
 interface Invite {
   kind?: "owner" | "ward";
-  owner: number;
+  owner: Owner;
   name: string;
   created: number;
   guardian?: Omit<Guardian, "since">;
@@ -69,14 +74,14 @@ async function remove(path: string) {
   await del(path).catch(() => {});
 }
 
-const famPath = (owner: number) => `family/${owner}.json`;
+const famPath = (owner: Owner) => `family/${owner}.json`;
 const invitePath = (code: string) => `family/invites/${code}.json`;
 
-export async function getFamily(owner: number): Promise<Family | null> {
+export async function getFamily(owner: Owner): Promise<Family | null> {
   return readJson<Family>(famPath(owner));
 }
 
-export async function createInvite(owner: number, name: string): Promise<string> {
+export async function createInvite(owner: Owner, name: string): Promise<string> {
   const code = randomBytes(6).toString("base64url");
   await writeJson(invitePath(code), { owner, name, created: Date.now() } satisfies Invite);
   return code;
@@ -104,7 +109,7 @@ export async function acceptWardInvite(code: string, owner: { chatId: number; na
   return { ok: true, ownerId: owner.chatId, ownerName: owner.name, guardian: inv.guardian };
 }
 
-export type AcceptResult = { ok: true; ownerId: number; ownerName: string } | { ok: false; reason: "invalid" | "self" | "full" };
+export type AcceptResult = { ok: true; ownerId: Owner; ownerName: string } | { ok: false; reason: "invalid" | "self" | "full" };
 
 export async function acceptInvite(code: string, guardian: Omit<Guardian, "since">): Promise<AcceptResult> {
   if (!/^[\w-]{6,16}$/.test(code)) return { ok: false, reason: "invalid" };
@@ -121,7 +126,7 @@ export async function acceptInvite(code: string, guardian: Omit<Guardian, "since
   return { ok: true, ownerId: inv.owner, ownerName: inv.name };
 }
 
-export async function removeGuardian(owner: number, guardianId: number): Promise<Guardian | null> {
+export async function removeGuardian(owner: Owner, guardianId: number): Promise<Guardian | null> {
   const fam = await getFamily(owner);
   const g = fam?.guardians.find((x) => x.chatId === guardianId);
   if (!fam || !g) return null;
@@ -249,7 +254,7 @@ const T = {
 export const familyText = (lang: Lang) => T[lang];
 
 /** Sends a warning to everyone who agreed to look after this user. Returns the names of those warned. */
-export async function alertGuardians(owner: number, ownerName: string, kind: { danger: CheckResult } | { panic: string }): Promise<string[]> {
+export async function alertGuardians(owner: Owner, ownerName: string, kind: { danger: CheckResult } | { panic: string }): Promise<string[]> {
   const fam = await getFamily(owner);
   if (!fam?.guardians.length) return [];
   const name = ownerName || fam.name;

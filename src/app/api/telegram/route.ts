@@ -15,7 +15,7 @@ import {
 } from "@/lib/telegram";
 import { MAX_FILE_BYTES, toLang } from "@/lib/types";
 import { botId, guardGroupMessage, sendGroupIntro } from "@/lib/telegram-group";
-import { acceptInvite, acceptWardInvite, alertGuardians, createInvite, createWardInvite, familyText, getFamily, isPanic, removeGuardian } from "@/lib/family";
+import { acceptInvite, acceptWardInvite, alertGuardians, createInvite, createWardInvite, familyText, getFamily, isDeviceOwner, isPanic, parseOwner, removeGuardian } from "@/lib/family";
 import { findUrls } from "@/lib/check";
 
 /** The check runs after we answer Telegram (it waits only a few seconds for webhooks). */
@@ -128,13 +128,13 @@ export async function POST(req: Request) {
             await tg("sendMessage", { chat_id: chatId, text: f.removed(g.name) });
           }
         } else if (action === "leave") {
-          const owner = Number(arg);
+          const owner = parseOwner(cb.data!.slice("fam:leave:".length));
           const fam = await getFamily(owner);
           const g = await removeGuardian(owner, chatId);
           await tg("editMessageReplyMarkup", { chat_id: chatId, message_id: cb.message!.message_id, reply_markup: { inline_keyboard: [] } });
           if (g) {
             await tg("sendMessage", { chat_id: chatId, text: f.left(fam?.name ?? ""), parse_mode: "HTML" });
-            await tg("sendMessage", { chat_id: owner, text: familyText(getLang(owner)).removed(g.name) });
+            if (typeof owner === "number") await tg("sendMessage", { chat_id: owner, text: familyText(getLang(owner)).removed(g.name) });
           }
         }
       });
@@ -200,7 +200,9 @@ export async function POST(req: Request) {
         return;
       }
       await send(f.acceptedGuardian(r.ownerName));
-      await tg("sendMessage", { chat_id: r.ownerId, text: familyText(getLang(r.ownerId)).acceptedOwner(me), parse_mode: "HTML" });
+      if (!isDeviceOwner(r.ownerId)) {
+        await tg("sendMessage", { chat_id: r.ownerId, text: familyText(getLang(r.ownerId as number)).acceptedOwner(me), parse_mode: "HTML" });
+      }
     });
     return new Response("ok");
   }
