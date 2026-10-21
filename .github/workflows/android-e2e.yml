@@ -73,6 +73,8 @@ jobs:
           mkdir -p out && cp -r e2e/* out/ 2>/dev/null || true
           cp api_*.json out/ 2>/dev/null || true
           cd out
+          # results only: tell Vercel not to deploy this branch
+          echo '{"git":{"deploymentEnabled":false}}' > vercel.json
           git init -q && git checkout -q -b e2e-results
           git config user.name e2e && git config user.email e2e@users.noreply.github.com
           git add -A && git commit -qm "e2e $GITHUB_SHA" || true

@@ -11,7 +11,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -66,16 +65,24 @@ public final class Warning {
 
     /** Builds the warning. r = server answer for "check"; onClose hides the overlay or finishes the activity. */
     public static View build(final Context c, JSONObject r, String appLabel, final Runnable onClose) {
-        final FrameLayout root = new FrameLayout(c);
-        root.setBackgroundColor(Color.parseColor("#E6B71C1C"));
+        // Content scrolls, buttons stay pinned at the bottom so they are always visible.
+        final LinearLayout root = new LinearLayout(c);
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setBackgroundColor(Color.parseColor("#B71C1C"));
         root.setClickable(true);
 
         ScrollView scroll = new ScrollView(c);
         final LinearLayout box = new LinearLayout(c);
         box.setOrientation(LinearLayout.VERTICAL);
-        box.setPadding(dp(c, 24), dp(c, 48), dp(c, 24), dp(c, 32));
+        box.setPadding(dp(c, 24), dp(c, 40), dp(c, 24), dp(c, 16));
         scroll.addView(box);
-        root.addView(scroll, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        root.addView(scroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+
+        final LinearLayout footer = new LinearLayout(c);
+        footer.setOrientation(LinearLayout.VERTICAL);
+        footer.setBackgroundColor(Color.parseColor("#8E1414"));
+        footer.setPadding(dp(c, 16), dp(c, 10), dp(c, 16), dp(c, 28));
+        root.addView(footer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         boolean danger = "danger".equals(r.optString("verdict"));
         TextView head = text(c, danger ? "⚠️ ОСТОРОЖНО!\nЭТО МОШЕННИКИ" : "⚠️ БУДЬТЕ ОСТОРОЖНЫ", 34, true, Color.WHITE);
@@ -101,7 +108,7 @@ public final class Warning {
 
         Button ok = button(c, "Понятно, не буду ничего делать", Color.WHITE, Color.parseColor("#B71C1C"));
         ok.setOnClickListener(v -> onClose.run());
-        box.addView(ok, fullWidth(c, 28));
+        footer.addView(ok, fullWidth(c, 0));
 
         final Button sos = button(c, "🆘 Я уже перевёл(а) деньги или назвал(а) код", Color.parseColor("#0F1B36"), Color.WHITE);
         sos.setOnClickListener(v -> {
@@ -109,6 +116,7 @@ public final class Warning {
             sos.setText("Сообщаем близким…");
             sendSos(c, names -> {
                 box.removeAllViews();
+                footer.removeAllViews();
                 box.addView(text(c, "🆘 Действуйте прямо сейчас", 30, true, Color.WHITE));
                 box.addView(text(c, SOS_STEPS, 20, false, Color.WHITE), fullWidth(c, 16));
                 box.addView(text(c, names.isEmpty()
@@ -116,10 +124,10 @@ public final class Warning {
                         : "👨‍👩‍👧 Мы сообщили: " + names + ". Они скоро позвонят.", 19, true, Color.parseColor("#FFF3B0")), fullWidth(c, 16));
                 Button close = button(c, "Закрыть", Color.WHITE, Color.parseColor("#B71C1C"));
                 close.setOnClickListener(x -> onClose.run());
-                box.addView(close, fullWidth(c, 24));
+                footer.addView(close, fullWidth(c, 0));
             });
         });
-        box.addView(sos, fullWidth(c, 12));
+        footer.addView(sos, fullWidth(c, 10));
         return root;
     }
 
