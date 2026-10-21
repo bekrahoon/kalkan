@@ -35,7 +35,6 @@ adb shell input keyevent 111   # hide keyboard
 sleep 1; ui 01b
 tap e2e/01b.xml "Продолжить"
 sleep 15; shot 02_main; ui 02_main
-adb shell input swipe 160 560 160 120 300; sleep 2; shot 02b_main_scrolled
 
 adb shell input keyevent 3   # home: the scam arrives while another screen is open
 sleep 2
@@ -66,8 +65,9 @@ grep -q "ОСТОРОЖНО\|БУДЬТЕ" e2e/normal.xml && echo "false_alarm=1
 
 # demo button inside the app
 adb shell am start -W -n $P/.MainActivity; sleep 4
-for i in 1 2 3 4; do adb shell input swipe 160 560 160 120 300; sleep 1; done
-sleep 1; ui demo
+shot 05b_home; ui home
+tap e2e/home.xml "Меню"; sleep 2; shot 05c_menu
+ui demo
 tap e2e/demo.xml "Показать, как"; sleep 3; shot 06_demo; ui demo_open
 grep -q "пример" e2e/demo_open.xml && echo "demo_ok=1" >> e2e/result.txt || echo "demo_ok=0" >> e2e/result.txt
 # SOS from the warning screen shows the help steps
