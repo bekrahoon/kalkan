@@ -20,7 +20,7 @@ const ru = {
     close: "Закрыть меню",
     desc: {
       check: "Ссылка, сообщение, номер, скриншот",
-      protect: "Приложение для родителей и доверенное лицо",
+      protect: "Доверенное лицо и охрана семейного чата",
       schemes: "Как обманывают сейчас",
       help: "Что делать прямо сейчас",
       about: "Команда и как это работает",
@@ -33,7 +33,7 @@ const ru = {
     lead: "Мошенники чаще всего пишут пожилым. Выберите удобный способ — каждый занимает пару минут.",
     best: "Лучший вариант",
     homeTitle: "Защитите близких",
-    homeText: "Приложение само проверяет сообщения на телефоне бабушки и предупреждает вас.",
+    homeText: "Если маме или бабушке напишут мошенники, KalkanCheck сразу предупредит вас в Telegram.",
     homeButton: "Как защитить",
   },
   more: { title: "Что можно проверить" },
@@ -74,13 +74,6 @@ const ru = {
     title: "Доверенное лицо для родителей",
     text: "Подключи к боту маму, папу или бабушку и стань их доверенным лицом. Если им придёт опасное сообщение или они напишут, что уже перевели деньги, KalkanCheck сразу напишет тебе — и ты успеешь позвонить.",
     button: "Настроить в Telegram",
-  },
-  guard: {
-    badge: "Android",
-    title: "KalkanCheck Защитник — сам проверяет телефон",
-    text: "Приложение для телефона бабушки или мамы. Ничего не нужно пересылать: оно само смотрит новые сообщения в WhatsApp, Telegram и СМС. Если пишут мошенники — на экране появится большое красное предупреждение, а доверенное лицо получит сообщение.",
-    button: "Скачать для Android",
-    note: "Бесплатно. Установка из файла: телефон спросит разрешение «Установка из неизвестных источников».",
   },
   bot: {
     title: "Удобнее в Telegram",
@@ -221,7 +214,7 @@ const ky: Dict = {
     close: "Менюну жабуу",
     desc: {
       check: "Шилтеме, билдирүү, номер, скриншот",
-      protect: "Ата-эне үчүн тиркеме жана ишенимдүү адам",
+      protect: "Ишенимдүү адам жана үй-бүлөлүк чатты коргоо",
       schemes: "Азыр кантип алдашат",
       help: "Азыр эмне кылуу керек",
       about: "Команда жана кантип иштейт",
@@ -234,7 +227,7 @@ const ky: Dict = {
     lead: "Алдамчылар көбүнчө улгайган адамдарга жазышат. Ыңгайлуу жолду танда — ар бири бир-эки мүнөт алат.",
     best: "Эң жакшы вариант",
     homeTitle: "Жакындарыңды корго",
-    homeText: "Тиркеме чоң эненин телефонундагы билдирүүлөрдү өзү текшерип, сага эскертет.",
+    homeText: "Апаңа же чоң энеңе алдамчылар жазса, KalkanCheck сага Telegramда дароо эскертет.",
     homeButton: "Кантип коргоо",
   },
   more: { title: "Эмнени текшерсе болот" },
@@ -275,13 +268,6 @@ const ky: Dict = {
     title: "Ата-эне үчүн ишенимдүү адам",
     text: "Апаңды, атаңды же чоң энеңди ботко туташтырып, алардын ишенимдүү адамы бол. Аларга коркунучтуу билдирүү келсе же акча которуп койгонун жазса, KalkanCheck сага дароо жазат — сен чалып үлгүрөсүң.",
     button: "Telegramда жөндөө",
-  },
-  guard: {
-    badge: "Android",
-    title: "KalkanCheck Защитник — телефонду өзү текшерет",
-    text: "Чоң эненин же апанын телефону үчүн тиркеме. Эч нерсе жөнөтүүнүн кереги жок: WhatsApp, Telegram жана СМСтеги жаңы билдирүүлөрдү өзү карайт. Алдамчылар жазса — экранда чоң кызыл эскертүү чыгат, ишенимдүү адамга билдирүү барат.",
-    button: "Android үчүн жүктөө",
-    note: "Акысыз. Файлдан орнотулат: телефон «Белгисиз булактардан орнотуу» уруксатын сурайт.",
   },
   bot: {
     title: "Telegramда ыңгайлуураак",
@@ -420,7 +406,7 @@ const en: Dict = {
     close: "Close menu",
     desc: {
       check: "Link, message, number, screenshot",
-      protect: "App for parents and a trusted person",
+      protect: "Trusted person and family chat guard",
       schemes: "How people get scammed now",
       help: "What to do right now",
       about: "The team and how it works",
@@ -433,7 +419,7 @@ const en: Dict = {
     lead: "Scammers target older people most. Pick the way that suits you — each takes a couple of minutes.",
     best: "Best option",
     homeTitle: "Protect your family",
-    homeText: "The app checks messages on grandma's phone by itself and warns you.",
+    homeText: "If scammers write to your mum or grandma, KalkanCheck warns you in Telegram right away.",
     homeButton: "How to protect",
   },
   more: { title: "What you can check" },
@@ -474,13 +460,6 @@ const en: Dict = {
     title: "Trusted person for your parents",
     text: "Connect your mum, dad or grandparent to the bot and become their trusted person. If they get a dangerous message or write that they already sent money, KalkanCheck messages you right away — so you can call in time.",
     button: "Set up in Telegram",
-  },
-  guard: {
-    badge: "Android",
-    title: "KalkanCheck Guard — checks the phone by itself",
-    text: "An app for your grandma's or mum's phone. Nothing to forward: it watches new WhatsApp, Telegram and SMS messages on its own. If scammers write, a big red warning appears on screen and the trusted person gets a message.",
-    button: "Download for Android",
-    note: "Free. Installed from a file: the phone will ask to allow installing from unknown sources.",
   },
   bot: {
     title: "Easier in Telegram",
@@ -607,5 +586,4 @@ const en: Dict = {
 export const DICTS: Record<Lang, Dict> = { ru, ky, en };
 export const BOT_URL = "https://t.me/kalkan_kgs_bot";
 export const GROUP_URL = "https://t.me/kalkan_kgs_bot?startgroup=true";
-export const GUARD_APK_URL = "/KalkanCheck-Guard.apk";
 export const FAMILY_URL = "https://t.me/kalkan_kgs_bot?start=family";

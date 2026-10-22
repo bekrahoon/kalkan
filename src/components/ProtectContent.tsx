@@ -1,8 +1,8 @@
 "use client";
 
-import { Download, HeartHandshake, Send, ShieldCheck, Users, type LucideIcon } from "lucide-react";
+import { Download, HeartHandshake, Send, Users, type LucideIcon } from "lucide-react";
 import { useLang } from "./LangProvider";
-import { BOT_URL, FAMILY_URL, GROUP_URL, GUARD_APK_URL } from "@/lib/i18n";
+import { BOT_URL, FAMILY_URL, GROUP_URL } from "@/lib/i18n";
 
 type Option = {
   icon: LucideIcon;
@@ -19,8 +19,7 @@ type Option = {
 export function ProtectContent() {
   const { t } = useLang();
   const options: Option[] = [
-    { icon: ShieldCheck, title: t.guard.title, text: t.guard.text, button: t.guard.button, href: GUARD_APK_URL, download: true, note: t.guard.note, best: true },
-    { icon: HeartHandshake, title: t.family.title, text: t.family.text, button: t.family.button, href: FAMILY_URL },
+    { icon: HeartHandshake, title: t.family.title, text: t.family.text, button: t.family.button, href: FAMILY_URL, best: true },
     { icon: Users, title: t.group.title, text: t.group.text, button: t.group.button, href: GROUP_URL },
     { icon: Send, title: t.bot.title, text: t.bot.text, button: t.bot.button, href: BOT_URL },
   ];
