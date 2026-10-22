@@ -1,4 +1,6 @@
-import { clientIp, sameOrigin, tooMany } from "@/server/security/request-guard";
+import { tooMany } from "@/server/security/rate-limit";
+import { clientIp, sameOrigin } from "@/server/security/request";
+import { isAdmin } from "@/server/security/secrets";
 import { addReport, clearReports } from "@/server/reports/store";
 import { reportableIndicators } from "@/server/reports/validate";
 
@@ -15,13 +17,14 @@ export async function POST(req: Request) {
 
 /**
  * Moderation for false reports (official sites can't be reported at all):
- *   DELETE /api/report?key=ADMIN_KEY&type=domain|app&value=…
+ *   curl -X DELETE -H "Authorization: Bearer $ADMIN_KEY" "…/api/report?type=domain&value=example.com"
  */
 export async function DELETE(req: Request) {
+  if (!isAdmin(req)) return new Response("Not found", { status: 404 });
   const u = new URL(req.url);
-  if (!process.env.ADMIN_KEY || u.searchParams.get("key") !== process.env.ADMIN_KEY) return new Response("Not found", { status: 404 });
   const type = u.searchParams.get("type");
-  const value = u.searchParams.get("value") ?? "";
-  const ok = await clearReports({ type: type as "domain" | "app", value, display: value });
+  const value = (u.searchParams.get("value") ?? "").trim().toLowerCase().slice(0, 253);
+  if ((type !== "domain" && type !== "app") || !/^[a-z0-9][a-z0-9._-]*$/.test(value)) return Response.json({ ok: false }, { status: 400 });
+  const ok = await clearReports({ type, value, display: value });
   return Response.json({ ok });
 }

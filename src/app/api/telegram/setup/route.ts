@@ -1,18 +1,19 @@
+import { SITE_URL } from "@/server/config";
+import { isAdmin } from "@/server/security/secrets";
 import { botToken, tg, webhookSecret } from "@/server/telegram/bot";
 
 /**
  * One-time bot setup (re-run after changing the domain or the token):
- *   GET /api/telegram/setup?key=ADMIN_KEY
+ *   curl -H "Authorization: Bearer $ADMIN_KEY" https://<site>/api/telegram/setup
+ *   (or open /api/telegram/setup?key=… in a browser)
  * Points the Telegram webhook to this site and sets the bot's commands and descriptions.
  */
 export async function GET(req: Request) {
-  const u = new URL(req.url);
-  if (!process.env.ADMIN_KEY || u.searchParams.get("key") !== process.env.ADMIN_KEY) return new Response("Not found", { status: 404 });
+  if (!isAdmin(req)) return new Response("Not found", { status: 404 });
   if (!botToken()) return Response.json({ ok: false, error: "TELEGRAM_BOT_TOKEN is not set" }, { status: 400 });
 
-  const host = req.headers.get("x-forwarded-host") || req.headers.get("host");
   const webhook = await tg("setWebhook", {
-    url: `https://${host}/api/telegram`,
+    url: `${SITE_URL}/api/telegram`,
     secret_token: webhookSecret(),
     allowed_updates: ["message", "callback_query", "my_chat_member"],
     drop_pending_updates: true,

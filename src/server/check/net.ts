@@ -1,27 +1,9 @@
 import "server-only";
 import { lookup } from "node:dns/promises";
 import net from "node:net";
+import { fetch as undiciFetch } from "undici";
 import { CheckError } from "@/server/ai/gemini";
-
-/** Rejects localhost, private, link-local and other internal addresses (basic SSRF guard). */
-function isPrivateIp(ip: string): boolean {
-  if (net.isIPv4(ip)) {
-    const [a, b] = ip.split(".").map(Number);
-    return (
-      a === 0 ||
-      a === 10 ||
-      a === 127 ||
-      (a === 100 && b >= 64 && b <= 127) ||
-      (a === 169 && b === 254) ||
-      (a === 172 && b >= 16 && b <= 31) ||
-      (a === 192 && b === 168) ||
-      a >= 224
-    );
-  }
-  const v6 = ip.toLowerCase();
-  if (v6.startsWith("::ffff:")) return isPrivateIp(v6.slice(7));
-  return v6 === "::1" || v6 === "::" || v6.startsWith("fc") || v6.startsWith("fd") || v6.startsWith("fe80");
-}
+import { BlockedAddressError, isPublicIp, publicAgent, readLimited } from "@/server/security/ssrf";
 
 export function parseUserUrl(input: string): URL {
   let s = input.trim();
@@ -36,7 +18,10 @@ export function parseUserUrl(input: string): URL {
   return url;
 }
 
-/** Throws blocked_url for internal addresses; returns false if the name does not resolve at all. */
+/**
+ * Early, user-friendly check: throws blocked_url for internal addresses, returns false if the name does not resolve.
+ * The real protection is publicAgent, which validates the address again at connect time (DNS rebinding).
+ */
 export async function resolvesPublic(url: URL): Promise<boolean> {
   const host = url.hostname.replace(/^\[|\]$/g, "");
   if (/^localhost$|\.local$|\.internal$/i.test(host)) throw new CheckError("blocked_url", 400);
@@ -46,7 +31,7 @@ export async function resolvesPublic(url: URL): Promise<boolean> {
   } catch {
     return false;
   }
-  if (addrs.some((a) => isPrivateIp(a.address))) throw new CheckError("blocked_url", 400);
+  if (addrs.some((a) => !isPublicIp(a.address))) throw new CheckError("blocked_url", 400);
   return addrs.length > 0;
 }
 
@@ -79,9 +64,10 @@ export async function fetchPage(start: URL, budgetMs = 12_000): Promise<FetchedP
   const hops: Hop[] = [];
   for (let i = 0; i < 8; i++) {
     if (!(await resolvesPublic(url))) return { ok: false, hops, finalUrl: url, html: "", problem: "dns" };
-    let res: Response;
+    let res: Awaited<ReturnType<typeof undiciFetch>>;
     try {
-      res = await fetch(url, {
+      res = await undiciFetch(url, {
+        dispatcher: publicAgent,
         redirect: "manual",
         headers: {
           "User-Agent": UA,
@@ -91,11 +77,14 @@ export async function fetchPage(start: URL, budgetMs = 12_000): Promise<FetchedP
         signal: AbortSignal.timeout(Math.max(1_000, Math.min(8_000, deadline - Date.now()))),
       });
     } catch (e) {
+      const cause = (e as { cause?: unknown })?.cause;
+      if (cause instanceof BlockedAddressError) throw new CheckError("blocked_url", 400);
       return { ok: false, hops, finalUrl: url, html: "", problem: (e as Error)?.name === "TimeoutError" ? "timeout" : "error" };
     }
     hops.push({ url: url.href, status: res.status });
     const loc = res.headers.get("location");
     if (res.status >= 300 && res.status < 400 && loc) {
+      res.body?.cancel().catch(() => {});
       try {
         url = new URL(loc, url);
       } catch {
@@ -106,10 +95,11 @@ export async function fetchPage(start: URL, budgetMs = 12_000): Promise<FetchedP
     }
     const type = res.headers.get("content-type") ?? "";
     if (type && !/text\/html|application\/xhtml|text\/plain/i.test(type)) {
+      res.body?.cancel().catch(() => {});
       return { ok: false, hops, finalUrl: url, html: "", problem: "not_html" };
     }
-    const buf = await res.arrayBuffer().catch(() => new ArrayBuffer(0));
-    const html = new TextDecoder("utf-8").decode(buf.slice(0, MAX_HTML_BYTES));
+    const bytes = await readLimited(res.body as ReadableStream<Uint8Array> | null, MAX_HTML_BYTES).catch(() => new Uint8Array());
+    const html = new TextDecoder("utf-8").decode(bytes);
 
     // A page that only redirects with <meta refresh> or a one-line script counts as a redirect too.
     const next = scriptedRedirect(html, url);

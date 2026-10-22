@@ -1,15 +1,25 @@
 import "server-only";
 import { createHash } from "node:crypto";
+import { safeEqual } from "@/server/security/secrets";
 import { CheckError } from "@/server/ai/gemini";
 import { runCheck, type CheckInput } from "@/server/check";
 import { alertGuardians, familyText } from "@/server/family/family";
 import { SCHEMES } from "@/content/schemes";
 import type { CheckResult, ErrorCode, Indicator, Lang, Verdict } from "@/lib/types";
+import { esc } from "@/server/telegram/html";
 
 const API = (process.env.TELEGRAM_API_BASE || "https://api.telegram.org").replace(/\/$/, "");
 export const botToken = () => process.env.TELEGRAM_BOT_TOKEN?.trim() || "";
-/** Secret Telegram sends back in every webhook call, so nobody else can post updates to us. */
-export const webhookSecret = () => createHash("sha256").update(`kalkan:${botToken()}`).digest("hex").slice(0, 48);
+/**
+ * Secret Telegram sends back in every webhook call, so nobody else can post updates to us.
+ * TELEGRAM_WEBHOOK_SECRET if set; otherwise derived from the bot token (re-run /api/telegram/setup after changing it).
+ */
+export const webhookSecret = () =>
+  process.env.TELEGRAM_WEBHOOK_SECRET?.trim() || createHash("sha256").update(`kalkan:${botToken()}`).digest("hex").slice(0, 48);
+
+/** True if a webhook request really comes from Telegram. */
+export const isTelegramRequest = (req: Request) =>
+  Boolean(botToken()) && safeEqual(req.headers.get("x-telegram-bot-api-secret-token") ?? "", webhookSecret());
 
 export async function tg<T = unknown>(method: string, payload: Record<string, unknown>): Promise<T | null> {
   const token = botToken();
@@ -135,7 +145,6 @@ const T = {
 };
 export const botText = (lang: Lang) => T[lang];
 
-const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const DOT = { bad: "❌", warn: "⚠️", good: "✅", info: "ℹ️" } as const;
 
 export function formatResult(r: CheckResult, lang: Lang, site: string): string {

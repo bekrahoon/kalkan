@@ -1,13 +1,15 @@
 import { CheckError } from "@/server/ai/gemini";
 import { runCheck } from "@/server/check";
 import { getDemoResult, isDemoId } from "@/lib/demo";
-import { clientIp, sameOrigin, tooMany } from "@/server/security/request-guard";
+import { tooMany } from "@/server/security/rate-limit";
+import { clientIp, sameOrigin } from "@/server/security/request";
 import { IMAGE_MIMES, MAX_FILE_BYTES, MAX_TEXT_CHARS, type CheckResponse, type ErrorCode, type Lang, toLang } from "@/lib/types";
 
 /** A check takes a few seconds; the ceiling is for slow sites and a busy AI. */
 export const maxDuration = 60;
 
 const MAX_BODY_CHARS = 4_300_000;
+const BASE64 = /^[A-Za-z0-9+/]+={0,2}$/;
 const PER_MINUTE = 10;
 const PER_DAY = Number(process.env.DAILY_LIMIT_PER_IP || 80);
 
@@ -34,7 +36,7 @@ export async function POST(req: Request) {
     const f = body.image as Record<string, unknown>;
     const mime = typeof f.mime === "string" ? f.mime.toLowerCase() : "";
     const data = typeof f.data === "string" ? f.data.replace(/^data:[^,]*,/, "") : "";
-    if (!(IMAGE_MIMES as readonly string[]).includes(mime) || !data) return fail("file_type", 415);
+    if (!(IMAGE_MIMES as readonly string[]).includes(mime) || !data || !BASE64.test(data)) return fail("file_type", 415);
     if (Math.floor((data.length * 3) / 4) > MAX_FILE_BYTES) return fail("file_too_big", 413);
     image = { mime, data };
   }

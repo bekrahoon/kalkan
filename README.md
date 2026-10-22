@@ -31,7 +31,7 @@ alone.
 
 ## Measured accuracy
 
-Measured on 15 October 2026 with [`scripts/eval-links.mts`](scripts/eval-links.mts)
+Measured on 15 October 2026 with [`scripts/eval/eval-links.mts`](scripts/eval/eval-links.mts)
 (raw results in [`docs/eval`](docs/eval)). Technical checks only, no AI.
 
 | | Result |
@@ -63,18 +63,43 @@ deployed on Vercel.
 
 ## Project layout
 
-| What | Where |
-|---|---|
-| Entry point that routes any input to the right check | `src/lib/check/index.ts` |
-| Link engine: redirects, page signals, brand look-alikes | `src/lib/check/link.ts`, `official.ts` |
-| Domain age (RDAP / WHOIS) | `src/lib/check/domain-age.ts` |
-| Phishing feeds | `src/lib/check/feeds.ts` |
-| Apps, phone numbers, QR codes | `src/lib/check/app.ts`, `phone.ts`, `qr.ts` |
-| Company / pyramid check | `src/lib/check/company.ts` |
-| AI verdict and prompts | `src/lib/check/ai-verdict.ts`, `src/lib/ai.ts` |
-| API routes | `src/app/api/check`, `src/app/api/report`, `src/app/api/telegram` |
-| Rate limits and origin checks | `src/lib/guard.ts` |
-| UI strings (RU/KG/EN) | `src/lib/i18n.ts` |
+```
+src/
+├── app/                 Routes only (pages + API), thin: validate input, call src/server, return JSON
+│   ├── api/check        POST — run a check
+│   ├── api/report       POST — "this is fraud" report; DELETE — admin moderation
+│   └── api/telegram     Telegram webhook (+ /setup for the admin)
+├── components/          React UI, grouped by feature
+│   ├── checker/         Input form, loading, verdict, history
+│   ├── layout/          Header with menu, footer, consent dialog
+│   ├── pages/           Content of /about, /help, /schemes, /protect, legal pages
+│   ├── providers/       Language context
+│   └── ui/              Small reusable pieces (logo, reveal, PWA install card)
+├── content/             Static texts: schemes, legal pages, about
+├── lib/                 Code shared by browser and server: types, UI strings, demo results, local history
+└── server/              Server-only code (secrets, network, AI) — never shipped to the browser
+    ├── ai/              Gemini client with fallbacks and time budget
+    ├── check/           Check engine: routing, links, domain age, feeds, apps, phones, QR, companies, AI verdict, rules
+    ├── family/          Trusted person: invites, alerts
+    ├── reports/         User reports: validation and storage (Vercel Blob)
+    ├── security/        SSRF guard, rate limits, request origin, admin key / constant-time compare
+    ├── telegram/        Bot: messages, group guard, HTML escaping
+    └── config.ts        Public site URL
+scripts/
+├── eval/                Accuracy evaluation of the link engine
+└── mobile-build/        Single-file offline demo build
+```
+
+An ESLint rule forbids importing `src/server` from `components`, `lib` or `content`, so server code cannot leak into the browser bundle.
+
+## Security
+
+- **SSRF:** links are opened through an HTTP agent that resolves the name and refuses private, loopback, link-local, metadata, CGNAT and IPv4-in-IPv6 addresses at connect time (safe against DNS rebinding); every redirect hop is checked; responses are capped at 1.5 MB.
+- **API abuse:** `/api/check` and `/api/report` accept only same-origin requests from the site, with per-IP limits; request bodies, text and files are size- and type-checked.
+- **Secrets:** API keys live only in server environment variables; admin routes require `ADMIN_KEY` (≥16 chars, `Authorization: Bearer`), compared in constant time; the Telegram webhook checks Telegram's secret header in constant time.
+- **Output:** bot messages escape all user and AI text; the site sets a strict Content-Security-Policy, HSTS, `X-Frame-Options: DENY`, `nosniff`, Referrer- and Permissions-Policy.
+- **Privacy:** the text, links and files a user checks are not stored; a report keeps only the reported domain or app id and a counter, never who reported it.
+- Known limit: rate limits live in each server instance's memory. For a real attack add Vercel Firewall rate-limit rules.
 
 ## Run locally
 
@@ -89,7 +114,7 @@ Without a key the link checks still work, and the example buttons show prepared 
 Re-run the accuracy evaluation:
 
 ```bash
-NODE_OPTIONS=--conditions=react-server npx tsx scripts/eval-links.mts > eval.json
+NODE_OPTIONS=--conditions=react-server npx tsx scripts/eval/eval-links.mts > eval.json
 ```
 
 ## Honest limits

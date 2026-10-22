@@ -3,7 +3,6 @@ import { addReport } from "@/server/reports/store";
 import { reportableIndicators } from "@/server/reports/validate";
 import {
   botText,
-  botToken,
   chatTooMany,
   checkForChat,
   downloadTelegramFile,
@@ -11,12 +10,13 @@ import {
   parseReportData,
   setLang,
   tg,
-  webhookSecret,
+  isTelegramRequest,
 } from "@/server/telegram/bot";
 import { MAX_FILE_BYTES, toLang } from "@/lib/types";
 import { botId, guardGroupMessage, sendGroupIntro } from "@/server/telegram/group";
-import { acceptInvite, acceptWardInvite, alertGuardians, createInvite, createWardInvite, familyText, getFamily, isDeviceOwner, isPanic, parseOwner, removeGuardian } from "@/server/family/family";
+import { acceptInvite, acceptWardInvite, alertGuardians, createInvite, createWardInvite, familyText, getFamily, isPanic, parseOwner, removeGuardian } from "@/server/family/family";
 import { findUrls } from "@/server/check";
+import { SITE_URL } from "@/server/config";
 
 /** The check runs after we answer Telegram (it waits only a few seconds for webhooks). */
 export const maxDuration = 60;
@@ -81,10 +81,9 @@ async function sendWardSetup(chatId: number, name: string, lang: Parameters<type
   await tg("sendMessage", { chat_id: chatId, text: f.wardInvite(name, link), parse_mode: "HTML", link_preview_options: { is_disabled: true } });
 }
 
-const site = (req: Request) => `https://${req.headers.get("x-forwarded-host") || req.headers.get("host")}`;
 
 export async function POST(req: Request) {
-  if (!botToken() || req.headers.get("x-telegram-bot-api-secret-token") !== webhookSecret()) {
+  if (!isTelegramRequest(req)) {
     return new Response("Not found", { status: 404 });
   }
   const update = (await req.json().catch(() => ({}))) as TgUpdate;
@@ -129,12 +128,13 @@ export async function POST(req: Request) {
           }
         } else if (action === "leave") {
           const owner = parseOwner(cb.data!.slice("fam:leave:".length));
+          if (owner === null) return;
           const fam = await getFamily(owner);
           const g = await removeGuardian(owner, chatId);
           await tg("editMessageReplyMarkup", { chat_id: chatId, message_id: cb.message!.message_id, reply_markup: { inline_keyboard: [] } });
           if (g) {
             await tg("sendMessage", { chat_id: chatId, text: f.left(fam?.name ?? ""), parse_mode: "HTML" });
-            if (typeof owner === "number") await tg("sendMessage", { chat_id: owner, text: familyText(getLang(owner)).removed(g.name) });
+            await tg("sendMessage", { chat_id: owner, text: familyText(getLang(owner)).removed(g.name) });
           }
         }
       });
@@ -185,12 +185,12 @@ export async function POST(req: Request) {
       return new Response("ok");
     }
     const hiddenLinks = [...(msg.entities ?? []), ...(msg.caption_entities ?? [])].filter((e) => e.type === "text_link" && e.url).map((e) => e.url!);
-    if (raw || hiddenLinks.length) after(() => guardGroupMessage(chatId, msg.message_id, raw, hiddenLinks, lang, site(req)));
+    if (raw || hiddenLinks.length) after(() => guardGroupMessage(chatId, msg.message_id, raw, hiddenLinks, lang, SITE_URL));
     return new Response("ok");
   }
 
   const me = personName(msg.from);
-  const famStart = raw.match(/^\/start\s+fam_([\w-]+)/);
+  const famStart = raw.match(/^\/start\s+fam_([\w-]{6,16})$/);
   if (famStart) {
     const f = familyText(lang);
     after(async () => {
@@ -200,13 +200,11 @@ export async function POST(req: Request) {
         return;
       }
       await send(f.acceptedGuardian(r.ownerName));
-      if (!isDeviceOwner(r.ownerId)) {
-        await tg("sendMessage", { chat_id: r.ownerId, text: familyText(getLang(r.ownerId as number)).acceptedOwner(me), parse_mode: "HTML" });
-      }
+      await tg("sendMessage", { chat_id: r.ownerId, text: familyText(getLang(r.ownerId)).acceptedOwner(me), parse_mode: "HTML" });
     });
     return new Response("ok");
   }
-  const wardStart = raw.match(/^\/start\s+ward_([\w-]+)/);
+  const wardStart = raw.match(/^\/start\s+ward_([\w-]{6,16})$/);
   if (wardStart) {
     const f = familyText(lang);
     after(async () => {
@@ -273,7 +271,7 @@ export async function POST(req: Request) {
     return new Response("ok");
   }
 
-  const base = site(req);
+  const base = SITE_URL;
   after(async () => {
     const working = await tg<{ message_id: number }>("sendMessage", { chat_id: chatId, text: t.working, reply_to_message_id: msg.message_id });
     let img: { mime: string; data: string } | null = null;

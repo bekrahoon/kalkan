@@ -3,6 +3,7 @@ import { runCheck, findUrls } from "@/server/check";
 import { checkLink } from "@/server/check/link";
 import { botToken, chatTooMany, tg } from "./bot";
 import type { CheckResult, Lang } from "@/lib/types";
+import { esc } from "@/server/telegram/html";
 
 /*
  * "Chat guard": added to a family, class or neighbours' group, the bot stays silent
@@ -40,7 +41,6 @@ const T = {
   },
 };
 
-const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 export async function sendGroupIntro(chatId: number, lang: Lang) {
   await tg("sendMessage", { chat_id: chatId, text: T[lang].intro, parse_mode: "HTML" });

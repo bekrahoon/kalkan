@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import { del, get, put } from "@vercel/blob";
 import { tg } from "@/server/telegram/bot";
 import type { CheckResult, Lang } from "@/lib/types";
+import { esc } from "@/server/telegram/html";
 
 /*
  * "Trusted person": a vulnerable user (often an elderly parent) links a relative once.
@@ -20,10 +21,10 @@ export interface Guardian {
   lang: Lang;
   since: string;
 }
-/** A Telegram chat id, or "d_<id>" for a phone running the Android guard app. */
-export type Owner = number | string;
-export const parseOwner = (v: string): Owner => (/^-?\d+$/.test(v) ? Number(v) : v);
-export const isDeviceOwner = (o: Owner) => typeof o === "string";
+/** The protected person: a Telegram chat id. */
+export type Owner = number;
+/** Parses an owner id from button data (which a modified Telegram client can forge): digits only. */
+export const parseOwner = (v: string): Owner | null => (/^-?\d{1,16}$/.test(v) ? Number(v) : null);
 
 interface Family {
   name: string;
@@ -150,7 +151,6 @@ export const isPanic = (text: string) => text.length <= 400 && PANIC.some((re) =
 
 /* ---------------- texts ---------------- */
 
-const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const T = {
   ru: {
