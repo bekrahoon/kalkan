@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AboutContent } from "@/components/AboutContent";
+import { AboutContent } from "@/components/pages/AboutContent";
 
 export const metadata: Metadata = { title: "О проекте — KalkanCheck" };
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HelpContent } from "@/components/HelpContent";
+import { HelpContent } from "@/components/pages/HelpContent";
 
 export const metadata: Metadata = { title: "Если тебя обманули — KalkanCheck" };
 

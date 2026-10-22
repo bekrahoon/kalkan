@@ -1,6 +1,6 @@
-import { clientIp, sameOrigin, tooMany } from "@/lib/guard";
-import { addReport, clearReports } from "@/lib/reports";
-import { reportableIndicators } from "@/lib/report-input";
+import { clientIp, sameOrigin, tooMany } from "@/server/security/request-guard";
+import { addReport, clearReports } from "@/server/reports/store";
+import { reportableIndicators } from "@/server/reports/validate";
 
 /** "This is fraud" button. Limited per IP so one person cannot flood a domain with reports. */
 export async function POST(req: Request) {

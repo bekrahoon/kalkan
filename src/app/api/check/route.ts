@@ -1,7 +1,7 @@
-import { CheckError } from "@/lib/ai";
-import { runCheck } from "@/lib/check";
+import { CheckError } from "@/server/ai/gemini";
+import { runCheck } from "@/server/check";
 import { getDemoResult, isDemoId } from "@/lib/demo";
-import { clientIp, sameOrigin, tooMany } from "@/lib/guard";
+import { clientIp, sameOrigin, tooMany } from "@/server/security/request-guard";
 import { IMAGE_MIMES, MAX_FILE_BYTES, MAX_TEXT_CHARS, type CheckResponse, type ErrorCode, type Lang, toLang } from "@/lib/types";
 
 /** A check takes a few seconds; the ceiling is for slow sites and a busy AI. */

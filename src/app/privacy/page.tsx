@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LegalContent } from "@/components/LegalContent";
+import { LegalContent } from "@/components/pages/LegalContent";
 
 export const metadata: Metadata = { title: "Политика конфиденциальности — KalkanCheck" };
 

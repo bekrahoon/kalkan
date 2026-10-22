@@ -1,4 +1,4 @@
-import { botToken, tg, webhookSecret } from "@/lib/telegram";
+import { botToken, tg, webhookSecret } from "@/server/telegram/bot";
 
 /**
  * One-time bot setup (re-run after changing the domain or the token):

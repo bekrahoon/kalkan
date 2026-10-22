@@ -1,6 +1,6 @@
 import { after } from "next/server";
-import { addReport } from "@/lib/reports";
-import { reportableIndicators } from "@/lib/report-input";
+import { addReport } from "@/server/reports/store";
+import { reportableIndicators } from "@/server/reports/validate";
 import {
   botText,
   botToken,
@@ -12,11 +12,11 @@ import {
   setLang,
   tg,
   webhookSecret,
-} from "@/lib/telegram";
+} from "@/server/telegram/bot";
 import { MAX_FILE_BYTES, toLang } from "@/lib/types";
-import { botId, guardGroupMessage, sendGroupIntro } from "@/lib/telegram-group";
-import { acceptInvite, acceptWardInvite, alertGuardians, createInvite, createWardInvite, familyText, getFamily, isDeviceOwner, isPanic, parseOwner, removeGuardian } from "@/lib/family";
-import { findUrls } from "@/lib/check";
+import { botId, guardGroupMessage, sendGroupIntro } from "@/server/telegram/group";
+import { acceptInvite, acceptWardInvite, alertGuardians, createInvite, createWardInvite, familyText, getFamily, isDeviceOwner, isPanic, parseOwner, removeGuardian } from "@/server/family/family";
+import { findUrls } from "@/server/check";
 
 /** The check runs after we answer Telegram (it waits only a few seconds for webhooks). */
 export const maxDuration = 60;

@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/inter";
 import "./globals.css";
-import { LangProvider } from "@/components/LangProvider";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SiteFooter } from "@/components/SiteFooter";
-import { ConsentModal } from "@/components/Consent";
+import { LangProvider } from "@/components/providers/LangProvider";
+import { SiteHeader } from "@/components/layout/SiteHeader";
+import { SiteFooter } from "@/components/layout/SiteFooter";
+import { ConsentModal } from "@/components/layout/Consent";
 
 export const metadata: Metadata = {
   title: "KalkanCheck — проверь, прежде чем нажать",

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ProtectContent } from "@/components/ProtectContent";
+import { ProtectContent } from "@/components/pages/ProtectContent";
 
 export const metadata: Metadata = { title: "Защита близких — KalkanCheck" };
 
